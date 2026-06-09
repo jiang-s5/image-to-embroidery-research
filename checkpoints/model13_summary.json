@@ -1,0 +1,19 @@
+{
+    "epochs":  24,
+    "best_epoch":  24,
+    "best_score":  3.738220682255401,
+    "best_mask_iou":  0.9533605922791074,
+    "best_boundary_f1":  0.6999207075882552,
+    "best_centerline_f1":  0.4802198374754172,
+    "best_stitch_type_miou":  0.18956356655771486,
+    "best_endpoint_mae":  0.11780266022756464,
+    "best_path_order_mae":  0.2845349568072881,
+    "best_path_order_pairwise_acc":  0.4863432949391481,
+    "best_segment_order_mae":  0.19540961202802687,
+    "best_stitch_trace_f1":  0.5709184909535345,
+    "best_near_connect_f1":  0.4392108340686727,
+    "best_jump_endpoint_f1":  0.014953577716913179,
+    "best_continuity_mae":  0.13243291441153887,
+    "last_epoch":  24,
+    "last_score":  3.738220682255401
+}

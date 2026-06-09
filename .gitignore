@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+.venv_gpu/
+venv/
+env/
+
+# Large local artifacts.
+# Keep datasets/checkpoints out of normal Git history; publish them with Git LFS,
+# GitHub Releases, DVC, Hugging Face Datasets/Models, or another artifact store.
+datasets/
+models/
+outputs/
+external/
+*.pt
+*.pth
+*.onnx
+*.dst
+*.pes
+*.pec
+*.vp3
+*.jef
+*.xxx
+*.hus
+*.exp
+*.zip
+*.7z
+
+# Local reports and logs
+*.log
+*.err
+*.tmp
+
+# Allow repository documentation and lightweight examples if added explicitly.
+!docs/
+!examples/
+!requirements.txt
+!checkpoints/
+!checkpoints/*.pt
+!checkpoints/*.json
