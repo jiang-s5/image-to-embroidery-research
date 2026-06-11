@@ -98,6 +98,17 @@ Evaluation must include three layers:
    - fewer broken fragments;
    - recognizable cartoon/person features.
 
+## Planner-Only Ablation Path
+
+The promoted checkpoint remains `model13`. Recent planner work is evaluated as a post-processing ablation, not as a new model checkpoint:
+
+- A0: geometry planner + vector-continuity planner;
+- A1: relation-aware transition cost from `configs/relation_planner.yaml`;
+- A2: A1 plus retrieval planner priors from `datasets/mini_demo/retrieval_planner_index.json` or a larger case bank;
+- A3: future beam-search ordering over top-k candidate transitions.
+
+Use `tools/eval_executability.py` to compare these variants with command-level metrics before deciding whether to train a relation head.
+
 ## Known Limitation
 
 The model has improved continuity and jump safety, but it still does not fully reproduce a professional digitizer's satin/fill style. The next research step is stronger segment-level graph planning and stitch-style generation.

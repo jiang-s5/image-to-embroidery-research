@@ -55,6 +55,20 @@ datasets/mini_demo/inputs
 
 It contains 12 sample PNG files. These are intended for quick inference and packaging checks, not for benchmark training.
 
+The quickstart also uses a small retrieval planner index:
+
+```text
+datasets/mini_demo/retrieval_planner_index.json
+```
+
+If it is missing, rebuild it with:
+
+```powershell
+.\.venv\Scripts\python.exe retrieval_augmented_planner.py `
+  --image-dir datasets/mini_demo/inputs `
+  --output datasets/mini_demo/retrieval_planner_index.json
+```
+
 ## 5. Run One Image
 
 ```powershell
@@ -65,6 +79,8 @@ It contains 12 sample PNG files. These are intended for quick inference and pack
   --geometry-planner `
   --model-path-order `
   --use-continuity-planner `
+  --retrieval-index datasets/mini_demo/retrieval_planner_index.json `
+  --planner-config configs/relation_planner.yaml `
   --serpentine-fill `
   --cpu
 ```
@@ -78,7 +94,40 @@ outputs/quickstart_ce_demo/prediction_panel.png
 outputs/quickstart_ce_demo/summary.json
 ```
 
-## 6. Train on the Main Dataset
+The `summary.json` should include `planner_values` and `retrieval_planner`, which show the retrieved nearest examples and the final planner settings used for export.
+
+Run the command-level executability check:
+
+```powershell
+.\.venv\Scripts\python.exe tools/eval_executability.py `
+  --pred outputs/quickstart_ce_demo/embroidery_output.dst `
+  --report outputs/quickstart_ce_demo/executability_eval.json
+```
+
+The report includes parse success, stitch/jump/trim counts, high-risk jump count, illegal long-stitch count, and max jump length.
+
+## 6. Optional Label and Augmentation Builders
+
+Enhanced DST/PES labels:
+
+```powershell
+.\.venv\Scripts\python.exe build_dst_label_v2.py `
+  --dst-dir path/to/embroidery_files `
+  --output-dir datasets/dst_label_v2 `
+  --limit 20
+```
+
+Render augmentation:
+
+```powershell
+.\.venv\Scripts\python.exe augment_render_inputs.py `
+  --input-dir datasets/mini_demo/inputs `
+  --output-dir outputs/mini_demo_render_augmented `
+  --variants 1 `
+  --limit 3
+```
+
+## 7. Train on the Main Dataset
 
 After downloading and extracting the main training dataset:
 

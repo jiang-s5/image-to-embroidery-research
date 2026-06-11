@@ -22,6 +22,14 @@ datasets/mini_demo
 
 It contains 12 PNG inputs for quick installation and inference checks. It is not a formal training or benchmark dataset.
 
+It also includes a tiny retrieval planner index:
+
+```text
+datasets/mini_demo/retrieval_planner_index.json
+```
+
+This index is only for smoke tests. Build a larger index from the full training set before reporting final metrics.
+
 ## Composition
 
 The full dataset is built from real embroidery files, mainly DST and other machine-embroidery formats.
@@ -57,6 +65,26 @@ Core sample fields:
 | `segment_id_map_npy` | Segment id map |
 | `path_graph_json` | Segment graph/path metadata |
 | `*_vector_continuity.npy` | Continuity, near-connect, and jump-risk supervision |
+| `*_dst_label_v2.npy` | Enhanced command-derived labels for stitch trace, near-connect, jump, trim, color-change, closure, and path order |
+| `*_path_events_v2.json` | Per-edge path events derived from DST/PES commands |
+
+## Enhanced DST-Derived Label V2
+
+`build_dst_label_v2.py` parses DST/PES command streams and produces seven extra supervision channels:
+
+- `stitch_trace`;
+- `same_color_near_connect`;
+- `long_jump_endpoint`;
+- `trim_endpoint`;
+- `color_change_endpoint`;
+- `closure_gap_endpoint`;
+- `path_order`.
+
+These labels target the current core failure mode: generated stitches may cover the right area but still break visual continuity, overuse jumps, or lose closed outlines.
+
+## Render Augmentation
+
+`augment_render_inputs.py` creates fabric, lighting, contrast, blur, and noise variants while keeping the same geometry labels. This is intended to improve robustness to real camera previews without changing the stitch/path supervision.
 
 ## Current Split
 
@@ -82,6 +110,7 @@ This is not an image-classification dataset. It is a multi-task embroidery-plann
 - where segments enter and exit;
 - how path order should behave;
 - where long jumps or continuity breaks are risky.
+- how similar historical designs should bias planner parameters through retrieval.
 
 ## Known Limitations
 

@@ -12,6 +12,8 @@ input image / DST-rendered preview
   -> mask, density, direction, boundary, centerline
   -> stitch type, endpoints, path order
   -> vector-continuity and jump-risk supervision
+  -> retrieval-augmented planner priors
+  -> relation-aware transition cost
   -> graph/path planning
   -> DST/PES export and render-back evaluation
 ```
@@ -44,6 +46,8 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 1. DST-derived supervision dataset: real embroidery files are parsed/rendered into dense geometry, planning, and continuity labels rather than treated as ordinary image pairs.
 2. Multi-task embroidery representation: the model predicts mask, density, direction, boundary, centerline, stitch type, endpoints, path order, segment structure, and continuity maps.
 3. Path-continuity learning: vector-continuity labels and planner-side penalties target broken outlines, long jumps, and disconnected stitch traces before DST/PES export.
+4. Retrieval-augmented planning: similar embroidery samples can provide planner priors for row spacing, jump limits, continuity weights, and serpentine fill behavior.
+5. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, and round-trip parse metrics.
 
 ## Architecture
 
@@ -98,6 +102,75 @@ datasets/mini_demo
 
 See [DATASET_CARD.md](DATASET_CARD.md).
 
+## Optimization Tools
+
+The current high-priority optimization path is implemented as three practical tools.
+
+### Enhanced DST-Derived Labels
+
+Build richer labels directly from DST/PES command streams:
+
+```powershell
+python build_dst_label_v2.py `
+  --dst-dir path/to/embroidery_files `
+  --output-dir datasets/dst_label_v2 `
+  --limit 100
+```
+
+This creates `stitch_trace`, `same_color_near_connect`, `long_jump_endpoint`, `trim_endpoint`, `color_change_endpoint`, `closure_gap_endpoint`, and `path_order` maps, plus segment and path-event JSON files.
+
+### Retrieval-Augmented Planner
+
+Create a small planner index from demo or training images:
+
+```powershell
+python retrieval_augmented_planner.py `
+  --image-dir datasets/mini_demo/inputs `
+  --output datasets/mini_demo/retrieval_planner_index.json
+```
+
+Use the index during inference:
+
+```powershell
+python infer_model3_portrait_hybrid.py inputs/your_image.png `
+  --checkpoint checkpoints/best_model13_multiformat_all_vector_continuity.pt `
+  --output-dir outputs/your_image_model13 `
+  --geometry-planner `
+  --model-path-order `
+  --use-continuity-planner `
+  --retrieval-index datasets/mini_demo/retrieval_planner_index.json `
+  --planner-config configs/relation_planner.yaml `
+  --serpentine-fill
+```
+
+The `summary.json` records the retrieved matches and the final planner values applied to DST/PES export.
+
+### Relation-Aware Planner Cost
+
+`configs/relation_planner.yaml` enables the A1/A2 planner-only ablation path from the research report. It adds normalized distance, jump/trim risk, lock risk, near-connect bonus, direction alignment, endpoint compatibility, and retrieval-prior terms to the transition cost.
+
+Run command-level executability evaluation after export:
+
+```powershell
+python tools/eval_executability.py `
+  --pred outputs/your_image_model13/embroidery_output.dst `
+  --report outputs/your_image_model13/executability_eval.json
+```
+
+### Render Augmentation
+
+Create fabric, lighting, blur, color, and noise variants without changing geometry labels:
+
+```powershell
+python augment_render_inputs.py `
+  --dataset-dir datasets/dataset4_multiformat_all_geometry_graph `
+  --manifest manifest_dataset2.csv `
+  --output-dir datasets/dataset4_render_augmented `
+  --variants 2
+```
+
+Use this for robustness experiments before moving to heavier generative models such as CVAE, cGAN, diffusion, or autoregressive DST sequence modeling.
+
 ## Install
 
 ```powershell
@@ -143,6 +216,8 @@ python infer_model3_portrait_hybrid.py inputs/your_image.png `
   --geometry-planner `
   --model-path-order `
   --use-continuity-planner `
+  --retrieval-index datasets/mini_demo/retrieval_planner_index.json `
+  --planner-config configs/relation_planner.yaml `
   --serpentine-fill
 ```
 

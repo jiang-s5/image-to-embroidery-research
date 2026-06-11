@@ -27,6 +27,15 @@ from train_image_to_stitch_label import TinyUNet
 from train_model7_geometry_planner import Model7GeometryPlannerCascade
 from train_model8_joint_segment import Model8JointSegmentPlanner
 from train_model10_vector_continuity import Model10VectorContinuityPlanner
+from retrieval_augmented_planner import prediction_feature_vector, retrieve_planner_prior
+from planner.relation_cost import (
+    RelationPlannerConfig,
+    config_to_dict,
+    endpoint_direction,
+    load_relation_config,
+    relation_transition_cost,
+    transition_direction,
+)
 
 
 def image_to_tensor(image: Image.Image) -> torch.Tensor:
@@ -39,6 +48,18 @@ def direction_from_axis(raw_axis: np.ndarray) -> np.ndarray:
     return np.stack([np.cos(angle), np.sin(angle)], axis=0).astype(np.float32)
 
 
+def blend_retrieval_value(current: float | int | bool, prior: object, weight: float, as_int: bool = False) -> float | int | bool:
+    if isinstance(current, bool):
+        return bool(prior) or current
+    try:
+        blended = (1.0 - weight) * float(current) + weight * float(prior)
+    except (TypeError, ValueError):
+        return current
+    if as_int:
+        return int(round(blended))
+    return float(blended)
+
+
 def direction_image(direction: np.ndarray, mask: np.ndarray) -> Image.Image:
     dx = (direction[0] + 1.0) * 0.5
     dy = (direction[1] + 1.0) * 0.5
@@ -46,7 +67,7 @@ def direction_image(direction: np.ndarray, mask: np.ndarray) -> Image.Image:
     rgb[..., 0] = np.clip(dx * 255, 0, 255).astype(np.uint8)
     rgb[..., 1] = np.clip(dy * 255, 0, 255).astype(np.uint8)
     rgb[..., 2] = np.clip(mask * 255, 0, 255).astype(np.uint8)
-    return Image.fromarray(rgb, mode="RGB")
+    return Image.fromarray(rgb)
 
 
 def heatmap_preview(arr: np.ndarray) -> Image.Image:
@@ -54,11 +75,11 @@ def heatmap_preview(arr: np.ndarray) -> Image.Image:
     rgb = np.zeros((arr.shape[0], arr.shape[1], 3), dtype=np.uint8)
     rgb[..., 0] = (arr * 255).astype(np.uint8)
     rgb[..., 1] = (np.sqrt(arr) * 190).astype(np.uint8)
-    return Image.fromarray(rgb, mode="RGB")
+    return Image.fromarray(rgb)
 
 
 def grayscale_from_float(arr: np.ndarray) -> Image.Image:
-    return Image.fromarray(np.clip(arr * 255.0, 0, 255).astype(np.uint8), mode="L")
+    return Image.fromarray(np.clip(arr * 255.0, 0, 255).astype(np.uint8))
 
 
 def largest_component(mask: np.ndarray) -> np.ndarray:
@@ -223,6 +244,7 @@ def continuity_adjusted_transition(
     continuity_jump: np.ndarray | None = None,
     continuity_order_weight: float = 0.0,
     jump_endpoint_weight: float = 0.0,
+    relation_config: RelationPlannerConfig | None = None,
 ) -> tuple[float, bool, float]:
     base_cost, reverse, distance = best_polyline_transition(
         current,
@@ -237,6 +259,18 @@ def continuity_adjusted_transition(
     current_px = mm_to_coord(current, width, height, scale_mm)
     near_signal = line_map_mean(continuity_near, current_px, first)
     jump_signal = line_map_mean(continuity_jump, current_px, first)
+    if relation_config is not None and relation_config.enabled:
+        segment_dir = endpoint_direction(coords, reverse)
+        trans_dir = transition_direction(current_px, first)
+        relation_cost, _details = relation_transition_cost(
+            distance,
+            near_signal,
+            jump_signal,
+            trans_dir,
+            segment_dir,
+            relation_config,
+        )
+        return relation_cost, reverse, distance
     adjusted = base_cost - continuity_order_weight * near_signal * long_jump_threshold_mm
     adjusted += jump_endpoint_weight * jump_signal * max(distance, long_jump_threshold_mm)
     return adjusted, reverse, distance
@@ -460,6 +494,7 @@ def order_polylines_nearest(
     continuity_jump: np.ndarray | None = None,
     continuity_order_weight: float = 0.0,
     jump_endpoint_weight: float = 0.0,
+    relation_config: RelationPlannerConfig | None = None,
 ) -> list[list[tuple[float, float]]]:
     remaining = [coords for coords in polylines if len(coords) >= 2]
     ordered: list[list[tuple[float, float]]] = []
@@ -481,6 +516,7 @@ def order_polylines_nearest(
                 continuity_jump,
                 continuity_order_weight,
                 jump_endpoint_weight,
+                relation_config,
             )
             if cost < best_cost:
                 best_cost = cost
@@ -528,6 +564,7 @@ def export_color_planner_geometry_as_dst(
     max_stitch_mm: float = 4.0,
     max_jump_mm: float = 7.5,
     trim_jump_threshold_mm: float = 10.0,
+    relation_config: RelationPlannerConfig | None = None,
 ) -> dict[str, int | float | str | dict[str, int]]:
     active = mask >= threshold
     height, width = active.shape
@@ -626,17 +663,20 @@ def export_color_planner_geometry_as_dst(
 
         while tasks:
             best_index = 0
-            best_distance = float("inf")
+            best_cost = float("inf")
             if path_order is not None:
                 search_window = min(len(tasks), 8)
                 candidates = range(search_window)
             else:
                 candidates = range(len(tasks))
-            for index in candidates:
+            candidate_indices = list(candidates)
+            if relation_config is not None and relation_config.enabled:
+                candidate_indices = sorted(
+                    candidate_indices,
+                    key=lambda idx: bbox_distance2_mm(current, tasks[idx]["bbox"], width, height, scale_mm),
+                )[: min(len(candidate_indices), 12)]
+            for index in candidate_indices:
                 task = tasks[index]
-                bbox_d2 = bbox_distance2_mm(current, task["bbox"], width, height, scale_mm)
-                if bbox_d2 > best_distance:
-                    continue
                 task_best = float("inf")
                 for coords in task["polylines"]:
                     cost, _reverse, _distance = continuity_adjusted_transition(
@@ -651,11 +691,12 @@ def export_color_planner_geometry_as_dst(
                         continuity_jump,
                         continuity_order_weight,
                         jump_endpoint_weight,
+                        relation_config,
                     )
                     if cost < task_best:
                         task_best = cost
-                if task_best < best_distance:
-                    best_distance = task_best
+                if task_best < best_cost:
+                    best_cost = task_best
                     best_index = index
             task = tasks.pop(best_index)
             type_name = str(task["type_name"])
@@ -687,6 +728,7 @@ def export_color_planner_geometry_as_dst(
                     continuity_jump=continuity_jump,
                     continuity_order_weight=continuity_order_weight,
                     jump_endpoint_weight=jump_endpoint_weight,
+                    relation_config=relation_config,
                 )
             for coords in ordered_polylines:
                 sc, jc, tc, cc, jump_mm, path_mm, current = add_polyline_nearest(
@@ -747,6 +789,7 @@ def export_color_planner_geometry_as_dst(
         "max_stitch_mm": max_stitch_mm,
         "max_jump_mm_limit": max_jump_mm,
         "trim_jump_threshold_mm": trim_jump_threshold_mm,
+        "relation_planner": config_to_dict(relation_config),
     }
 
 
@@ -834,6 +877,69 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         output_path=output_dir / "prediction_panel.png",
     )
 
+    planner_values = {
+        "row_step_px": args.row_step_px,
+        "point_step_px": args.point_step_px,
+        "min_component_px": args.min_component_px,
+        "max_components": args.max_components,
+        "long_jump_threshold_mm": args.long_jump_threshold_mm,
+        "long_jump_weight": args.long_jump_weight,
+        "two_opt_passes": args.two_opt_passes,
+        "connect_near_mm": args.connect_near_mm,
+        "continuity_order_weight": args.continuity_order_weight,
+        "jump_endpoint_weight": args.jump_endpoint_weight,
+        "continuity_connect_threshold": args.continuity_connect_threshold,
+        "continuity_connect_max_mm": args.continuity_connect_max_mm,
+        "max_stitch_mm": args.max_stitch_mm,
+        "max_jump_mm": args.max_jump_mm,
+        "trim_jump_threshold_mm": args.trim_jump_threshold_mm,
+        "serpentine_fill": args.serpentine_fill and not args.no_serpentine_fill,
+    }
+    relation_config = load_relation_config(args.planner_config)
+    retrieval_info = None
+    if args.retrieval_index and not args.no_apply_retrieval_prior:
+        query_features = prediction_feature_vector(
+            active.astype(np.float32),
+            density,
+            stitch_type_hybrid,
+            centerline,
+            boundary,
+        )
+        retrieval_info = retrieve_planner_prior(
+            Path(args.retrieval_index),
+            query_features,
+            top_k=max(1, args.retrieval_top_k),
+        )
+        prior = retrieval_info.get("planner_prior", {})
+        if isinstance(prior, dict):
+            weight = max(0.0, min(1.0, float(args.retrieval_weight)))
+            for key in ("row_step_px", "point_step_px", "min_component_px", "max_components", "two_opt_passes"):
+                if key in prior:
+                    planner_values[key] = blend_retrieval_value(planner_values[key], prior[key], weight, as_int=True)
+            for key in (
+                "long_jump_threshold_mm",
+                "long_jump_weight",
+                "connect_near_mm",
+                "continuity_order_weight",
+                "jump_endpoint_weight",
+                "continuity_connect_threshold",
+                "continuity_connect_max_mm",
+                "max_stitch_mm",
+                "max_jump_mm",
+                "trim_jump_threshold_mm",
+            ):
+                if key in prior:
+                    planner_values[key] = blend_retrieval_value(planner_values[key], prior[key], weight)
+            planner_values["serpentine_fill"] = (
+                bool(planner_values["serpentine_fill"]) or bool(prior.get("serpentine_fill", False))
+            ) and not args.no_serpentine_fill
+            distances = [float(match.get("distance", 0.0)) for match in retrieval_info.get("matches", []) if isinstance(match, dict)]
+            if distances and relation_config.enabled:
+                retrieval_score = float(1.0 / (1.0 + np.mean(distances)))
+                relation_config.retrieval_prior = max(float(relation_config.retrieval_prior), retrieval_score)
+            retrieval_info["retrieval_weight"] = weight
+            retrieval_info["applied_planner_values"] = planner_values
+
     exporter = export_color_planner_geometry_as_dst if args.geometry_planner else export_color_planner_as_dst
     export_kwargs = {
         "mask": active.astype(np.float32),
@@ -845,11 +951,11 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "output_base": output_dir / args.output_prefix,
         "threshold": 0.5,
         "target_width_mm": args.target_width_mm,
-        "row_step_px": args.row_step_px,
-        "point_step_px": args.point_step_px,
+        "row_step_px": int(planner_values["row_step_px"]),
+        "point_step_px": int(planner_values["point_step_px"]),
         "min_run_px": args.min_run_px,
-        "min_component_px": args.min_component_px,
-        "max_components": args.max_components,
+        "min_component_px": int(planner_values["min_component_px"]),
+        "max_components": int(planner_values["max_components"]),
         "max_colors": args.max_colors,
         "min_color_px": args.min_color_px,
         "add_outline": args.add_outline,
@@ -859,20 +965,21 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         export_kwargs.update(
             {
                 "path_order": path_order,
-                "long_jump_threshold_mm": args.long_jump_threshold_mm,
-                "long_jump_weight": args.long_jump_weight,
-                "two_opt_passes": args.two_opt_passes,
-                "serpentine_fill": args.serpentine_fill and not args.no_serpentine_fill,
-                "connect_near_mm": args.connect_near_mm,
+                "long_jump_threshold_mm": float(planner_values["long_jump_threshold_mm"]),
+                "long_jump_weight": float(planner_values["long_jump_weight"]),
+                "two_opt_passes": int(planner_values["two_opt_passes"]),
+                "serpentine_fill": bool(planner_values["serpentine_fill"]),
+                "connect_near_mm": float(planner_values["connect_near_mm"]),
                 "continuity_near": continuity[1] if continuity is not None and args.use_continuity_planner else None,
                 "continuity_jump": continuity[2] if continuity is not None and args.use_continuity_planner else None,
-                "continuity_order_weight": args.continuity_order_weight if args.use_continuity_planner else 0.0,
-                "jump_endpoint_weight": args.jump_endpoint_weight if args.use_continuity_planner else 0.0,
-                "continuity_connect_threshold": args.continuity_connect_threshold if args.use_continuity_planner else 0.0,
-                "continuity_connect_max_mm": args.continuity_connect_max_mm if args.use_continuity_planner else 0.0,
-                "max_stitch_mm": args.max_stitch_mm,
-                "max_jump_mm": args.max_jump_mm,
-                "trim_jump_threshold_mm": args.trim_jump_threshold_mm,
+                "continuity_order_weight": float(planner_values["continuity_order_weight"]) if args.use_continuity_planner else 0.0,
+                "jump_endpoint_weight": float(planner_values["jump_endpoint_weight"]) if args.use_continuity_planner else 0.0,
+                "continuity_connect_threshold": float(planner_values["continuity_connect_threshold"]) if args.use_continuity_planner else 0.0,
+                "continuity_connect_max_mm": float(planner_values["continuity_connect_max_mm"]) if args.use_continuity_planner else 0.0,
+                "max_stitch_mm": float(planner_values["max_stitch_mm"]),
+                "max_jump_mm": float(planner_values["max_jump_mm"]),
+                "trim_jump_threshold_mm": float(planner_values["trim_jump_threshold_mm"]),
+                "relation_config": relation_config,
             }
         )
     dst_summary = exporter(**export_kwargs)
@@ -886,6 +993,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "mask_mean": float(mask.mean()),
         "density_mean": float(density.mean()),
         "stitch_type_counts": counts,
+        "planner_values": planner_values,
+        "relation_planner": config_to_dict(relation_config),
+        "retrieval_planner": retrieval_info,
         "dst_summary": dst_summary,
         "files": [
             "input_256.png",
@@ -941,6 +1051,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--trim-jump-threshold-mm", type=float, default=10.0)
     parser.add_argument("--serpentine-fill", action="store_true")
     parser.add_argument("--no-serpentine-fill", action="store_true")
+    parser.add_argument("--retrieval-index", default="", help="Optional retrieval planner index JSON built from similar designs.")
+    parser.add_argument("--retrieval-top-k", type=int, default=5)
+    parser.add_argument("--retrieval-weight", type=float, default=0.45)
+    parser.add_argument("--no-apply-retrieval-prior", action="store_true")
+    parser.add_argument("--planner-config", default="", help="Optional relation planner YAML/JSON config for A1/A2 ablations.")
     parser.add_argument("--cpu", action="store_true")
     return parser
 

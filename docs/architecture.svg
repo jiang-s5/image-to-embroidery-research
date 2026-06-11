@@ -1,12 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="760" viewBox="0 0 980 760" role="img" aria-labelledby="title desc">
   <title id="title">Image-to-Embroidery Research Architecture</title>
-  <desc id="desc">Pipeline from input image or DST render through shared encoder, geometry heads, planner heads, vector-continuity heads, graph planner, DST/PES export, and render-back evaluation.</desc>
+  <desc id="desc">Pipeline from input image or DST render through shared encoder, geometry heads, planner heads, vector-continuity heads, retrieval planner priors, graph planner, DST/PES export, and render-back evaluation.</desc>
   <defs>
     <style>
       .bg { fill: #fbfbf8; }
       .box { fill: #ffffff; stroke: #263238; stroke-width: 2; rx: 10; }
       .head { fill: #e8f2ff; stroke: #1f6aa5; stroke-width: 2; rx: 10; }
       .planner { fill: #fff5df; stroke: #a76812; stroke-width: 2; rx: 10; }
+      .retrieval { fill: #f3efff; stroke: #6b4bb3; stroke-width: 2; rx: 10; }
       .export { fill: #ecf8ee; stroke: #287c3e; stroke-width: 2; rx: 10; }
       .text { font-family: Arial, Helvetica, sans-serif; font-size: 20px; fill: #202124; }
       .small { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #37474f; }
@@ -36,6 +37,10 @@
   <text class="text" x="490" y="515" text-anchor="middle">Vector-Continuity Heads</text>
   <text class="small" x="490" y="540" text-anchor="middle">stitch trace / near-connect / jump endpoint</text>
   <line class="arrow" x1="490" y1="565" x2="490" y2="600"/>
+  <rect class="retrieval" x="35" y="600" width="185" height="60"/>
+  <text class="small" x="127" y="625" text-anchor="middle">Retrieval Priors</text>
+  <text class="small" x="127" y="647" text-anchor="middle">similar design planner settings</text>
+  <line class="arrow" x1="220" y1="630" x2="250" y2="630"/>
   <rect class="planner" x="250" y="600" width="480" height="60"/>
   <text class="text" x="490" y="637" text-anchor="middle">Graph &amp; Path Planner</text>
   <line class="arrow" x1="490" y1="660" x2="490" y2="690"/>
