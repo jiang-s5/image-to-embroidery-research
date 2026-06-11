@@ -1,0 +1,5 @@
+# CPU-friendly install file. PyTorch comes from the CPU wheel index; the other
+# packages remain available through PyPI.
+--index-url https://download.pytorch.org/whl/cpu
+--extra-index-url https://pypi.org/simple
+-r requirements.txt

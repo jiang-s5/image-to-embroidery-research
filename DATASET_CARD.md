@@ -2,21 +2,29 @@
 
 ## Main Dataset
 
-Primary local training dataset:
+Recommended primary training dataset:
 
 ```text
-datasets/dataset2_collection_20260512_geometry_graph
+datasets/dataset4_multiformat_all_geometry_graph
 ```
 
-Desktop organized copy:
+This is the most complete geometry-graph package in the current release. Download it from GitHub Releases and extract it under `datasets/`.
+
+Older or smaller datasets remain useful for ablation and debugging, but new users should start with `dataset4_multiformat_all_geometry_graph`.
+
+## Mini Demo Dataset
+
+A lightweight inference demo set is included in Git:
 
 ```text
-C:/Users/jiang/Desktop/科研/图片到dst/数据集/dataset4_multiformat_all_geometry_graph
+datasets/mini_demo
 ```
+
+It contains 12 PNG inputs for quick installation and inference checks. It is not a formal training or benchmark dataset.
 
 ## Composition
 
-The dataset is built from real embroidery files, mainly DST and other machine-embroidery formats.
+The full dataset is built from real embroidery files, mainly DST and other machine-embroidery formats.
 
 The supervision chain is:
 
@@ -52,7 +60,7 @@ Core sample fields:
 
 ## Current Split
 
-For `dataset2_collection_20260512_geometry_graph`:
+For older `dataset2_collection_20260512_geometry_graph` experiments:
 
 ```text
 total: 3033
@@ -60,6 +68,8 @@ train: 2206
 val:   381
 test:  446
 ```
+
+For `dataset4_multiformat_all_geometry_graph`, read the split counts from the extracted dataset manifest because this package may be rebuilt as new DST/PES sources are imported.
 
 ## Why This Dataset Is Different
 
@@ -86,7 +96,7 @@ The Embroideres public-page collector stores page metadata and public preview im
 
 ```text
 datasets/embroideres_free_raw_20260513_category_probe
-C:/Users/jiang/Desktop/科研/图片到dst/数据集/embroideres_free_1_raw_public_manifest
+datasets/embroideres_free_1_raw_public_manifest
 ```
 
 If DST/PES downloads require login, do not bypass access control. Download files through a normal logged-in session and then import them into the dataset builder.

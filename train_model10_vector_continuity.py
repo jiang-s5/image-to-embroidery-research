@@ -332,7 +332,7 @@ def train(args: argparse.Namespace) -> dict[str, object]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train model10 with DST-derived vector-continuity supervision.")
-    parser.add_argument("--dataset-dir", default="datasets/dataset2_collection_20260512_geometry_graph")
+    parser.add_argument("--dataset-dir", default="datasets/dataset4_multiformat_all_geometry_graph")
     parser.add_argument("--output-dir", default="models/model10_vector_continuity")
     parser.add_argument("--split-field", default="canonical_split")
     parser.add_argument("--train-split", default="train")
@@ -340,7 +340,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--epochs", type=int, default=16)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--base-channels", type=int, default=32)
-    parser.add_argument("--init-checkpoint", default="C:/Users/jiang/Desktop/科研/图片到dst/模型/model9_hard_experiments_20260513/model9A_joint_best_model9_hard.pt")
+    parser.add_argument("--init-checkpoint", default=None, help="Optional relative or absolute checkpoint path for continuation training.")
     parser.add_argument("--lr", type=float, default=1.5e-5)
     parser.add_argument("--min-lr", type=float, default=1e-6)
     parser.add_argument("--weight-decay", type=float, default=1e-4)

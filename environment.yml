@@ -1,0 +1,15 @@
+name: image-to-embroidery
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - numpy>=2.0
+  - pillow>=11.0
+  - opencv
+  - shapely>=2.0
+  - pytorch>=2.2
+  - cpuonly
+  - pip:
+      - pyembroidery>=1.5

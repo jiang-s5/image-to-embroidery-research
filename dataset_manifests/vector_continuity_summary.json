@@ -1,15 +1,15 @@
-{
-  "dataset_dir": "C:\\Users\\jiang\\Desktop\\WKU\\cps3830\\embroidery_stage1\\datasets\\dataset2_collection_20260512_geometry_graph",
-  "connect_mm": 2.5,
-  "long_jump_mm": 8.0,
-  "rows_total": 3033,
-  "processed": 3033,
-  "skipped_existing": 0,
-  "failed": 0,
-  "totals": {
-    "segments": 22528920,
-    "near_connect_edges": 22436994,
-    "long_jump_edges": 41260,
-    "color_change_edges": 6605
-  }
+﻿{
+    "dataset_dir":  "datasets/dataset2_collection_20260512_geometry_graph",
+    "connect_mm":  2.5,
+    "long_jump_mm":  8.0,
+    "rows_total":  3033,
+    "processed":  3033,
+    "skipped_existing":  0,
+    "failed":  0,
+    "totals":  {
+                   "segments":  22528920,
+                   "near_connect_edges":  22436994,
+                   "long_jump_edges":  41260,
+                   "color_change_edges":  6605
+               }
 }

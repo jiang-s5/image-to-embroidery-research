@@ -1,0 +1,5 @@
+# CUDA 12.1 example install file. Change the index URL if your CUDA
+# version requires a different PyTorch wheel set.
+--index-url https://download.pytorch.org/whl/cu121
+--extra-index-url https://pypi.org/simple
+-r requirements.txt

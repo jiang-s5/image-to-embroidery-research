@@ -1,6 +1,6 @@
-{
-    "source_dir":  "C:\\Users\\jiang\\Desktop\\WKU\\cps3830\\embroidery_stage1\\datasets\\dst_rendered_supervision_collection_20260512_rich_v2",
-    "output_dir":  "C:\\Users\\jiang\\Desktop\\WKU\\cps3830\\embroidery_stage1\\datasets\\dataset2_collection_20260512_geometry_graph",
+﻿{
+    "source_dir":  "datasets/dst_rendered_supervision_collection_20260512_rich_v2",
+    "output_dir":  "datasets/dataset2_collection_20260512_geometry_graph",
     "samples":  3033,
     "canonical_split_counts":  {
                                    "train":  2206,

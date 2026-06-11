@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="760" viewBox="0 0 980 760" role="img" aria-labelledby="title desc">
+  <title id="title">Image-to-Embroidery Research Architecture</title>
+  <desc id="desc">Pipeline from input image or DST render through shared encoder, geometry heads, planner heads, vector-continuity heads, graph planner, DST/PES export, and render-back evaluation.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfbf8; }
+      .box { fill: #ffffff; stroke: #263238; stroke-width: 2; rx: 10; }
+      .head { fill: #e8f2ff; stroke: #1f6aa5; stroke-width: 2; rx: 10; }
+      .planner { fill: #fff5df; stroke: #a76812; stroke-width: 2; rx: 10; }
+      .export { fill: #ecf8ee; stroke: #287c3e; stroke-width: 2; rx: 10; }
+      .text { font-family: Arial, Helvetica, sans-serif; font-size: 20px; fill: #202124; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #37474f; }
+      .arrow { stroke: #37474f; stroke-width: 3; marker-end: url(#arrowhead); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#37474f"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="980" height="760"/>
+  <rect class="box" x="280" y="30" width="420" height="70"/>
+  <text class="text" x="490" y="63" text-anchor="middle">Input Image / DST Render</text>
+  <text class="small" x="490" y="86" text-anchor="middle">raster artwork, rendered stitch previews, or demo images</text>
+  <line class="arrow" x1="490" y1="100" x2="490" y2="135"/>
+  <rect class="box" x="320" y="135" width="340" height="70"/>
+  <text class="text" x="490" y="177" text-anchor="middle">Shared Encoder</text>
+  <line class="arrow" x1="490" y1="205" x2="490" y2="240"/>
+  <rect class="head" x="170" y="240" width="640" height="85"/>
+  <text class="text" x="490" y="275" text-anchor="middle">Geometry Heads</text>
+  <text class="small" x="490" y="300" text-anchor="middle">mask / density / direction / boundary / centerline</text>
+  <line class="arrow" x1="490" y1="325" x2="490" y2="360"/>
+  <rect class="planner" x="170" y="360" width="640" height="85"/>
+  <text class="text" x="490" y="395" text-anchor="middle">Planner Heads</text>
+  <text class="small" x="490" y="420" text-anchor="middle">stitch type / endpoints / path order / segment map</text>
+  <line class="arrow" x1="490" y1="445" x2="490" y2="480"/>
+  <rect class="head" x="170" y="480" width="640" height="85"/>
+  <text class="text" x="490" y="515" text-anchor="middle">Vector-Continuity Heads</text>
+  <text class="small" x="490" y="540" text-anchor="middle">stitch trace / near-connect / jump endpoint</text>
+  <line class="arrow" x1="490" y1="565" x2="490" y2="600"/>
+  <rect class="planner" x="250" y="600" width="480" height="60"/>
+  <text class="text" x="490" y="637" text-anchor="middle">Graph &amp; Path Planner</text>
+  <line class="arrow" x1="490" y1="660" x2="490" y2="690"/>
+  <rect class="export" x="180" y="690" width="250" height="45"/>
+  <text class="text" x="305" y="719" text-anchor="middle">DST / PES Export</text>
+  <rect class="export" x="550" y="690" width="250" height="45"/>
+  <text class="text" x="675" y="719" text-anchor="middle">Render-back Evaluation</text>
+  <line class="arrow" x1="430" y1="712" x2="550" y2="712"/>
+</svg>

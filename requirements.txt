@@ -3,3 +3,4 @@ numpy>=2.0
 opencv-python-headless>=4.0
 shapely>=2.0
 pyembroidery>=1.5
+torch>=2.2

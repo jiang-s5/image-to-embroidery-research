@@ -13,7 +13,9 @@ env/
 # Large local artifacts.
 # Keep datasets/checkpoints out of normal Git history; publish them with Git LFS,
 # GitHub Releases, DVC, Hugging Face Datasets/Models, or another artifact store.
-datasets/
+datasets/*
+!datasets/mini_demo/
+!datasets/mini_demo/**
 models/
 outputs/
 external/
