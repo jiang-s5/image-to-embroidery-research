@@ -171,6 +171,18 @@ python augment_render_inputs.py `
 
 Use this for robustness experiments before moving to heavier generative models such as CVAE, cGAN, diffusion, or autoregressive DST sequence modeling.
 
+### Real-Image Canonicalization
+
+Preprocess a real or panel-style input into an embroidery-design-like image before inference:
+
+```powershell
+python tools/preprocess_real_image.py inputs/your_image.png `
+  --output-dir outputs/your_image_preprocess `
+  --colors 10
+```
+
+The tool writes `canonical_input.png`, `foreground_mask.png`, `edge_map.png`, and `color_quantized.png`. For wide diagnostic panels it automatically crops the left input tile before resizing. Use both the raw-cropped image and the canonical image in ablations: raw crops may preserve fill/satin behavior better, while canonicalized images can reduce noisy fragments and emphasize outlines.
+
 ## Install
 
 ```powershell

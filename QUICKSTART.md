@@ -127,6 +127,17 @@ Render augmentation:
   --limit 3
 ```
 
+Real-image preprocessing:
+
+```powershell
+.\.venv\Scripts\python.exe tools/preprocess_real_image.py `
+  datasets/mini_demo/inputs/dst3322_00058_ANIB1037_model10_continuity_prediction.png `
+  --output-dir outputs/bird_preprocess `
+  --colors 10
+```
+
+Then run inference on either `outputs/bird_preprocess/input_resized.png` for a raw crop or `outputs/bird_preprocess/canonical_input.png` for the color-simplified, edge-enhanced version.
+
 ## 7. Train on the Main Dataset
 
 After downloading and extracting the main training dataset:
