@@ -157,6 +157,18 @@ python tools/eval_executability.py `
   --report outputs/your_image_model13/executability_eval.json
 ```
 
+Run the full A0/A1/A2 mini-demo ablation:
+
+```powershell
+python tools/run_planner_ablation.py `
+  --input-dir datasets/mini_demo/inputs `
+  --output-dir outputs/planner_ablation_mini_demo `
+  --limit 12 `
+  --cpu
+```
+
+This writes `metrics.csv`, `summary.json`, and `comparison.md`. Use `--reuse` to skip samples that already have an `executability_eval.json`.
+
 ### Render Augmentation
 
 Create fabric, lighting, blur, color, and noise variants without changing geometry labels:
