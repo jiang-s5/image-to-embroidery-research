@@ -105,10 +105,14 @@ The promoted checkpoint remains `model13`. Recent planner work is evaluated as a
 - A0: geometry planner + vector-continuity planner;
 - A1: relation-aware transition cost from `configs/relation_planner.yaml`;
 - A2: A1 plus retrieval planner priors from `datasets/mini_demo/retrieval_planner_index.json` or a larger case bank;
+- A2-fixed: A1 plus the conservative planner parameters observed in A2, without retrieval;
+- A2-controls: leave-one-out, external-index, random-prior, and shuffled-prior variants for overfit checks;
 - A3: future beam-search ordering over top-k candidate transitions.
 
-Use `tools/eval_executability.py` to compare these variants with command-level metrics before deciding whether to train a relation head.
+Use `tools/run_planner_ablation.py` and `tools/eval_executability.py` to compare these variants with command-level metrics before deciding whether to train a relation head. If `A2-fixed`, random-prior, or shuffled-prior performs like `A2`, the improvement should be attributed to conservative planner parameters rather than retrieval-specific generalization.
+
+The current mini-demo control result supports this conservative interpretation: the fixed-prior planner reproduces the command-level jump/trim improvements seen in retrieval variants. This is useful, but it means retrieval should remain a hypothesis until it beats fixed/random/shuffled controls on a held-out set.
 
 ## Known Limitation
 
-The model has improved continuity and jump safety, but it still does not fully reproduce a professional digitizer's satin/fill style. The next research step is stronger segment-level graph planning and stitch-style generation.
+The model has improved continuity and jump safety, but it still does not fully reproduce a professional digitizer's satin/fill style. Lower jump/trim counts can also hide visible connector artifacts, so render-back visual checks from `tools/make_planner_visual_report.py` should accompany command-level metrics. The next research step is stronger segment-level graph planning and stitch-style generation.

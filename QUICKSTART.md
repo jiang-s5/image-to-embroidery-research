@@ -106,7 +106,7 @@ Run the command-level executability check:
 
 The report includes parse success, stitch/jump/trim counts, high-risk jump count, illegal long-stitch count, and max jump length.
 
-Optional: compare the baseline continuity planner against relation-aware and retrieval-augmented variants:
+Optional: compare the baseline continuity planner against relation-aware, retrieval, and fixed-prior variants:
 
 ```powershell
 .\.venv\Scripts\python.exe tools/run_planner_ablation.py `
@@ -117,6 +117,28 @@ Optional: compare the baseline continuity planner against relation-aware and ret
 ```
 
 Open `outputs/planner_ablation_mini_demo/comparison.md` for the averaged A0/A1/A2 command-level metrics.
+
+Run overfit controls when evaluating retrieval claims:
+
+```powershell
+.\.venv\Scripts\python.exe tools/run_planner_ablation.py `
+  --input-dir datasets/mini_demo/inputs `
+  --output-dir outputs/planner_ablation_mini_demo_controls `
+  --limit 12 `
+  --include-validation-controls `
+  --external-retrieval-index outputs/retrieval_indices/dataset4_multiformat_all_index.json `
+  --cpu
+```
+
+If `A2_fixed_params`, `A2_random_prior`, or `A2_shuffled_prior` matches `A2_retrieval_relation`, treat the gain as a planner-parameter effect, not as proof of retrieval generalization.
+
+Create a visual render-back sheet to check whether lower jump/trim counts produce visible connecting artifacts:
+
+```powershell
+.\.venv\Scripts\python.exe tools/make_planner_visual_report.py `
+  --ablation-dir outputs/planner_ablation_mini_demo_controls `
+  --output-dir outputs/planner_visual_report
+```
 
 ## 6. Optional Label and Augmentation Builders
 

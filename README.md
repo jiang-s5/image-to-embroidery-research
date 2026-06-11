@@ -46,8 +46,9 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 1. DST-derived supervision dataset: real embroidery files are parsed/rendered into dense geometry, planning, and continuity labels rather than treated as ordinary image pairs.
 2. Multi-task embroidery representation: the model predicts mask, density, direction, boundary, centerline, stitch type, endpoints, path order, segment structure, and continuity maps.
 3. Path-continuity learning: vector-continuity labels and planner-side penalties target broken outlines, long jumps, and disconnected stitch traces before DST/PES export.
-4. Retrieval-augmented planning: similar embroidery samples can provide planner priors for row spacing, jump limits, continuity weights, and serpentine fill behavior.
-5. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, and round-trip parse metrics.
+4. Conservative continuity-aware planning: fixed planner priors for component filtering, near-connect stitching, short-stitch limits, and path ordering substantially reduce jump/trim commands in command-level ablations.
+5. Anti-overfit planner controls: leave-one-out, external-index, random-prior, shuffled-prior, and fixed-prior controls are used to separate true retrieval gains from planner-parameter effects.
+6. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, round-trip parse, and render-back visual checks.
 
 ## Architecture
 
@@ -119,7 +120,7 @@ python build_dst_label_v2.py `
 
 This creates `stitch_trace`, `same_color_near_connect`, `long_jump_endpoint`, `trim_endpoint`, `color_change_endpoint`, `closure_gap_endpoint`, and `path_order` maps, plus segment and path-event JSON files.
 
-### Retrieval-Augmented Planner
+### Conservative and Retrieval-Augmented Planner
 
 Create a small planner index from demo or training images:
 
@@ -143,7 +144,7 @@ python infer_model3_portrait_hybrid.py inputs/your_image.png `
   --serpentine-fill
 ```
 
-The `summary.json` records the retrieved matches and the final planner values applied to DST/PES export.
+The `summary.json` records the retrieved matches and the final planner values applied to DST/PES export. Current ablations show that the strongest improvement comes from a conservative fixed planner prior, while retrieval-specific gains require controls before they should be claimed.
 
 ### Relation-Aware Planner Cost
 
@@ -168,6 +169,30 @@ python tools/run_planner_ablation.py `
 ```
 
 This writes `metrics.csv`, `summary.json`, and `comparison.md`. Use `--reuse` to skip samples that already have an `executability_eval.json`.
+
+Run the anti-overfit controls:
+
+```powershell
+python tools/run_planner_ablation.py `
+  --input-dir datasets/mini_demo/inputs `
+  --output-dir outputs/planner_ablation_mini_demo_controls `
+  --limit 12 `
+  --include-validation-controls `
+  --external-retrieval-index outputs/retrieval_indices/dataset4_multiformat_all_index.json `
+  --cpu
+```
+
+The control report includes `A2_fixed_params`, `A2_leave_one_out`, `A2_external_index`, `A2_random_prior`, and `A2_shuffled_prior`. If these match `A2_retrieval_relation`, the result should be interpreted as a planner-parameter improvement rather than proof that retrieval itself generalizes.
+
+Create a render-back visual report for the same ablation folder:
+
+```powershell
+python tools/make_planner_visual_report.py `
+  --ablation-dir outputs/planner_ablation_mini_demo_controls `
+  --output-dir outputs/planner_visual_report
+```
+
+Use the contact sheet to check whether lower `jump_count` and `trim_count` are achieved by adding visible stitch connectors across blank regions.
 
 ### Render Augmentation
 
