@@ -101,10 +101,11 @@ Run the command-level executability check:
 ```powershell
 .\.venv\Scripts\python.exe tools/eval_executability.py `
   --pred outputs/quickstart_ce_demo/embroidery_output.dst `
+  --mask outputs/quickstart_ce_demo/hybrid_export_mask.png `
   --report outputs/quickstart_ce_demo/executability_eval.json
 ```
 
-The report includes parse success, stitch/jump/trim counts, high-risk jump count, illegal long-stitch count, and max jump length.
+The report includes parse success, stitch/jump/trim counts, high-risk jump count, illegal long-stitch count, max jump length, and mask-based visual tradeoff metrics such as `off_mask_stitch_length_mm` and `visible_connector_count`.
 
 Optional: compare the baseline continuity planner against relation-aware, retrieval, and fixed-prior variants:
 
@@ -117,6 +118,19 @@ Optional: compare the baseline continuity planner against relation-aware, retrie
 ```
 
 Open `outputs/planner_ablation_mini_demo/comparison.md` for the averaged A0/A1/A2 command-level metrics.
+
+Optional: sweep fixed planner presets with a simple train/validation split before promoting a new default:
+
+```powershell
+.\.venv\Scripts\python.exe tools/sweep_fixed_planner_params.py `
+  --input-dir datasets/mini_demo/inputs `
+  --output-dir outputs/fixed_planner_param_sweep `
+  --limit 12 `
+  --train-count 6 `
+  --cpu
+```
+
+This ranks planner presets using both command metrics and visible-connector/off-mask penalties.
 
 Run overfit controls when evaluating retrieval claims:
 

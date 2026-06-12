@@ -92,6 +92,8 @@ Evaluation must include three layers:
    - continuity score.
 
 3. Visual embroidery realism:
+   - off-mask stitch length;
+   - visible connector count;
    - closed and continuous outlines;
    - realistic fill/tatami direction;
    - satin-like border behavior;
@@ -109,10 +111,12 @@ The promoted checkpoint remains `model13`. Recent planner work is evaluated as a
 - A2-controls: leave-one-out, external-index, random-prior, and shuffled-prior variants for overfit checks;
 - A3: future beam-search ordering over top-k candidate transitions.
 
-Use `tools/run_planner_ablation.py` and `tools/eval_executability.py` to compare these variants with command-level metrics before deciding whether to train a relation head. If `A2-fixed`, random-prior, or shuffled-prior performs like `A2`, the improvement should be attributed to conservative planner parameters rather than retrieval-specific generalization.
+Use `tools/run_planner_ablation.py` and `tools/eval_executability.py` to compare these variants before deciding whether to train a relation head. Pass a `--mask` to `tools/eval_executability.py` so lower jump/trim counts are checked against `off_mask_stitch_length_mm` and `visible_connector_count`. If `A2-fixed`, random-prior, or shuffled-prior performs like `A2`, the improvement should be attributed to conservative planner parameters rather than retrieval-specific generalization.
 
 The current mini-demo control result supports this conservative interpretation: the fixed-prior planner reproduces the command-level jump/trim improvements seen in retrieval variants. This is useful, but it means retrieval should remain a hypothesis until it beats fixed/random/shuffled controls on a held-out set.
 
+Use `tools/sweep_fixed_planner_params.py` to tune fixed planner presets with a train/validation-style split. A preset should not be promoted only because it reduces jumps on the same examples used to choose the parameters; it should also avoid visible connector growth on validation samples.
+
 ## Known Limitation
 
-The model has improved continuity and jump safety, but it still does not fully reproduce a professional digitizer's satin/fill style. Lower jump/trim counts can also hide visible connector artifacts, so render-back visual checks from `tools/make_planner_visual_report.py` should accompany command-level metrics. The next research step is stronger segment-level graph planning and stitch-style generation.
+The model has improved continuity and jump safety, but it still does not fully reproduce a professional digitizer's satin/fill style. Lower jump/trim counts can also hide visible connector artifacts, so mask-based visual metrics and render-back visual checks from `tools/make_planner_visual_report.py` should accompany command-level metrics. The next research step is stronger segment-level graph planning, edge-level relation learning, and stitch-style generation.

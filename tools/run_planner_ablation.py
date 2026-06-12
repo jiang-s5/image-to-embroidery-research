@@ -73,6 +73,10 @@ METRIC_KEYS = [
     "stitch_path_mm",
     "jump_path_mm",
     "lock_tack_like_count",
+    "off_mask_stitch_length_mm",
+    "off_mask_stitch_count",
+    "visible_connector_count",
+    "visible_connector_length_mm",
 ]
 
 
@@ -89,6 +93,18 @@ def run_command(command: list[str], cwd: Path) -> None:
 
 def read_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def eval_has_required_metrics(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        pred = read_json(path).get("pred", {})
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(pred, dict):
+        return False
+    return all(key in pred for key in METRIC_KEYS)
 
 
 def write_json(path: Path, payload: dict[str, object]) -> None:
@@ -233,12 +249,12 @@ def write_markdown(summary: dict[str, object], output_path: Path) -> None:
         "",
         "Lower is better for jump, trim, illegal stitch, and unsupported command metrics.",
         "",
-        "| Method | Samples | Parse Success | Stitch Count | Stitch Path mm | Jump Count | Jump Path mm | Max Jump mm | Trim Count | Illegal Long Stitch | Unsupported |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Method | Samples | Parse Success | Stitch Count | Stitch Path mm | Jump Count | Jump Path mm | Trim Count | Visible Connectors | Off-Mask Stitch mm | Illegal Long Stitch | Unsupported |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for method, metrics in methods.items():  # type: ignore[union-attr]
         lines.append(
-            "| {method} | {samples} | {parse:.3f} | {stitch:.3f} | {stitch_path:.3f} | {jump:.3f} | {jump_path:.3f} | {max_jump:.3f} | {trim:.3f} | {illegal:.3f} | {unsupported:.3f} |".format(
+            "| {method} | {samples} | {parse:.3f} | {stitch:.3f} | {stitch_path:.3f} | {jump:.3f} | {jump_path:.3f} | {trim:.3f} | {visible:.3f} | {off_mask:.3f} | {illegal:.3f} | {unsupported:.3f} |".format(
                 method=method,
                 samples=int(metrics["samples"]),
                 parse=float(metrics["round_trip_parse_success"]),
@@ -246,8 +262,9 @@ def write_markdown(summary: dict[str, object], output_path: Path) -> None:
                 stitch_path=float(metrics["stitch_path_mm"]),
                 jump=float(metrics["jump_count"]),
                 jump_path=float(metrics["jump_path_mm"]),
-                max_jump=float(metrics["max_jump_mm"]),
                 trim=float(metrics["trim_count"]),
+                visible=float(metrics.get("visible_connector_count", 0.0)),
+                off_mask=float(metrics.get("off_mask_stitch_length_mm", 0.0)),
                 illegal=float(metrics["illegal_long_stitch_count"]),
                 unsupported=float(metrics["unsupported_command_count"]),
             )
@@ -264,6 +281,8 @@ def write_markdown(summary: dict[str, object], output_path: Path) -> None:
         lines.append(f"- trim_count: {metrics.get('trim_count', 0):.3f}")
         lines.append(f"- stitch_count: {metrics.get('stitch_count', 0):.3f}")
         lines.append(f"- stitch_path_mm: {metrics.get('stitch_path_mm', 0):.3f}")
+        lines.append(f"- visible_connector_count: {metrics.get('visible_connector_count', 0):.3f}")
+        lines.append(f"- off_mask_stitch_length_mm: {metrics.get('off_mask_stitch_length_mm', 0):.3f}")
         lines.append(f"- illegal_long_stitch_count: {metrics.get('illegal_long_stitch_count', 0):.3f}")
         lines.append(f"- unsupported_command_count: {metrics.get('unsupported_command_count', 0):.3f}")
         lines.append("")
@@ -280,6 +299,7 @@ def main() -> int:
     parser.add_argument("--planner-config", default="configs/relation_planner.yaml")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--include-validation-controls", action="store_true")
+    parser.add_argument("--method", action="append", default=[], help="Run only this method. Can be repeated.")
     parser.add_argument("--random-seed", type=int, default=20260611)
     parser.add_argument("--random-top-k", type=int, default=5)
     parser.add_argument("--use-canonical", action="store_true")
@@ -293,6 +313,11 @@ def main() -> int:
     methods = dict(BASE_METHODS)
     if args.include_validation_controls:
         methods.update(CONTROL_METHODS)
+    if args.method:
+        unknown = sorted(set(args.method) - set(methods))
+        if unknown:
+            raise SystemExit(f"Unknown method(s): {', '.join(unknown)}")
+        methods = {name: methods[name] for name in args.method}
     base_index_path = Path(args.retrieval_index)
     external_index_path = Path(args.external_retrieval_index) if args.external_retrieval_index else None
     base_payload = read_json(base_index_path) if base_index_path.exists() else {"items": []}
@@ -322,7 +347,8 @@ def main() -> int:
         for method, config in methods.items():
             run_dir = output_dir / "runs" / sample_id / method
             eval_path = run_dir / "executability_eval.json"
-            if not args.reuse or not eval_path.exists():
+            needs_infer = not args.reuse or not (run_dir / "summary.json").exists() or not (run_dir / "embroidery_output.dst").exists()
+            if needs_infer:
                 retrieval_index_path: Path | None = None
                 retrieval_mode = str(config.get("retrieval_mode", ""))
                 command = [
@@ -379,12 +405,15 @@ def main() -> int:
                     )
                     command += ["--retrieval-index", str(retrieval_index_path)]
                 run_command(command, root)
+            if not args.reuse or not eval_has_required_metrics(eval_path):
                 run_command(
                     [
                         sys.executable,
                         "tools/eval_executability.py",
                         "--pred",
                         str(run_dir / "embroidery_output.dst"),
+                        "--mask",
+                        str(run_dir / "hybrid_export_mask.png"),
                         "--report",
                         str(eval_path),
                     ],

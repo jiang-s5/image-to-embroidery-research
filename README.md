@@ -12,7 +12,7 @@ input image / DST-rendered preview
   -> mask, density, direction, boundary, centerline
   -> stitch type, endpoints, path order
   -> vector-continuity and jump-risk supervision
-  -> retrieval-augmented planner priors
+  -> conservative planner priors and retrieval controls
   -> relation-aware transition cost
   -> graph/path planning
   -> DST/PES export and render-back evaluation
@@ -155,8 +155,11 @@ Run command-level executability evaluation after export:
 ```powershell
 python tools/eval_executability.py `
   --pred outputs/your_image_model13/embroidery_output.dst `
+  --mask outputs/your_image_model13/hybrid_export_mask.png `
   --report outputs/your_image_model13/executability_eval.json
 ```
+
+Passing `--mask` enables visual tradeoff metrics such as `off_mask_stitch_length_mm` and `visible_connector_count`, which help detect cases where lower jump/trim counts are achieved by visible stitch connectors across blank regions.
 
 Run the full A0/A1/A2 mini-demo ablation:
 
@@ -193,6 +196,21 @@ python tools/make_planner_visual_report.py `
 ```
 
 Use the contact sheet to check whether lower `jump_count` and `trim_count` are achieved by adding visible stitch connectors across blank regions.
+
+Run a train/validation-style fixed-parameter sweep:
+
+```powershell
+python tools/sweep_fixed_planner_params.py `
+  --input-dir datasets/mini_demo/inputs `
+  --output-dir outputs/fixed_planner_param_sweep `
+  --limit 12 `
+  --train-count 6 `
+  --cpu
+```
+
+The sweep report ranks fixed planner presets with both command-level metrics and visual tradeoff penalties. Use it before promoting a new fixed planner preset.
+
+See [docs/research_roadmap_report24.md](docs/research_roadmap_report24.md) for the current research direction after the overfit controls.
 
 ### Render Augmentation
 
