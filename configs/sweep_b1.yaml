@@ -1,0 +1,98 @@
+{
+  "description": "JSON-compatible sweep config for B1/B1_clean planner selection. Lower unified_loss is better.",
+  "thresholds": {
+    "jump_count": 25,
+    "trim_count": 20,
+    "jump_path_mm": 2500,
+    "off_mask_stitch_length_mm": 8,
+    "visible_connector_count": 3,
+    "visible_connector_length_mm": 20
+  },
+  "weights": {
+    "parse_fail": 0.30,
+    "jump_count": 0.20,
+    "trim_count": 0.12,
+    "jump_path_mm": 0.08,
+    "off_mask_stitch_length_mm": 0.18,
+    "visible_connector_count": 0.08,
+    "visible_connector_length_mm": 0.04
+  },
+  "presets": [
+    {
+      "name": "b1_conservative",
+      "args": {
+        "--density-threshold": 0.52,
+        "--mask-threshold": 0.62,
+        "--min-active-px": 8000,
+        "--row-step-px": 2,
+        "--point-step-px": 2,
+        "--min-component-px": 24,
+        "--max-components": 74,
+        "--long-jump-weight": 0.2025,
+        "--two-opt-passes": 1,
+        "--connect-near-mm": 0.9,
+        "--continuity-order-weight": 0.7675,
+        "--continuity-connect-threshold": 0.2665,
+        "--continuity-connect-max-mm": 5.0,
+        "--max-stitch-mm": 3.82
+      }
+    },
+    {
+      "name": "b1_low_connect",
+      "args": {
+        "--density-threshold": 0.50,
+        "--mask-threshold": 0.58,
+        "--min-active-px": 4000,
+        "--row-step-px": 2,
+        "--point-step-px": 2,
+        "--min-component-px": 20,
+        "--max-components": 96,
+        "--long-jump-weight": 0.25,
+        "--two-opt-passes": 1,
+        "--connect-near-mm": 0.35,
+        "--continuity-order-weight": 0.76,
+        "--continuity-connect-threshold": 0.38,
+        "--continuity-connect-max-mm": 1.8,
+        "--max-stitch-mm": 3.6
+      }
+    },
+    {
+      "name": "b1_dense_thread",
+      "args": {
+        "--density-threshold": 0.38,
+        "--mask-threshold": 0.45,
+        "--min-active-px": 1000,
+        "--row-step-px": 1,
+        "--point-step-px": 1,
+        "--min-component-px": 10,
+        "--max-components": 140,
+        "--long-jump-weight": 0.2025,
+        "--two-opt-passes": 1,
+        "--connect-near-mm": 0.45,
+        "--continuity-order-weight": 0.7675,
+        "--continuity-connect-threshold": 0.35,
+        "--continuity-connect-max-mm": 2.0,
+        "--max-stitch-mm": 3.2
+      }
+    },
+    {
+      "name": "b1_region_fill",
+      "args": {
+        "--density-threshold": 0.44,
+        "--mask-threshold": 0.52,
+        "--min-active-px": 1500,
+        "--row-step-px": 2,
+        "--point-step-px": 1,
+        "--min-component-px": 14,
+        "--max-components": 110,
+        "--long-jump-weight": 0.2025,
+        "--two-opt-passes": 1,
+        "--connect-near-mm": 0.55,
+        "--continuity-order-weight": 0.7675,
+        "--continuity-connect-threshold": 0.33,
+        "--continuity-connect-max-mm": 2.2,
+        "--max-stitch-mm": 3.4
+      }
+    }
+  ]
+}

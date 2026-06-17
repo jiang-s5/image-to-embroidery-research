@@ -49,6 +49,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 4. Conservative continuity-aware planning: fixed planner priors for component filtering, near-connect stitching, short-stitch limits, and path ordering substantially reduce jump/trim commands in command-level ablations.
 5. Anti-overfit planner controls: leave-one-out, external-index, random-prior, shuffled-prior, and fixed-prior controls are used to separate true retrieval gains from planner-parameter effects.
 6. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, round-trip parse, and render-back visual checks.
+7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
 
 ## Architecture
 
@@ -161,6 +162,36 @@ python tools/eval_executability.py `
 
 Passing `--mask` enables visual tradeoff metrics such as `off_mask_stitch_length_mm` and `visible_connector_count`, which help detect cases where lower jump/trim counts are achieved by visible stitch connectors across blank regions.
 
+Score one or more executability reports with the unified objective from the latest research direction:
+
+```powershell
+python tools/score_unified.py `
+  --eval-glob "outputs/latest_dataset_pair_eval_20260615/**/executability_eval.json" `
+  --config configs/sweep_b1.yaml `
+  --output-csv results/b1_sweep/unified_scores.csv `
+  --output-md results/b1_sweep/unified_scores.md
+```
+
+Run a B1/B1_clean planner sweep on image/mask cases:
+
+```powershell
+python tools/run_b1_sweep.py `
+  --pair-root datasets/incoming_review/latest_dataset_20260615/organized/pairing_review_NOT_FOR_TRAINING_YET/paired_candidates_FOR_APPROVAL_NOT_TRAINING `
+  --target-root outputs/latest_dataset_pair_eval_20260615/model13_relation_fixed_no_training `
+  --config configs/sweep_b1.yaml `
+  --output-dir results/b1_sweep/latest_pairs `
+  --cpu
+```
+
+Select the B1_clean recommendation from scored rows:
+
+```powershell
+python tools/select_b1_clean.py `
+  --scores-csv results/b1_sweep/latest_pairs/sweep_results.csv `
+  --sweep-config configs/sweep_b1.yaml `
+  --output-dir results/pareto/b1_clean_latest_pairs
+```
+
 Run the full A0/A1/A2 mini-demo ablation:
 
 ```powershell
@@ -237,6 +268,26 @@ python tools/preprocess_real_image.py inputs/your_image.png `
 ```
 
 The tool writes `canonical_input.png`, `foreground_mask.png`, `edge_map.png`, and `color_quantized.png`. For wide diagnostic panels it automatically crops the left input tile before resizing. Use both the raw-cropped image and the canonical image in ablations: raw crops may preserve fill/satin behavior better, while canonicalized images can reduce noisy fragments and emphasize outlines.
+
+For real embroidery photos, use the newer v2 preprocessing path. It produces thread-only, region-reconstructed, and selected masks:
+
+```powershell
+python tools/preprocess_real_image_v2.py inputs/your_photo.png `
+  --output-dir outputs/your_photo_preprocess_v2 `
+  --colors 10
+
+python infer_model3_portrait_hybrid.py outputs/your_photo_preprocess_v2/selected_design.png `
+  --checkpoint checkpoints/best_model13_multiformat_all_vector_continuity.pt `
+  --output-dir outputs/your_photo_model13_v2 `
+  --geometry-planner `
+  --model-path-order `
+  --use-continuity-planner `
+  --planner-config configs/relation_planner.yaml `
+  --external-foreground-mask outputs/your_photo_preprocess_v2/selected_mask.png `
+  --serpentine-fill
+```
+
+See [docs/research_direction_report25_zh.md](docs/research_direction_report25_zh.md) and [docs/hitl_protocol_zh.md](docs/hitl_protocol_zh.md) for the current research protocol.
 
 ## Install
 

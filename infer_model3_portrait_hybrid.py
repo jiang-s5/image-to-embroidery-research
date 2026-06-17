@@ -120,6 +120,19 @@ def portrait_foreground_mask(image: Image.Image, threshold: float, close_px: int
     return fg
 
 
+def load_external_foreground_mask(mask_path: Path, size: int) -> np.ndarray:
+    image = Image.open(mask_path).convert("L")
+    if image.size != (size, size):
+        scale = min(size / image.width, size / image.height)
+        new_size = (max(1, int(round(image.width * scale))), max(1, int(round(image.height * scale))))
+        resized = image.resize(new_size, Image.Resampling.NEAREST)
+        canvas = Image.new("L", (size, size), 0)
+        canvas.paste(resized, ((size - new_size[0]) // 2, (size - new_size[1]) // 2))
+        image = canvas
+    arr = np.asarray(image, dtype=np.float32) / 255.0
+    return arr >= 0.5
+
+
 def save_panel(
     input_image: Image.Image,
     mask: np.ndarray,
@@ -230,6 +243,59 @@ def line_map_mean(
     xi = np.clip(np.rint(xs).astype(np.int32), 0, w - 1)
     yi = np.clip(np.rint(ys).astype(np.int32), 0, h - 1)
     return float(score_map[yi, xi].mean())
+
+
+def point_inside_mask(mask: np.ndarray, point: tuple[float, float]) -> bool:
+    x = int(round(point[0]))
+    y = int(round(point[1]))
+    return 0 <= y < mask.shape[0] and 0 <= x < mask.shape[1] and bool(mask[y, x])
+
+
+def segment_inside_mask(
+    mask: np.ndarray,
+    start: tuple[float, float],
+    end: tuple[float, float],
+    sample_step_px: float = 0.75,
+    min_inside_fraction: float = 0.72,
+) -> bool:
+    distance = float(np.hypot(end[0] - start[0], end[1] - start[1]))
+    steps = max(1, int(np.ceil(distance / max(0.25, sample_step_px))))
+    inside = 0
+    total = steps + 1
+    for index in range(total):
+        t = index / steps
+        point = (start[0] + (end[0] - start[0]) * t, start[1] + (end[1] - start[1]) * t)
+        if point_inside_mask(mask, point):
+            inside += 1
+    return inside / total >= min_inside_fraction
+
+
+def split_polylines_by_mask(
+    polylines: list[list[tuple[float, float]]],
+    mask: np.ndarray,
+    min_points: int = 2,
+) -> list[list[tuple[float, float]]]:
+    safe: list[list[tuple[float, float]]] = []
+    for coords in polylines:
+        current: list[tuple[float, float]] = []
+        previous: tuple[float, float] | None = None
+        for point in coords:
+            if not point_inside_mask(mask, point):
+                if len(current) >= min_points:
+                    safe.append(current)
+                current = []
+                previous = None
+                continue
+            if previous is not None and not segment_inside_mask(mask, previous, point):
+                if len(current) >= min_points:
+                    safe.append(current)
+                current = [point]
+            else:
+                current.append(point)
+            previous = point
+        if len(current) >= min_points:
+            safe.append(current)
+    return safe
 
 
 def continuity_adjusted_transition(
@@ -616,22 +682,28 @@ def export_color_planner_geometry_as_dst(
                         polylines.append(path)
                 elif type_id == 2:
                     polylines.extend(
-                        hatch_component(
+                        split_polylines_by_mask(
+                            hatch_component(
+                                component,
+                                angle=angle + np.pi / 2.0,
+                                spacing_px=max(1, row_step_px - 1),
+                                point_step_px=max(1, point_step_px),
+                                min_run_px=max(2, min_run_px - 1),
+                            ),
                             component,
-                            angle=angle + np.pi / 2.0,
-                            spacing_px=max(1, row_step_px - 1),
-                            point_step_px=max(1, point_step_px),
-                            min_run_px=max(2, min_run_px - 1),
                         )
                     )
                 else:
                     polylines.extend(
-                        hatch_component(
+                        split_polylines_by_mask(
+                            hatch_component(
+                                component,
+                                angle=angle,
+                                spacing_px=row_step_px,
+                                point_step_px=point_step_px,
+                                min_run_px=min_run_px,
+                            ),
                             component,
-                            angle=angle,
-                            spacing_px=row_step_px,
-                            point_step_px=point_step_px,
-                            min_run_px=min_run_px,
                         )
                     )
                 if add_outline and type_id != 1:
@@ -839,7 +911,12 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     path_order = torch.sigmoid(output[13]).numpy() if output.shape[0] > 13 and args.model_path_order else None
     continuity = torch.sigmoid(output[17:20]).numpy() if output.shape[0] >= 20 else None
 
-    foreground = portrait_foreground_mask(input_image, threshold=args.foreground_threshold, close_px=args.foreground_close_px)
+    if args.external_foreground_mask:
+        foreground = load_external_foreground_mask(Path(args.external_foreground_mask), args.size)
+        foreground_source = str(Path(args.external_foreground_mask))
+    else:
+        foreground = portrait_foreground_mask(input_image, threshold=args.foreground_threshold, close_px=args.foreground_close_px)
+        foreground_source = "auto_portrait_foreground_mask"
     active = foreground & (density >= args.density_threshold)
     if int(active.sum()) < args.min_active_px:
         active = foreground & (mask >= args.mask_threshold)
@@ -989,6 +1066,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "checkpoint": str(Path(args.checkpoint).resolve()),
         "device": str(device),
         "foreground_pixels": int(foreground.sum()),
+        "foreground_source": foreground_source,
         "hybrid_pixels": int(active.sum()),
         "mask_mean": float(mask.mean()),
         "density_mean": float(density.mean()),
@@ -1022,6 +1100,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--size", type=int, default=256)
     parser.add_argument("--foreground-threshold", type=float, default=0.115)
     parser.add_argument("--foreground-close-px", type=int, default=9)
+    parser.add_argument("--external-foreground-mask", default="", help="Optional binary mask aligned to the input image; white pixels allow exported stitches.")
     parser.add_argument("--density-threshold", type=float, default=0.52)
     parser.add_argument("--mask-threshold", type=float, default=0.62)
     parser.add_argument("--min-active-px", type=int, default=8000)

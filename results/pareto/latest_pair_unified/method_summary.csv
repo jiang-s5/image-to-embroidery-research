@@ -1,0 +1,9 @@
+﻿method,samples,unified_loss,jump_count,trim_count,off_mask_stitch_length_mm,visible_connector_count,jump_path_mm,exec_score,visual_risk,stitch_count,stitch_path_mm,hard_fail,warning,pass,excellent
+model13_relation_fixed_thread_v2_dense_no_training,4,0.64688931,267.0,53.0,358.567425,113.75,1529.5337,0.36894508,0.27794423,5293.5,4593.96755,4,0,0,0
+model13_relation_fixed_thread_v2_no_training,4,0.61556772,125.25,24.0,126.2516,19.75,744.0329,0.33780905,0.27775867,2386.5,2374.21,4,0,0,0
+model13_relation_fixed_v2_adaptive_no_connectors_no_training,4,0.63483376,409.25,19.25,744.7759,88.5,979.180075,0.33483376,0.3,4183.0,5579.816,4,0,0,0
+model13_relation_fixed_v2_adaptive_no_training,4,0.62376655,104.0,19.25,749.27775,88.5,633.329825,0.32376655,0.3,4498.0,5926.199125,4,0,0,0
+model13_relation_fixed_v2_adaptive_safehatch_no_training,4,0.61803374,104.5,18.25,748.80685,89.0,641.679325,0.31803374,0.3,4279.0,5805.04675,4,0,0,0
+model13_relation_fixed_v2_selected_no_training,4,0.63350629,212.75,34.25,757.4983,207.0,1115.30065,0.35568962,0.27781667,6762.25,6343.5047,4,0,0,0
+model13_relation_fixed_v2_selected_strictjump_no_training,4,0.64350733,584.75,34.25,756.87855,207.0,1427.8333,0.36569067,0.27781667,6390.25,6030.972075,4,0,0,0
+model13_v2_routed_best_no_training,4,0.62198559,216.0,38.25,116.28085,16.75,1164.792775,0.35127337,0.27071222,5321.75,4535.8819,4,0,0,0
