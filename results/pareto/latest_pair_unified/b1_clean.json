@@ -1,7 +1,8 @@
 {
   "name": "b1_clean",
-  "source_method": "model13_relation_fixed_thread_v2_no_training",
+  "source_method": "model13_v2_routed_best_no_training",
+  "selection_policy": "hard",
   "selection_metric": "unified_loss",
-  "mean_unified_loss": 0.61556772,
+  "mean_unified_loss": 0.62198559,
   "planner_args": {}
 }

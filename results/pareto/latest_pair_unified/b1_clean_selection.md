@@ -1,12 +1,13 @@
 # B1 Clean Selection
 
-Lower is better. The recommendation is selected from the Pareto front using the lowest mean unified loss.
+Lower is better. The recommendation is selected from the Pareto front.
+Selection policy: `hard`.
 
 ## Recommendation
 
-- recommended method: `model13_relation_fixed_thread_v2_no_training`
-- mean unified loss: `0.615568`
-- mean visual risk: `0.277759`
+- recommended method: `model13_v2_routed_best_no_training`
+- mean unified loss: `0.621986`
+- mean visual risk: `0.270712`
 
 ## Pareto Front
 

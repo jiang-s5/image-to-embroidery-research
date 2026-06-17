@@ -1,15 +1,10 @@
 {
   "name": "b1_clean",
-  "status": "candidate",
-  "description": "Current fixed strong baseline for executability-aware image-to-embroidery export. Use tools/run_b1_sweep.py and tools/select_b1_clean.py to refresh this after each validation sweep.",
-  "selection_objective": "unified_loss = ExecScore + VisualRisk",
-  "selection_policy": "hard",
   "source_method": "b1_conservative",
+  "selection_policy": "hard",
+  "selection_metric": "unified_loss",
+  "mean_unified_loss": 0.63677208,
   "planner_args": {
-    "--geometry-planner": true,
-    "--model-path-order": true,
-    "--use-continuity-planner": true,
-    "--serpentine-fill": true,
     "--density-threshold": 0.52,
     "--mask-threshold": 0.62,
     "--min-active-px": 8000,

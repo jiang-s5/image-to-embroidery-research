@@ -65,6 +65,24 @@ def pareto_front(rows: list[dict[str, Any]], keys: list[str]) -> list[dict[str, 
     return sorted(front, key=lambda row: safe_float(row.get("unified_loss")))
 
 
+def choose_recommended(rows: list[dict[str, Any]], policy: str) -> dict[str, Any]:
+    if not rows:
+        return {}
+    if policy == "hard":
+        return sorted(
+            rows,
+            key=lambda row: (
+                safe_float(row.get("hard_fail")),
+                safe_float(row.get("visible_connector_count")),
+                safe_float(row.get("off_mask_stitch_length_mm")),
+                safe_float(row.get("jump_count")),
+                safe_float(row.get("trim_count")),
+                safe_float(row.get("unified_loss")),
+            ),
+        )[0]
+    return sorted(rows, key=lambda row: safe_float(row.get("unified_loss")))[0]
+
+
 def load_sweep_config(path: Path | None) -> dict[str, Any]:
     if path is None or not path.exists():
         return {}
@@ -95,11 +113,18 @@ def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
         writer.writerows(rows)
 
 
-def write_markdown(summary_rows: list[dict[str, Any]], front: list[dict[str, Any]], recommended: dict[str, Any], path: Path) -> None:
+def write_markdown(
+    summary_rows: list[dict[str, Any]],
+    front: list[dict[str, Any]],
+    recommended: dict[str, Any],
+    path: Path,
+    selection_policy: str,
+) -> None:
     lines = [
         "# B1 Clean Selection",
         "",
-        "Lower is better. The recommendation is selected from the Pareto front using the lowest mean unified loss.",
+        "Lower is better. The recommendation is selected from the Pareto front.",
+        f"Selection policy: `{selection_policy}`.",
         "",
         "## Recommendation",
         "",
@@ -156,24 +181,27 @@ def main() -> int:
     parser.add_argument("--scores-csv", required=True)
     parser.add_argument("--group-key", default="method")
     parser.add_argument("--sweep-config", default="")
+    parser.add_argument("--selection-policy", choices=["mean", "hard"], default="", help="mean = lowest unified loss; hard = prioritize raw connector/off-mask/jump risks.")
     parser.add_argument("--output-dir", default="results/pareto/b1_clean")
     args = parser.parse_args()
 
+    sweep_config = load_sweep_config(Path(args.sweep_config)) if args.sweep_config else {}
+    selection_policy = args.selection_policy or str(sweep_config.get("selection_policy", "mean"))
     rows = read_csv(Path(args.scores_csv))
     summaries = [summarize_group(name, group) for name, group in group_rows(rows, args.group_key).items()]
     front = pareto_front(summaries, PARETO_KEYS)
-    recommended = front[0] if front else (sorted(summaries, key=lambda row: safe_float(row.get("unified_loss")))[0] if summaries else {})
+    recommended = choose_recommended(front or summaries, selection_policy)
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     write_csv(summaries, output_dir / "method_summary.csv")
     write_csv(front, output_dir / "pareto_front.csv")
-    write_markdown(summaries, front, recommended, output_dir / "b1_clean_selection.md")
+    write_markdown(summaries, front, recommended, output_dir / "b1_clean_selection.md", selection_policy)
 
-    sweep_config = load_sweep_config(Path(args.sweep_config)) if args.sweep_config else {}
     b1_clean = {
         "name": "b1_clean",
         "source_method": recommended.get("method", ""),
+        "selection_policy": selection_policy,
         "selection_metric": "unified_loss",
         "mean_unified_loss": safe_float(recommended.get("unified_loss")),
         "planner_args": planner_args_for_method(sweep_config, str(recommended.get("method", ""))),

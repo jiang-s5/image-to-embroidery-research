@@ -1,0 +1,3 @@
+﻿method,samples,unified_loss,jump_count,trim_count,off_mask_stitch_length_mm,visible_connector_count,jump_path_mm,exec_score,visual_risk,stitch_count,stitch_path_mm,hard_fail,warning,pass,excellent
+b1_low_connect,4,0.62878565,203.5,26.75,201.237975,46.25,1014.62145,0.35096789,0.27781777,3185.25,3043.08155,4,0,0,0
+b1_conservative,4,0.63677208,130.75,25.25,185.82805,37.0,783.3306,0.34206658,0.2947055,3097.0,3080.769175,4,0,0,0

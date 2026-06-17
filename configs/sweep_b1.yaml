@@ -1,5 +1,6 @@
 {
   "description": "JSON-compatible sweep config for B1/B1_clean planner selection. Lower unified_loss is better.",
+  "selection_policy": "hard",
   "thresholds": {
     "jump_count": 25,
     "trim_count": 20,

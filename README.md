@@ -189,6 +189,7 @@ Select the B1_clean recommendation from scored rows:
 python tools/select_b1_clean.py `
   --scores-csv results/b1_sweep/latest_pairs/sweep_results.csv `
   --sweep-config configs/sweep_b1.yaml `
+  --selection-policy hard `
   --output-dir results/pareto/b1_clean_latest_pairs
 ```
 
