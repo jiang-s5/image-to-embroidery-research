@@ -172,6 +172,8 @@ python infer_model3_portrait_hybrid.py inputs/your_image.png `
 
 The `b2_graph_tsp_conservative_safe` preset in `configs/sweep_b1.yaml` is the current hard-selection candidate. In the latest 4-sample paired holdout sweep, it reduced mean unified loss and visual-risk metrics compared with the conservative B1 baseline, but still increased jump count, so it should be treated as an optimization direction rather than a final production planner.
 
+When `--graph-tsp-planner` is enabled, inference also writes `graph_tsp_trace.json`, containing graph nodes, selected transition edges, route node IDs, and edge-risk details. This is the bridge artifact for M1 learned preset selection and future M2 edge-level GNN routing.
+
 Run command-level executability evaluation after export:
 
 ```powershell

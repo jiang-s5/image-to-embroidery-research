@@ -28,7 +28,11 @@ from train_model7_geometry_planner import Model7GeometryPlannerCascade
 from train_model8_joint_segment import Model8JointSegmentPlanner
 from train_model10_vector_continuity import Model10VectorContinuityPlanner
 from retrieval_augmented_planner import prediction_feature_vector, retrieve_planner_prior
-from planner.graph_tsp import GraphTSPConfig, config_to_dict as graph_tsp_config_to_dict, order_polylines_graph_tsp
+from planner.graph_tsp import (
+    GraphTSPConfig,
+    config_to_dict as graph_tsp_config_to_dict,
+    order_polylines_graph_tsp_with_trace,
+)
 from planner.relation_cost import (
     RelationPlannerConfig,
     config_to_dict,
@@ -649,6 +653,8 @@ def export_color_planner_geometry_as_dst(
     graph_trim_penalty: float = 1.0,
     graph_min_inside_fraction: float = 0.88,
     graph_max_two_opt_nodes: int = 80,
+    graph_trace_max_tasks: int = 96,
+    graph_trace_max_nodes: int = 5000,
     mask_safe_connectors: bool = False,
 ) -> dict[str, int | float | str | dict[str, int]]:
     active = mask >= threshold
@@ -686,6 +692,15 @@ def export_color_planner_geometry_as_dst(
         "visible_risk_edges": 0.0,
         "mean_offmask_fraction_sum": 0.0,
     }
+    graph_tsp_trace: dict[str, object] = {
+        "version": "graph_tsp_trace_v1",
+        "target_width_mm": target_width_mm,
+        "scale_mm": scale_mm,
+        "tasks": [],
+        "truncated": False,
+        "truncation_reason": "",
+    }
+    graph_trace_nodes = 0
     graph_tsp_config = GraphTSPConfig(
         long_jump_threshold_mm=long_jump_threshold_mm,
         long_jump_weight=long_jump_weight,
@@ -815,7 +830,7 @@ def export_color_planner_geometry_as_dst(
             component_count += 1
             component_mask = task["component"] if isinstance(task.get("component"), np.ndarray) else None
             if graph_tsp_planner:
-                ordered_polylines, stats = order_polylines_graph_tsp(
+                ordered_polylines, stats, graph_record = order_polylines_graph_tsp_with_trace(
                     task["polylines"],
                     current,
                     width,
@@ -830,6 +845,28 @@ def export_color_planner_geometry_as_dst(
                 graph_tsp_stats["selected_distance_mm"] += float(stats.get("selected_distance_mm", 0.0))
                 graph_tsp_stats["visible_risk_edges"] += float(stats.get("visible_risk_edges", 0.0))
                 graph_tsp_stats["mean_offmask_fraction_sum"] += float(stats.get("mean_offmask_fraction", 0.0))
+                graph_trace_nodes += int(stats.get("nodes", 0.0))
+                trace_tasks = graph_tsp_trace["tasks"]
+                if (
+                    isinstance(trace_tasks, list)
+                    and len(trace_tasks) < graph_trace_max_tasks
+                    and graph_trace_nodes <= graph_trace_max_nodes
+                ):
+                    trace_tasks.append(
+                        {
+                            "task_index": int(component_count - 1),
+                            "type_name": type_name,
+                            "type_id": int(task["type_id"]),
+                            "area_px": int(task["area"]),
+                            "bbox_px": task["bbox"],
+                            "order_score": float(task["order_score"]),
+                            "graph": graph_record,
+                            "stats": stats,
+                        }
+                    )
+                else:
+                    graph_tsp_trace["truncated"] = True
+                    graph_tsp_trace["truncation_reason"] = "graph_trace_max_tasks_or_nodes"
             elif serpentine_fill and int(task["type_id"]) in (2, 3):
                 ordered_polylines = order_polylines_serpentine(
                     task["polylines"],
@@ -888,6 +925,15 @@ def export_color_planner_geometry_as_dst(
     pattern.add_stitch_absolute(END, int(round(current[0] * 10)), int(round(current[1] * 10)))
     write_dst(pattern, str(output_base.with_suffix(".dst")))
     write_pes(pattern, str(output_base.with_suffix(".pes")))
+    graph_trace_path = ""
+    if graph_tsp_planner:
+        graph_tsp_trace["stats"] = graph_tsp_stats
+        graph_tsp_trace["config"] = graph_tsp_config_to_dict(graph_tsp_config)
+        graph_trace_path = str(output_base.with_name("graph_tsp_trace.json"))
+        output_base.with_name("graph_tsp_trace.json").write_text(
+            json.dumps(graph_tsp_trace, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
     return {
         "dst": str(output_base.with_suffix(".dst")),
         "pes": str(output_base.with_suffix(".pes")),
@@ -922,6 +968,7 @@ def export_color_planner_geometry_as_dst(
         "relation_planner": config_to_dict(relation_config),
         "graph_tsp_planner": graph_tsp_planner,
         "graph_tsp_config": graph_tsp_config_to_dict(graph_tsp_config) if graph_tsp_planner else None,
+        "graph_tsp_trace": graph_trace_path,
         "graph_tsp_stats": {
             **graph_tsp_stats,
             "mean_offmask_fraction": (
@@ -1132,6 +1179,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 "graph_trim_penalty": args.graph_trim_penalty,
                 "graph_min_inside_fraction": args.graph_min_inside_fraction,
                 "graph_max_two_opt_nodes": args.graph_max_two_opt_nodes,
+                "graph_trace_max_tasks": args.graph_trace_max_tasks,
+                "graph_trace_max_nodes": args.graph_trace_max_nodes,
                 "mask_safe_connectors": args.mask_safe_connectors,
             }
         )
@@ -1159,6 +1208,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "pred_stitch_type.png",
             "pred_endpoint_heatmap.png",
             "pred_path_order.png" if path_order is not None else "",
+            "graph_tsp_trace.json" if args.graph_tsp_planner else "",
             f"{args.output_prefix}.dst",
             f"{args.output_prefix}.pes",
         ],
@@ -1212,6 +1262,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--graph-trim-penalty", type=float, default=1.0)
     parser.add_argument("--graph-min-inside-fraction", type=float, default=0.88)
     parser.add_argument("--graph-max-two-opt-nodes", type=int, default=80)
+    parser.add_argument("--graph-trace-max-tasks", type=int, default=96)
+    parser.add_argument("--graph-trace-max-nodes", type=int, default=5000)
     parser.add_argument("--mask-safe-connectors", action="store_true", help="Only use STITCH connectors when the connector path stays inside the active component mask.")
     parser.add_argument("--retrieval-index", default="", help="Optional retrieval planner index JSON built from similar designs.")
     parser.add_argument("--retrieval-top-k", type=int, default=5)

@@ -60,7 +60,7 @@ Geometry-to-Graph-to-TSP Planner
 - 它可以作为 GNN 的强 baseline，也可以为未来 GNN 提供 node/edge 监督。
 - RL 暂时不适合作为主线，因为 action space 大、reward 稀疏、训练不稳定。
 
-当前实现中，`b2_graph_tsp_conservative_safe` 将每条 stitch polyline 视为图节点，用边代价惩罚距离、跳针、剪线、越界连接和可见连接线，并启用 mask-safe connector。
+当前实现中，`b2_graph_tsp_conservative_safe` 将每条 stitch polyline 视为图节点，用边代价惩罚距离、跳针、剪线、越界连接和可见连接线，并启用 mask-safe connector。推理时还会导出 `graph_tsp_trace.json`，记录 node、selected edge、route order 和 edge-risk 细节，为下一阶段 M1 selector / M2 edge-GNN 提供中间监督。
 
 ## 当前新增工具
 
@@ -100,7 +100,7 @@ Geometry-to-Graph-to-TSP Planner
 ## 下一步优先级
 
 1. 继续优化 Graph-TSP edge cost，降低 jump count 的副作用。
-2. 增加 graph JSON 导出，为未来 GNN-assisted TSP 做准备。
+2. 基于 `graph_tsp_trace.json` 生成 M1 selector / M2 edge-GNN 训练样本。
 3. 扩大 holdout paired set，避免 4 个样本的偶然性。
 4. 优先降低 `visible_connector_count` 和 `off_mask_stitch_length_mm`。
 5. 将输入预处理从全局规则升级为按图像类型路由：thread / region / selected。

@@ -39,6 +39,23 @@ def distance_mm(a: Point, b: Point) -> float:
     return float(np.hypot(a[0] - b[0], a[1] - b[1]))
 
 
+def polyline_length_mm(coords: Polyline, width: int, height: int, scale_mm: float) -> float:
+    if len(coords) < 2:
+        return 0.0
+    total = 0.0
+    last = coord_to_mm(coords[0], width, height, scale_mm)
+    for point in coords[1:]:
+        current = coord_to_mm(point, width, height, scale_mm)
+        total += distance_mm(last, current)
+        last = current
+    return total
+
+
+def polyline_bbox(coords: Polyline) -> list[float]:
+    arr = np.asarray(coords, dtype=np.float32)
+    return [float(arr[:, 0].min()), float(arr[:, 1].min()), float(arr[:, 0].max()), float(arr[:, 1].max())]
+
+
 def line_inside_fraction(mask: np.ndarray | None, start_xy: Point, end_xy: Point, samples: int = 48) -> float:
     if mask is None:
         return 1.0
@@ -145,7 +162,60 @@ def two_opt(
     return best
 
 
-def order_polylines_graph_tsp(
+def sequence_cost_items(
+    ordered: list[dict[str, Any]],
+    start_mm: Point,
+    width: int,
+    height: int,
+    scale_mm: float,
+    mask: np.ndarray | None,
+    config: GraphTSPConfig,
+) -> float:
+    return sequence_cost([item["coords"] for item in ordered], start_mm, width, height, scale_mm, mask, config)
+
+
+def two_opt_items(
+    ordered: list[dict[str, Any]],
+    start_mm: Point,
+    width: int,
+    height: int,
+    scale_mm: float,
+    mask: np.ndarray | None,
+    config: GraphTSPConfig,
+) -> list[dict[str, Any]]:
+    if len(ordered) < 4 or config.two_opt_passes <= 0 or len(ordered) > config.max_two_opt_nodes:
+        return ordered
+    best = [{**item, "coords": list(item["coords"])} for item in ordered]
+    best_cost = sequence_cost_items(best, start_mm, width, height, scale_mm, mask, config)
+    for _ in range(config.two_opt_passes):
+        improved = False
+        for i in range(0, len(best) - 2):
+            for j in range(i + 1, len(best) - 1):
+                reversed_slice = [{**item, "coords": list(reversed(item["coords"]))} for item in reversed(best[i : j + 1])]
+                candidate = best[:i] + reversed_slice + best[j + 1 :]
+                cost = sequence_cost_items(candidate, start_mm, width, height, scale_mm, mask, config)
+                if cost + 1e-6 < best_cost:
+                    best = candidate
+                    best_cost = cost
+                    improved = True
+        if not improved:
+            break
+    return best
+
+
+def build_node_record(node_id: int, coords: Polyline, width: int, height: int, scale_mm: float) -> dict[str, Any]:
+    start_mm, end_mm = endpoint_options(coords, width, height, scale_mm)
+    return {
+        "node_id": int(node_id),
+        "point_count": int(len(coords)),
+        "length_mm": round(polyline_length_mm(coords, width, height, scale_mm), 4),
+        "start_mm": [round(float(start_mm[0]), 4), round(float(start_mm[1]), 4)],
+        "end_mm": [round(float(end_mm[0]), 4), round(float(end_mm[1]), 4)],
+        "bbox_px": [round(value, 3) for value in polyline_bbox(coords)],
+    }
+
+
+def order_polylines_graph_tsp_with_trace(
     polylines: list[Polyline],
     current_mm: Point,
     width: int,
@@ -153,9 +223,12 @@ def order_polylines_graph_tsp(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
-) -> tuple[list[Polyline], dict[str, float]]:
-    remaining = [coords for coords in polylines if len(coords) >= 2]
-    ordered: list[Polyline] = []
+) -> tuple[list[Polyline], dict[str, float], dict[str, Any]]:
+    items = [{"node_id": index, "coords": coords} for index, coords in enumerate(polylines) if len(coords) >= 2]
+    nodes = [build_node_record(int(item["node_id"]), item["coords"], width, height, scale_mm) for item in items]
+    remaining = [{**item, "coords": list(item["coords"])} for item in items]
+    ordered_items: list[dict[str, Any]] = []
+    selected_edges: list[dict[str, Any]] = []
     stats = {
         "nodes": float(len(remaining)),
         "edges_considered": 0.0,
@@ -167,34 +240,81 @@ def order_polylines_graph_tsp(
     }
     start_mm = current_mm
     current = current_mm
+    previous_node = -1
     while remaining:
         best_index = 0
         best_cost = float("inf")
         best_reverse = False
         best_details: dict[str, float] = {}
-        for index, coords in enumerate(remaining):
-            cost, reverse, details = transition_cost(current, coords, width, height, scale_mm, mask, config)
+        for index, item in enumerate(remaining):
+            cost, reverse, details = transition_cost(current, item["coords"], width, height, scale_mm, mask, config)
             stats["edges_considered"] += 1.0
             if cost < best_cost:
                 best_cost = cost
                 best_index = index
                 best_reverse = reverse
                 best_details = details
-        coords = remaining.pop(best_index)
+        item = remaining.pop(best_index)
+        coords = item["coords"]
         if best_reverse:
             coords = list(reversed(coords))
-        ordered.append(coords)
+            item = {**item, "coords": coords}
+        ordered_items.append(item)
+        selected_edges.append(
+            {
+                "step": int(len(ordered_items) - 1),
+                "from_node": int(previous_node),
+                "to_node": int(item["node_id"]),
+                "reverse": bool(best_reverse),
+                "cost": round(float(best_details.get("cost", best_cost)), 6),
+                "distance_mm": round(float(best_details.get("distance_mm", 0.0)), 4),
+                "inside_fraction": round(float(best_details.get("inside_fraction", 0.0)), 6),
+                "offmask_fraction": round(float(best_details.get("offmask_fraction", 0.0)), 6),
+                "visible_risk": round(float(best_details.get("visible_risk", 0.0)), 4),
+                "trim_risk": round(float(best_details.get("trim_risk", 0.0)), 4),
+            }
+        )
         stats["selected_cost"] += float(best_details.get("cost", best_cost))
         stats["selected_distance_mm"] += float(best_details.get("distance_mm", 0.0))
         stats["selected_offmask_fraction"] += float(best_details.get("offmask_fraction", 0.0))
         stats["visible_risk_edges"] += float(best_details.get("visible_risk", 0.0))
         stats["max_transition_mm"] = max(stats["max_transition_mm"], float(best_details.get("distance_mm", 0.0)))
         current = coord_to_mm(coords[-1], width, height, scale_mm)
-    ordered = two_opt(ordered, start_mm, width, height, scale_mm, mask, config)
+        previous_node = int(item["node_id"])
+    two_opt_allowed = len(ordered_items) <= config.max_two_opt_nodes and config.two_opt_passes > 0
+    ordered_items = two_opt_items(ordered_items, start_mm, width, height, scale_mm, mask, config)
     if stats["nodes"] > 0:
         stats["mean_selected_cost"] = stats["selected_cost"] / stats["nodes"]
         stats["mean_offmask_fraction"] = stats["selected_offmask_fraction"] / stats["nodes"]
     else:
         stats["mean_selected_cost"] = 0.0
         stats["mean_offmask_fraction"] = 0.0
+    graph = {
+        "nodes": nodes,
+        "selected_edges": selected_edges,
+        "route_node_ids": [int(item["node_id"]) for item in ordered_items],
+        "two_opt_allowed": bool(two_opt_allowed),
+        "two_opt_note": "selected_edges record greedy pre-2opt choices; route_node_ids records final route order",
+    }
+    return [item["coords"] for item in ordered_items], stats, graph
+
+
+def order_polylines_graph_tsp(
+    polylines: list[Polyline],
+    current_mm: Point,
+    width: int,
+    height: int,
+    scale_mm: float,
+    mask: np.ndarray | None,
+    config: GraphTSPConfig,
+) -> tuple[list[Polyline], dict[str, float]]:
+    ordered, stats, _graph = order_polylines_graph_tsp_with_trace(
+        polylines,
+        current_mm,
+        width,
+        height,
+        scale_mm,
+        mask,
+        config,
+    )
     return ordered, stats
