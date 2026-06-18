@@ -94,6 +94,58 @@
         "--continuity-connect-max-mm": 2.2,
         "--max-stitch-mm": 3.4
       }
+    },
+    {
+      "name": "b2_graph_tsp_safe",
+      "args": {
+        "--density-threshold": 0.52,
+        "--mask-threshold": 0.62,
+        "--min-active-px": 8000,
+        "--row-step-px": 2,
+        "--point-step-px": 2,
+        "--min-component-px": 24,
+        "--max-components": 74,
+        "--long-jump-weight": 0.2025,
+        "--two-opt-passes": 1,
+        "--connect-near-mm": 0.25,
+        "--continuity-order-weight": 0.7675,
+        "--continuity-connect-threshold": 0.42,
+        "--continuity-connect-max-mm": 2.0,
+        "--max-stitch-mm": 3.6,
+        "--graph-tsp-planner": true,
+        "--mask-safe-connectors": true,
+        "--graph-offmask-weight": 10.0,
+        "--graph-visible-connector-penalty": 14.0,
+        "--graph-trim-penalty": 2.0,
+        "--graph-min-inside-fraction": 0.92,
+        "--graph-max-two-opt-nodes": 60
+      }
+    },
+    {
+      "name": "b2_graph_tsp_conservative_safe",
+      "args": {
+        "--density-threshold": 0.52,
+        "--mask-threshold": 0.62,
+        "--min-active-px": 8000,
+        "--row-step-px": 2,
+        "--point-step-px": 2,
+        "--min-component-px": 24,
+        "--max-components": 74,
+        "--long-jump-weight": 0.2025,
+        "--two-opt-passes": 1,
+        "--connect-near-mm": 0.9,
+        "--continuity-order-weight": 0.7675,
+        "--continuity-connect-threshold": 0.2665,
+        "--continuity-connect-max-mm": 5.0,
+        "--max-stitch-mm": 3.82,
+        "--graph-tsp-planner": true,
+        "--mask-safe-connectors": true,
+        "--graph-offmask-weight": 10.0,
+        "--graph-visible-connector-penalty": 14.0,
+        "--graph-trim-penalty": 2.0,
+        "--graph-min-inside-fraction": 0.92,
+        "--graph-max-two-opt-nodes": 60
+      }
     }
   ]
 }

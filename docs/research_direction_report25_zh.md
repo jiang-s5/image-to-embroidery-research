@@ -5,6 +5,8 @@
 ```text
 DST-derived supervision
   -> structure prediction
+  -> segment/polyline graph construction
+  -> TSP-style path optimization
   -> executability-aware planner selection
   -> DST/PES export
   -> render-back and command-level evaluation
@@ -43,6 +45,23 @@ unified_loss = ExecScore + VisualRisk
 
 当前默认使用 `hard`，因为真实刺绣更怕可见连接线和越界针迹，而不是只追求单个平均分。
 
+## 为什么主线选 TSP / 图优化
+
+当前阶段最适合冲论文的路线是：
+
+```text
+Geometry-to-Graph-to-TSP Planner
+```
+
+原因：
+
+- TSP / 图优化直接对应 `jump_count`、`trim_count`、`off_mask_stitch_length_mm`、`visible_connector_count`。
+- 它不需要大量真实图片到 DST 的严格成对数据。
+- 它可以作为 GNN 的强 baseline，也可以为未来 GNN 提供 node/edge 监督。
+- RL 暂时不适合作为主线，因为 action space 大、reward 稀疏、训练不稳定。
+
+当前实现中，`b2_graph_tsp_conservative_safe` 将每条 stitch polyline 视为图节点，用边代价惩罚距离、跳针、剪线、越界连接和可见连接线，并启用 mask-safe connector。
+
 ## 当前新增工具
 
 | 文件 | 作用 |
@@ -53,6 +72,7 @@ unified_loss = ExecScore + VisualRisk
 | `configs/sweep_b1.yaml` | B1 参数候选、评分权重和选择策略 |
 | `configs/b1_clean.yaml` | 当前 B1_clean 候选配置 |
 | `tools/preprocess_real_image_v2.py` | 真实照片 thread/region/selected 输入预处理 |
+| `planner/graph_tsp.py` | polyline graph + TSP-style edge-cost planner |
 | `docs/hitl_protocol_zh.md` | 人工筛选协议 |
 
 ## E0-E4 实验路线
@@ -74,14 +94,16 @@ unified_loss = ExecScore + VisualRisk
 - `region_mask` 对填充类图案有效，但也可能产生越界填充。
 - 单一参数无法覆盖文字、线稿、卡通填充、真实绣片照片。
 - B1 full sweep 里 `b1_low_connect` 平均分最低，但 `b1_conservative` 在 3/4 个样本上更稳，且 jump、trim、visible connector 均值更低。
+- Graph-TSP sweep 里 `b2_graph_tsp_conservative_safe` 成为 hard policy 推荐：它降低了 mean unified loss、off-mask 长度和 visible connectors，但 jump count 上升。
 - 所有 4 个 holdout 样本仍为 `hard_fail`，说明当前只是相对优化，还没有达到真实可用标准。
 
 ## 下一步优先级
 
-1. 用 full sweep 固定 B1_clean hard selection，而不是只看平均分。
-2. 扩大 holdout paired set，避免 4 个样本的偶然性。
-3. 优先降低 `visible_connector_count` 和 `off_mask_stitch_length_mm`。
-4. 将输入预处理从全局规则升级为按图像类型路由：thread / region / selected。
-5. 构建 inverse pseudo-real 输入候选。
-6. 按 `docs/hitl_protocol_zh.md` 做人工筛选。
-7. 只将通过筛选的输入与原始 DST-derived labels 回流训练，不把模型预测当标签。
+1. 继续优化 Graph-TSP edge cost，降低 jump count 的副作用。
+2. 增加 graph JSON 导出，为未来 GNN-assisted TSP 做准备。
+3. 扩大 holdout paired set，避免 4 个样本的偶然性。
+4. 优先降低 `visible_connector_count` 和 `off_mask_stitch_length_mm`。
+5. 将输入预处理从全局规则升级为按图像类型路由：thread / region / selected。
+6. 构建 inverse pseudo-real 输入候选。
+7. 按 `docs/hitl_protocol_zh.md` 做人工筛选。
+8. 只将通过筛选的输入与原始 DST-derived labels 回流训练，不把模型预测当标签。

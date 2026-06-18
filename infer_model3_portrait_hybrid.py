@@ -28,6 +28,7 @@ from train_model7_geometry_planner import Model7GeometryPlannerCascade
 from train_model8_joint_segment import Model8JointSegmentPlanner
 from train_model10_vector_continuity import Model10VectorContinuityPlanner
 from retrieval_augmented_planner import prediction_feature_vector, retrieve_planner_prior
+from planner.graph_tsp import GraphTSPConfig, config_to_dict as graph_tsp_config_to_dict, order_polylines_graph_tsp
 from planner.relation_cost import (
     RelationPlannerConfig,
     config_to_dict,
@@ -460,6 +461,8 @@ def add_polyline_nearest(
     continuity_near: np.ndarray | None = None,
     continuity_connect_threshold: float = 0.0,
     continuity_connect_max_mm: float = 0.0,
+    connector_mask: np.ndarray | None = None,
+    connector_min_inside_fraction: float = 0.88,
     max_stitch_mm: float = 4.0,
     max_jump_mm: float = 7.5,
     trim_jump_threshold_mm: float = 10.0,
@@ -476,11 +479,20 @@ def add_polyline_nearest(
         current_px = mm_to_coord(current, width, height, scale_mm)
         near_signal = line_map_mean(continuity_near, current_px, coords[0])
         continuity_connect = bool(jump_mm <= continuity_connect_max_mm and near_signal >= continuity_connect_threshold)
+    connector_allowed = True
+    if connector_mask is not None:
+        current_px = mm_to_coord(current, width, height, scale_mm)
+        connector_allowed = segment_inside_mask(
+            connector_mask,
+            current_px,
+            coords[0],
+            min_inside_fraction=connector_min_inside_fraction,
+        )
     stitch_count = 0
     jump_count = 0
     trim_count = 0
     connector_count = 0
-    if (connect_near_mm > 0.0 and jump_mm <= connect_near_mm) or continuity_connect:
+    if connector_allowed and ((connect_near_mm > 0.0 and jump_mm <= connect_near_mm) or continuity_connect):
         added, _distance = add_stitch_segment(pattern, current, first, max_stitch_mm)
         stitch_count += added
         connector_count += 1
@@ -631,6 +643,13 @@ def export_color_planner_geometry_as_dst(
     max_jump_mm: float = 7.5,
     trim_jump_threshold_mm: float = 10.0,
     relation_config: RelationPlannerConfig | None = None,
+    graph_tsp_planner: bool = False,
+    graph_offmask_weight: float = 8.0,
+    graph_visible_connector_penalty: float = 10.0,
+    graph_trim_penalty: float = 1.0,
+    graph_min_inside_fraction: float = 0.88,
+    graph_max_two_opt_nodes: int = 80,
+    mask_safe_connectors: bool = False,
 ) -> dict[str, int | float | str | dict[str, int]]:
     active = mask >= threshold
     height, width = active.shape
@@ -659,6 +678,25 @@ def export_color_planner_geometry_as_dst(
     outline_count = 0
     connector_count = 0
     type_counts = {"running": 0, "satin": 0, "fill": 0}
+    graph_tsp_stats = {
+        "tasks": 0,
+        "nodes": 0.0,
+        "edges_considered": 0.0,
+        "selected_distance_mm": 0.0,
+        "visible_risk_edges": 0.0,
+        "mean_offmask_fraction_sum": 0.0,
+    }
+    graph_tsp_config = GraphTSPConfig(
+        long_jump_threshold_mm=long_jump_threshold_mm,
+        long_jump_weight=long_jump_weight,
+        trim_jump_threshold_mm=trim_jump_threshold_mm,
+        trim_penalty=graph_trim_penalty,
+        offmask_weight=graph_offmask_weight,
+        visible_connector_penalty=graph_visible_connector_penalty,
+        min_inside_fraction=graph_min_inside_fraction,
+        two_opt_passes=two_opt_passes,
+        max_two_opt_nodes=graph_max_two_opt_nodes,
+    )
 
     for color_index, (layer_mask, _color, _area) in enumerate(layers):
         if color_index > 0:
@@ -722,6 +760,7 @@ def export_color_planner_geometry_as_dst(
                         "angle": float(angle),
                         "order_score": float(path_order[component].mean()) if path_order is not None and np.any(component) else 1.0,
                         "bbox": component_bbox(component),
+                        "component": component,
                         "polylines": polylines,
                     }
                 )
@@ -774,7 +813,24 @@ def export_color_planner_geometry_as_dst(
             type_name = str(task["type_name"])
             type_counts[type_name] += 1
             component_count += 1
-            if serpentine_fill and int(task["type_id"]) in (2, 3):
+            component_mask = task["component"] if isinstance(task.get("component"), np.ndarray) else None
+            if graph_tsp_planner:
+                ordered_polylines, stats = order_polylines_graph_tsp(
+                    task["polylines"],
+                    current,
+                    width,
+                    height,
+                    scale_mm,
+                    component_mask,
+                    graph_tsp_config,
+                )
+                graph_tsp_stats["tasks"] += 1
+                graph_tsp_stats["nodes"] += float(stats.get("nodes", 0.0))
+                graph_tsp_stats["edges_considered"] += float(stats.get("edges_considered", 0.0))
+                graph_tsp_stats["selected_distance_mm"] += float(stats.get("selected_distance_mm", 0.0))
+                graph_tsp_stats["visible_risk_edges"] += float(stats.get("visible_risk_edges", 0.0))
+                graph_tsp_stats["mean_offmask_fraction_sum"] += float(stats.get("mean_offmask_fraction", 0.0))
+            elif serpentine_fill and int(task["type_id"]) in (2, 3):
                 ordered_polylines = order_polylines_serpentine(
                     task["polylines"],
                     current,
@@ -814,6 +870,8 @@ def export_color_planner_geometry_as_dst(
                     continuity_near=continuity_near,
                     continuity_connect_threshold=continuity_connect_threshold,
                     continuity_connect_max_mm=continuity_connect_max_mm,
+                    connector_mask=component_mask if mask_safe_connectors else None,
+                    connector_min_inside_fraction=graph_min_inside_fraction,
                     max_stitch_mm=max_stitch_mm,
                     max_jump_mm=max_jump_mm,
                     trim_jump_threshold_mm=trim_jump_threshold_mm,
@@ -862,6 +920,17 @@ def export_color_planner_geometry_as_dst(
         "max_jump_mm_limit": max_jump_mm,
         "trim_jump_threshold_mm": trim_jump_threshold_mm,
         "relation_planner": config_to_dict(relation_config),
+        "graph_tsp_planner": graph_tsp_planner,
+        "graph_tsp_config": graph_tsp_config_to_dict(graph_tsp_config) if graph_tsp_planner else None,
+        "graph_tsp_stats": {
+            **graph_tsp_stats,
+            "mean_offmask_fraction": (
+                round(graph_tsp_stats["mean_offmask_fraction_sum"] / max(1, graph_tsp_stats["tasks"]), 6)
+                if graph_tsp_planner
+                else 0.0
+            ),
+        },
+        "mask_safe_connectors": mask_safe_connectors,
     }
 
 
@@ -1057,6 +1126,13 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 "max_jump_mm": float(planner_values["max_jump_mm"]),
                 "trim_jump_threshold_mm": float(planner_values["trim_jump_threshold_mm"]),
                 "relation_config": relation_config,
+                "graph_tsp_planner": args.graph_tsp_planner,
+                "graph_offmask_weight": args.graph_offmask_weight,
+                "graph_visible_connector_penalty": args.graph_visible_connector_penalty,
+                "graph_trim_penalty": args.graph_trim_penalty,
+                "graph_min_inside_fraction": args.graph_min_inside_fraction,
+                "graph_max_two_opt_nodes": args.graph_max_two_opt_nodes,
+                "mask_safe_connectors": args.mask_safe_connectors,
             }
         )
     dst_summary = exporter(**export_kwargs)
@@ -1130,6 +1206,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--trim-jump-threshold-mm", type=float, default=10.0)
     parser.add_argument("--serpentine-fill", action="store_true")
     parser.add_argument("--no-serpentine-fill", action="store_true")
+    parser.add_argument("--graph-tsp-planner", action="store_true", help="Use graph/TSP-style polyline ordering with connector-risk edge costs.")
+    parser.add_argument("--graph-offmask-weight", type=float, default=8.0)
+    parser.add_argument("--graph-visible-connector-penalty", type=float, default=10.0)
+    parser.add_argument("--graph-trim-penalty", type=float, default=1.0)
+    parser.add_argument("--graph-min-inside-fraction", type=float, default=0.88)
+    parser.add_argument("--graph-max-two-opt-nodes", type=int, default=80)
+    parser.add_argument("--mask-safe-connectors", action="store_true", help="Only use STITCH connectors when the connector path stays inside the active component mask.")
     parser.add_argument("--retrieval-index", default="", help="Optional retrieval planner index JSON built from similar designs.")
     parser.add_argument("--retrieval-top-k", type=int, default=5)
     parser.add_argument("--retrieval-weight", type=float, default=0.45)

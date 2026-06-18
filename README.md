@@ -50,6 +50,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 5. Anti-overfit planner controls: leave-one-out, external-index, random-prior, shuffled-prior, and fixed-prior controls are used to separate true retrieval gains from planner-parameter effects.
 6. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, round-trip parse, and render-back visual checks.
 7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
+8. Geometry-to-Graph-to-TSP planning: predicted stitch regions are converted into polyline graph nodes, then ordered with TSP-style edge costs that penalize jump, trim, off-mask, and visible-connector risk.
 
 ## Architecture
 
@@ -70,6 +71,7 @@ Vector-Continuity Heads
 (stitch trace / near-connect / jump endpoint)
         |
 Graph & Path Planner
+(segment/polyline graph + TSP-style edge optimization)
         |
 DST / PES Export
         |
@@ -150,6 +152,25 @@ The `summary.json` records the retrieved matches and the final planner values ap
 ### Relation-Aware Planner Cost
 
 `configs/relation_planner.yaml` enables the A1/A2 planner-only ablation path from the research report. It adds normalized distance, jump/trim risk, lock risk, near-connect bonus, direction alignment, endpoint compatibility, and retrieval-prior terms to the transition cost.
+
+### Graph-TSP Planner
+
+The current paper-oriented planner route is `Geometry-to-Graph-to-TSP`: generated stitch polylines become graph nodes, and transition edges are scored by distance, long-jump risk, trim risk, off-mask risk, and visible connector risk.
+
+```powershell
+python infer_model3_portrait_hybrid.py inputs/your_image.png `
+  --checkpoint checkpoints/best_model13_multiformat_all_vector_continuity.pt `
+  --output-dir outputs/your_image_graph_tsp `
+  --geometry-planner `
+  --model-path-order `
+  --use-continuity-planner `
+  --planner-config configs/relation_planner.yaml `
+  --graph-tsp-planner `
+  --mask-safe-connectors `
+  --serpentine-fill
+```
+
+The `b2_graph_tsp_conservative_safe` preset in `configs/sweep_b1.yaml` is the current hard-selection candidate. In the latest 4-sample paired holdout sweep, it reduced mean unified loss and visual-risk metrics compared with the conservative B1 baseline, but still increased jump count, so it should be treated as an optimization direction rather than a final production planner.
 
 Run command-level executability evaluation after export:
 
