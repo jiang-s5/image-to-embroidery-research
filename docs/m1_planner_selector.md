@@ -4,6 +4,7 @@ This document separates two stages that are easy to confuse:
 
 - M0.9: candidate-preset scorer, trained from sweep results, but still scores candidate presets as inputs.
 - Strict M1: direct MLP selector, mapping image/geometry features to one planner preset/config.
+- M1 config regressor: direct MLP regressor, mapping image/geometry features to a continuous planner config vector.
 
 Strict M1 is deliberately smaller than M2/M3. It selects a planner preset/config; it does not predict graph edges, route order, or DST commands directly.
 
@@ -31,6 +32,19 @@ image / predicted geometry summary
 MLP softmax selector
         |
 predicted planner preset + config args
+```
+
+The strongest current M1 variant predicts numeric parameters directly:
+
+```text
+image / predicted geometry summary
+        |
+MLP regression model
+        |
+continuous planner config
+(thresholds / connectivity / graph penalties / limits)
+        |
+DST generation + evaluator
 ```
 
 ## M0.9 Candidate Scorer Features
@@ -116,6 +130,32 @@ python tools/apply_m1_direct_selector.py `
   --output-json results/m1_direct_selector/latest_pair_20260618/m1_direct_selected_configs.json
 ```
 
+## Reproduce M1 Continuous Config Loop
+
+```powershell
+python tools/run_m1_config_loop.py --config configs/m1_config_regressor.yaml
+```
+
+Equivalent manual commands:
+
+```powershell
+python tools/train_m1_config_regressor.py `
+  --candidates-jsonl results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl `
+  --sweep-config configs/sweep_b1.yaml `
+  --feature-method b1_conservative `
+  --label-target hard_score `
+  --output-dir results/m1_config_regressor/latest_pair_20260618 `
+  --model-output checkpoints/m1_config_regressor.json
+
+python tools/run_m1_config_eval.py `
+  --predictions-json results/m1_config_regressor/latest_pair_20260618/m1_config_predictions.json `
+  --output-dir results/m1_config_regressor/latest_pair_20260618_eval `
+  --checkpoint checkpoints/best_model13_multiformat_all_vector_continuity.pt `
+  --planner-config configs/relation_planner.yaml `
+  --score-config configs/sweep_b1.yaml `
+  --reuse
+```
+
 ## Current M0.9 Loop Result
 
 Current leave-one-out evaluation uses 4 paired holdout samples and 6 planner candidates per sample.
@@ -152,15 +192,39 @@ Strict M1 satisfies the formal stage requirement:
 - mapping: image/geometry features -> planner preset/config;
 - no candidate preset scoring at inference.
 
+## Current M1 Config Regressor Result
+
+The continuous-config regressor uses a NumPy MLP with normalized-MSE loss over oracle planner config vectors. Its predicted configs are then run through real DST/PES generation and executability evaluation.
+
+| Selector / Baseline | Unified Loss | Jumps | Trims | Visible Connectors | Off-Mask mm |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| M1 continuous config regressor, DST-evaluated | 0.621028 | 143.500 | 25.250 | 35.750 | 179.303 |
+| Oracle preset label | 0.621038 | 143.250 | 25.250 | 35.750 | 178.987 |
+| Strict M1 direct preset MLP | 0.621038 | 143.250 | 25.250 | 37.000 | 178.229 |
+| M0.9 candidate scorer | 0.621367 | 154.000 | 24.250 | 35.500 | 176.804 |
+| Fixed B2 Graph-TSP conservative | 0.626582 | 213.500 | 26.250 | 35.250 | 175.534 |
+| Fixed B1 conservative | 0.636772 | 130.750 | 25.250 | 37.000 | 185.828 |
+
+This is the closest implementation to the strict definition:
+
+```text
+image -> learned model -> planner config -> DST -> evaluator
+```
+
+It converts the parameter search problem into a learned function approximation problem. The current result is still small-sample, so it should be treated as a proof-of-loop rather than a mature generalization result.
+
 ## Artifacts
 
 - Selector model: `checkpoints/m1_planner_selector.json`
 - Strict M1 direct model: `checkpoints/m1_direct_selector.json`
+- M1 config regressor model: `checkpoints/m1_config_regressor.json`
 - Candidate dataset: `results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl`
 - Strict M1 sample dataset: `results/m1_direct_selector/latest_pair_20260618/m1_direct_samples.jsonl`
 - Fold decisions: `results/m1_selector/latest_pair_20260618/m1_selector_loo_decisions.csv`
 - Strict M1 fold decisions: `results/m1_direct_selector/latest_pair_20260618/m1_direct_loo_decisions.csv`
 - Strict M1 selected configs: `results/m1_direct_selector/latest_pair_20260618/m1_direct_selected_configs.json`
+- M1 config predictions: `results/m1_config_regressor/latest_pair_20260618/m1_config_predictions.json`
+- M1 config DST eval report: `results/m1_config_regressor/latest_pair_20260618_eval/m1_config_eval_report.md`
 - Optional applied selector output: `results/m1_selector/latest_pair_20260618/m1_selector_applied.csv`
 - Report: `results/m1_selector/latest_pair_20260618/m1_selector_report.md`
 - Strict M1 report: `results/m1_direct_selector/latest_pair_20260618/m1_direct_report.md`

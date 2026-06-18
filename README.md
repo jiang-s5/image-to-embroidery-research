@@ -51,7 +51,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 6. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, round-trip parse, and render-back visual checks.
 7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
 8. Geometry-to-Graph-to-TSP planning: predicted stitch regions are converted into polyline graph nodes, then ordered with TSP-style edge costs that penalize jump, trim, off-mask, and visible-connector risk.
-9. Strict M1 learned planner selection: a NumPy MLP maps image/geometry summaries directly to a planner preset/config, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge.
+9. Strict M1 learned planner selection: NumPy MLP models map image/geometry summaries directly to planner presets or continuous planner configs, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge.
 
 ## Architecture
 
@@ -181,6 +181,7 @@ Two selector stages are available:
 
 - M0.9 candidate scorer: scores image/geometry + candidate preset features.
 - Strict M1 direct selector: predicts one planner preset/config from image/geometry features with an MLP and cross-entropy loss.
+- M1 continuous config regressor: predicts numeric planner parameters from image/geometry features with an MLP and MSE loss, then runs the generated config through DST/PES export.
 
 Run the M0.9 candidate-scoring loop:
 
@@ -198,15 +199,22 @@ python tools/run_m1_direct_loop.py --config configs/m1_direct_selector.yaml
 
 This trains `checkpoints/m1_direct_selector.json` and applies it to produce `results/m1_direct_selector/latest_pair_20260618/m1_direct_selected_configs.json`.
 
-Current 4-sample leave-one-out result for strict M1:
+Run the stronger continuous-config M1 loop:
 
-| Selector / Baseline | Unified Loss | Hard Score | Jumps | Trims |
-| --- | ---: | ---: | ---: | ---: |
-| Oracle hard-score selector | 0.621038 | 51.903530 | 143.250 | 25.250 |
-| Strict M1 direct MLP | 0.621038 | 52.225434 | 143.250 | 25.250 |
-| M0.9 candidate scorer | 0.621367 | 51.927638 | 154.000 | 24.250 |
-| Fixed B2 Graph-TSP conservative | 0.626582 | 54.170873 | 213.500 | 26.250 |
-| Fixed B1 conservative | 0.636772 | 52.691112 | 130.750 | 25.250 |
+```powershell
+python tools/run_m1_config_loop.py --config configs/m1_config_regressor.yaml
+```
+
+Current 4-sample result:
+
+| Selector / Baseline | Unified Loss | Jumps | Trims | Visible Connectors | Off-Mask mm |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| M1 continuous config regressor, DST-evaluated | 0.621028 | 143.500 | 25.250 | 35.750 | 179.303 |
+| Oracle preset label | 0.621038 | 143.250 | 25.250 | 35.750 | 178.987 |
+| Strict M1 direct preset MLP | 0.621038 | 143.250 | 25.250 | 37.000 | 178.229 |
+| M0.9 candidate scorer | 0.621367 | 154.000 | 24.250 | 35.500 | 176.804 |
+| Fixed B2 Graph-TSP conservative | 0.626582 | 213.500 | 26.250 | 35.250 | 175.534 |
+| Fixed B1 conservative | 0.636772 | 130.750 | 25.250 | 37.000 | 185.828 |
 
 See [docs/m1_planner_selector.md](docs/m1_planner_selector.md) for details and limitations.
 

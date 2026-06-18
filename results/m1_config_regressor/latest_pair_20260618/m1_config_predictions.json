@@ -1,0 +1,142 @@
+[
+  {
+    "sample_id": "pair_006",
+    "label_method": "b1_conservative",
+    "nearest_preset": "b1_conservative",
+    "nearest_distance": 68629041.93064399,
+    "predicted_config": {
+      "--connect-near-mm": 0.886247,
+      "--continuity-connect-max-mm": 4.960886,
+      "--continuity-connect-threshold": 0.270975,
+      "--continuity-order-weight": 0.7675,
+      "--density-threshold": 0.52,
+      "--graph-max-two-opt-nodes": 5,
+      "--graph-min-inside-fraction": 0.041569,
+      "--graph-offmask-weight": 0.328634,
+      "--graph-trim-penalty": 0.079426,
+      "--graph-visible-connector-penalty": 0.400546,
+      "--long-jump-weight": 0.219684,
+      "--mask-threshold": 0.62,
+      "--max-components": 74,
+      "--max-stitch-mm": 3.81877,
+      "--min-active-px": 8000,
+      "--min-component-px": 24,
+      "--point-step-px": 2,
+      "--row-step-px": 2,
+      "--two-opt-passes": 1
+    },
+    "paths": {
+      "eval_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_006\\executability_eval.json",
+      "input": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_006\\preprocess_v2\\selected_design.png",
+      "mask": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_006\\preprocess_v2\\selected_mask.png",
+      "summary_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_006\\summary.json",
+      "target": "outputs\\latest_dataset_pair_eval_20260615\\model13_relation_fixed_no_training\\pair_006\\target_normalized.dst"
+    }
+  },
+  {
+    "sample_id": "pair_008",
+    "label_method": "b2_graph_tsp_safe",
+    "nearest_preset": "b1_low_connect",
+    "nearest_distance": 1039524710.2806361,
+    "predicted_config": {
+      "--connect-near-mm": 0.372101,
+      "--continuity-connect-max-mm": 2.502534,
+      "--continuity-connect-threshold": 0.402129,
+      "--continuity-order-weight": 0.76,
+      "--density-threshold": 0.38,
+      "--graph-max-two-opt-nodes": 58,
+      "--graph-min-inside-fraction": 0.827349,
+      "--graph-offmask-weight": 8.167918,
+      "--graph-trim-penalty": 1.816156,
+      "--graph-tsp-planner": true,
+      "--graph-visible-connector-penalty": 14.0,
+      "--long-jump-weight": 0.205653,
+      "--mask-safe-connectors": true,
+      "--mask-threshold": 0.62,
+      "--max-components": 74,
+      "--max-stitch-mm": 3.621854,
+      "--min-active-px": 8000,
+      "--min-component-px": 24,
+      "--point-step-px": 2,
+      "--row-step-px": 2,
+      "--two-opt-passes": 1
+    },
+    "paths": {
+      "eval_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_008\\executability_eval.json",
+      "input": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_008\\preprocess_v2\\selected_design.png",
+      "mask": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_008\\preprocess_v2\\selected_mask.png",
+      "summary_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_008\\summary.json",
+      "target": "outputs\\latest_dataset_pair_eval_20260615\\model13_relation_fixed_no_training\\pair_008\\target_normalized.dst"
+    }
+  },
+  {
+    "sample_id": "pair_010",
+    "label_method": "b1_conservative",
+    "nearest_preset": "b1_conservative",
+    "nearest_distance": 45784640.06357334,
+    "predicted_config": {
+      "--connect-near-mm": 0.893808,
+      "--continuity-connect-max-mm": 4.991968,
+      "--continuity-connect-threshold": 0.269114,
+      "--continuity-order-weight": 0.762394,
+      "--density-threshold": 0.52,
+      "--graph-max-two-opt-nodes": 4,
+      "--graph-min-inside-fraction": 0.032018,
+      "--graph-offmask-weight": 0.206635,
+      "--graph-trim-penalty": 0.043718,
+      "--graph-visible-connector-penalty": 0.221472,
+      "--long-jump-weight": 0.215158,
+      "--mask-threshold": 0.615664,
+      "--max-components": 74,
+      "--max-stitch-mm": 3.82,
+      "--min-active-px": 8000,
+      "--min-component-px": 24,
+      "--point-step-px": 2,
+      "--row-step-px": 2,
+      "--two-opt-passes": 1
+    },
+    "paths": {
+      "eval_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_010\\executability_eval.json",
+      "input": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_010\\preprocess_v2\\selected_design.png",
+      "mask": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_010\\preprocess_v2\\selected_mask.png",
+      "summary_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_010\\summary.json",
+      "target": "outputs\\latest_dataset_pair_eval_20260615\\model13_relation_fixed_no_training\\pair_010\\target_normalized.dst"
+    }
+  },
+  {
+    "sample_id": "pair_011a",
+    "label_method": "b2_graph_tsp_conservative_safe",
+    "nearest_preset": "b2_graph_tsp_conservative_safe",
+    "nearest_distance": 438266846.62997526,
+    "predicted_config": {
+      "--connect-near-mm": 0.808949,
+      "--continuity-connect-max-mm": 4.601971,
+      "--continuity-connect-threshold": 0.273803,
+      "--continuity-order-weight": 0.7675,
+      "--density-threshold": 0.52,
+      "--graph-max-two-opt-nodes": 54,
+      "--graph-min-inside-fraction": 0.907869,
+      "--graph-offmask-weight": 10.0,
+      "--graph-trim-penalty": 2.0,
+      "--graph-tsp-planner": true,
+      "--graph-visible-connector-penalty": 12.453614,
+      "--long-jump-weight": 0.2025,
+      "--mask-safe-connectors": true,
+      "--mask-threshold": 0.45,
+      "--max-components": 74,
+      "--max-stitch-mm": 3.803384,
+      "--min-active-px": 8000,
+      "--min-component-px": 24,
+      "--point-step-px": 2,
+      "--row-step-px": 2,
+      "--two-opt-passes": 1
+    },
+    "paths": {
+      "eval_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_011a\\executability_eval.json",
+      "input": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_011a\\preprocess_v2\\selected_design.png",
+      "mask": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING\\pair_011a\\preprocess_v2\\selected_mask.png",
+      "summary_json": "outputs\\b1_sweep_latest_pair_20260617\\b1_conservative\\pair_011a\\summary.json",
+      "target": "outputs\\latest_dataset_pair_eval_20260615\\model13_relation_fixed_no_training\\pair_011a\\target_normalized.dst"
+    }
+  }
+]

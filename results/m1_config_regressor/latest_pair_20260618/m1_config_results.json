@@ -1,0 +1,76 @@
+{
+  "version": "m1_config_regressor_results_v1",
+  "best": {
+    "hidden_dim": 4,
+    "lr": 0.05,
+    "weight_decay": 0.01,
+    "epochs": 800,
+    "seed": 13,
+    "mean_config_mse": 17.75667872,
+    "folds": [
+      {
+        "sample_id": "pair_006",
+        "label_method": "b1_conservative",
+        "nearest_preset": "b1_low_connect",
+        "nearest_distance": 337620363.9512005,
+        "config_mse": 9.574969,
+        "predicted_config_json": "{\"--connect-near-mm\": 0.66839, \"--continuity-connect-max-mm\": 3.884187, \"--continuity-connect-threshold\": 0.29773, \"--continuity-order-weight\": 0.76, \"--density-threshold\": 0.389735, \"--graph-max-two-opt-nodes\": 12, \"--graph-min-inside-fraction\": 0.0, \"--graph-offmask-weight\": 0.0, \"--graph-trim-penalty\": 0.283707, \"--graph-visible-connector-penalty\": 0.0, \"--long-jump-weight\": 0.23814, \"--mask-threshold\": 0.62, \"--max-components\": 74, \"--max-stitch-mm\": 3.731288, \"--min-active-px\": 8000, \"--min-component-px\": 24, \"--point-step-px\": 2, \"--row-step-px\": 1, \"--two-opt-passes\": 1}"
+      },
+      {
+        "sample_id": "pair_008",
+        "label_method": "b2_graph_tsp_safe",
+        "nearest_preset": "b1_low_connect",
+        "nearest_distance": 6851891423.075157,
+        "config_mse": 29.0373782,
+        "predicted_config_json": "{\"--connect-near-mm\": 0.9, \"--continuity-connect-max-mm\": 4.978287, \"--continuity-connect-threshold\": 0.2665, \"--continuity-order-weight\": 0.76, \"--density-threshold\": 0.38, \"--graph-max-two-opt-nodes\": 36, \"--graph-min-inside-fraction\": 0.92, \"--graph-offmask-weight\": 10.0, \"--graph-trim-penalty\": 2.0, \"--graph-tsp-planner\": true, \"--graph-visible-connector-penalty\": 14.0, \"--long-jump-weight\": 0.2025, \"--mask-safe-connectors\": true, \"--mask-threshold\": 0.481252, \"--max-components\": 74, \"--max-stitch-mm\": 3.612525, \"--min-active-px\": 8000, \"--min-component-px\": 24, \"--point-step-px\": 2, \"--row-step-px\": 2, \"--two-opt-passes\": 1}"
+      },
+      {
+        "sample_id": "pair_010",
+        "label_method": "b1_conservative",
+        "nearest_preset": "b1_low_connect",
+        "nearest_distance": 8585950458.57769,
+        "config_mse": 5.58575771,
+        "predicted_config_json": "{\"--connect-near-mm\": 0.457693, \"--continuity-connect-max-mm\": 2.821303, \"--continuity-connect-threshold\": 0.413854, \"--continuity-order-weight\": 0.76, \"--density-threshold\": 0.38, \"--graph-max-two-opt-nodes\": 0, \"--graph-min-inside-fraction\": 0.271229, \"--graph-offmask-weight\": 0.0, \"--graph-trim-penalty\": 0.0, \"--graph-visible-connector-penalty\": 6.319558, \"--long-jump-weight\": 0.2025, \"--mask-threshold\": 0.62, \"--max-components\": 74, \"--max-stitch-mm\": 3.625846, \"--min-active-px\": 8000, \"--min-component-px\": 24, \"--point-step-px\": 1, \"--row-step-px\": 2, \"--two-opt-passes\": 1}"
+      },
+      {
+        "sample_id": "pair_011a",
+        "label_method": "b2_graph_tsp_conservative_safe",
+        "nearest_preset": "b1_low_connect",
+        "nearest_distance": 1771561438.771302,
+        "config_mse": 26.82860997,
+        "predicted_config_json": "{\"--connect-near-mm\": 0.25, \"--continuity-connect-max-mm\": 1.8, \"--continuity-connect-threshold\": 0.42, \"--continuity-order-weight\": 0.76, \"--density-threshold\": 0.38, \"--graph-max-two-opt-nodes\": 60, \"--graph-min-inside-fraction\": 0.772619, \"--graph-offmask-weight\": 5.325673, \"--graph-trim-penalty\": 1.471028, \"--graph-tsp-planner\": true, \"--graph-visible-connector-penalty\": 13.458536, \"--long-jump-weight\": 0.25, \"--mask-safe-connectors\": true, \"--mask-threshold\": 0.62, \"--max-components\": 74, \"--max-stitch-mm\": 3.559896, \"--min-active-px\": 8000, \"--min-component-px\": 24, \"--point-step-px\": 2, \"--row-step-px\": 2, \"--two-opt-passes\": 1}"
+      }
+    ]
+  },
+  "feature_count": 28,
+  "parameter_keys": [
+    "--connect-near-mm",
+    "--continuity-connect-max-mm",
+    "--continuity-connect-threshold",
+    "--continuity-order-weight",
+    "--density-threshold",
+    "--graph-max-two-opt-nodes",
+    "--graph-min-inside-fraction",
+    "--graph-offmask-weight",
+    "--graph-trim-penalty",
+    "--graph-tsp-planner",
+    "--graph-visible-connector-penalty",
+    "--long-jump-weight",
+    "--mask-safe-connectors",
+    "--mask-threshold",
+    "--max-components",
+    "--max-stitch-mm",
+    "--min-active-px",
+    "--min-component-px",
+    "--point-step-px",
+    "--row-step-px",
+    "--two-opt-passes"
+  ],
+  "samples": [
+    "pair_006",
+    "pair_008",
+    "pair_010",
+    "pair_011a"
+  ],
+  "model_output": "checkpoints/m1_config_regressor.json"
+}

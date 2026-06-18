@@ -1,0 +1,32 @@
+{
+  "description": "M1 continuous planner config regressor. Maps image/geometry features directly to numeric planner parameters, then evaluates the generated DST.",
+  "trainer": {
+    "candidates_jsonl": "results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl",
+    "sweep_config": "configs/sweep_b1.yaml",
+    "feature_method": "b1_conservative",
+    "label_target": "hard_score",
+    "output_dir": "results/m1_config_regressor/latest_pair_20260618",
+    "model_output": "checkpoints/m1_config_regressor.json",
+    "hidden_dims": "4,8,16,32",
+    "lrs": "0.005,0.01,0.03,0.05",
+    "weight_decays": "0,0.0001,0.001,0.01",
+    "epochs": 800,
+    "seeds": "1,2,3,5,8,13"
+  },
+  "evaluator": {
+    "predictions_json": "results/m1_config_regressor/latest_pair_20260618/m1_config_predictions.json",
+    "output_dir": "results/m1_config_regressor/latest_pair_20260618_eval",
+    "checkpoint": "checkpoints/best_model13_multiformat_all_vector_continuity.pt",
+    "planner_config": "configs/relation_planner.yaml",
+    "score_config": "configs/sweep_b1.yaml",
+    "cpu": false,
+    "reuse": true
+  },
+  "strict_m1_requirements": {
+    "learning_model": "NumPy MLP regressor",
+    "training_loss": "normalized MSE over oracle config vectors",
+    "mapping": "image/geometry sample features -> continuous planner config",
+    "candidate_scoring_at_inference": false,
+    "dst_eval_loop": true
+  }
+}

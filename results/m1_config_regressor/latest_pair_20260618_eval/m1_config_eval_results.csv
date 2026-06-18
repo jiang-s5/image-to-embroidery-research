@@ -1,0 +1,5 @@
+﻿sample_id,nearest_preset,jump_count,jump_path_mm,off_mask_stitch_length_mm,round_trip_parse_success,stitch_count,stitch_path_mm,trim_count,visible_connector_count,visible_connector_length_mm,unified_loss,exec_score,visual_risk,quality_level,hard_score
+pair_006,b1_conservative,126,730.7612,437.3581,True,3523,3569.186,26,121,363.2428,0.64338436,0.34338436,0.3,hard_fail,101.98648019
+pair_008,b1_low_connect,172,978.0548,39.4983,True,2164,2877.511,26,1,2.3022,0.56256882,0.35129775,0.21127107,hard_fail,14.01318965
+pair_010,b1_conservative,145,866.5234,70.0023,True,5230,4361.2349,31,8,20.6894,0.64772875,0.34772875,0.3,hard_fail,19.41468292
+pair_011a,b2_graph_tsp_conservative_safe,131,700.9648,170.3547,True,1414,1391.5219,18,13,42.2819,0.63043087,0.33043087,0.3,hard_fail,32.3981017
