@@ -1,0 +1,1696 @@
+{
+  "version": "m1_direct_selector_results_v1",
+  "best": {
+    "hidden_dim": 4,
+    "lr": 0.005,
+    "weight_decay": 0.0,
+    "epochs": 600,
+    "seed": 1,
+    "folds": [
+      {
+        "sample_id": "pair_006",
+        "predicted_method": "b1_conservative",
+        "label_method": "b1_conservative",
+        "correct": true,
+        "confidence": 0.56398093,
+        "selected_unified_loss": 0.64338436,
+        "oracle_unified_loss": 0.64338436,
+        "selected_hard_score": 111.98648019333334,
+        "oracle_hard_score": 111.98648019333334,
+        "selected_jump_count": 126.0,
+        "selected_trim_count": 26.0
+      },
+      {
+        "sample_id": "pair_008",
+        "predicted_method": "b2_graph_tsp_conservative_safe",
+        "label_method": "b2_graph_tsp_safe",
+        "correct": false,
+        "confidence": 0.82211318,
+        "selected_unified_loss": 0.56226469,
+        "oracle_unified_loss": 0.56226469,
+        "selected_hard_score": 23.73451052333333,
+        "oracle_hard_score": 23.73451052333333,
+        "selected_jump_count": 169.0,
+        "selected_trim_count": 26.0
+      },
+      {
+        "sample_id": "pair_010",
+        "predicted_method": "b1_conservative",
+        "label_method": "b1_conservative",
+        "correct": true,
+        "confidence": 0.80178927,
+        "selected_unified_loss": 0.6480724,
+        "oracle_unified_loss": 0.6480724,
+        "selected_hard_score": 29.495026566666667,
+        "oracle_hard_score": 29.495026566666667,
+        "selected_jump_count": 147.0,
+        "selected_trim_count": 31.0
+      },
+      {
+        "sample_id": "pair_011a",
+        "predicted_method": "b2_graph_tsp_safe",
+        "label_method": "b2_graph_tsp_conservative_safe",
+        "correct": false,
+        "confidence": 0.72942296,
+        "selected_unified_loss": 0.63043087,
+        "oracle_unified_loss": 0.63043087,
+        "selected_hard_score": 43.685718370000004,
+        "oracle_hard_score": 42.39810170333333,
+        "selected_jump_count": 131.0,
+        "selected_trim_count": 18.0
+      }
+    ],
+    "accuracy": 0.5,
+    "selected_methods": {
+      "pair_006": "b1_conservative",
+      "pair_008": "b2_graph_tsp_conservative_safe",
+      "pair_010": "b1_conservative",
+      "pair_011a": "b2_graph_tsp_safe"
+    },
+    "summary": {
+      "unified_loss": 0.62103808,
+      "hard_score": 52.22543391,
+      "jump_count": 143.25,
+      "trim_count": 25.25,
+      "off_mask_stitch_length_mm": 178.2285,
+      "visible_connector_count": 37.0
+    }
+  },
+  "baselines": [
+    {
+      "name": "oracle_label",
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 51.90352975,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.9866,
+        "visible_connector_count": 35.75
+      }
+    },
+    {
+      "name": "fixed_b1_conservative",
+      "summary": {
+        "unified_loss": 0.63677208,
+        "hard_score": 52.69111166,
+        "jump_count": 130.75,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 185.82805,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "name": "fixed_b1_dense_thread",
+      "summary": {
+        "unified_loss": 0.64988453,
+        "hard_score": 195.57192723,
+        "jump_count": 265.75,
+        "trim_count": 42.25,
+        "off_mask_stitch_length_mm": 786.769675,
+        "visible_connector_count": 221.5
+      }
+    },
+    {
+      "name": "fixed_b1_low_connect",
+      "summary": {
+        "unified_loss": 0.62878565,
+        "hard_score": 60.67769919,
+        "jump_count": 203.5,
+        "trim_count": 26.75,
+        "off_mask_stitch_length_mm": 201.237975,
+        "visible_connector_count": 46.25
+      }
+    },
+    {
+      "name": "fixed_b1_region_fill",
+      "summary": {
+        "unified_loss": 0.6334354,
+        "hard_score": 183.29365832,
+        "jump_count": 211.0,
+        "trim_count": 34.25,
+        "off_mask_stitch_length_mm": 750.72845,
+        "visible_connector_count": 206.0
+      }
+    },
+    {
+      "name": "fixed_b2_graph_tsp_conservative_safe",
+      "summary": {
+        "unified_loss": 0.62658244,
+        "hard_score": 54.17087306,
+        "jump_count": 213.5,
+        "trim_count": 26.25,
+        "off_mask_stitch_length_mm": 175.534325,
+        "visible_connector_count": 35.25
+      }
+    },
+    {
+      "name": "fixed_b2_graph_tsp_safe",
+      "summary": {
+        "unified_loss": 0.62802082,
+        "hard_score": 56.39779165,
+        "jump_count": 227.5,
+        "trim_count": 26.25,
+        "off_mask_stitch_length_mm": 176.1915,
+        "visible_connector_count": 40.0
+      }
+    }
+  ],
+  "leaderboard_top": [
+    {
+      "hidden_dim": 4,
+      "lr": 0.005,
+      "weight_decay": 0.0,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.56398093,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.82211318,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.80178927,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.72942296,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.005,
+      "weight_decay": 0.0001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.56393617,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.82202044,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.80172439,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.72939519,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.005,
+      "weight_decay": 0.001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.56353336,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.8211855,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.80114048,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.72914483,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.005,
+      "weight_decay": 0.01,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.55950477,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.81281864,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.7953005,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.72659846,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.01,
+      "weight_decay": 0.0,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.65297006,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.89214525,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.89042128,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.89125512,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.01,
+      "weight_decay": 0.0001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.65286234,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.89202107,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.89032214,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.89120398,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.01,
+      "weight_decay": 0.001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.65189379,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.89090181,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.88942882,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.89074312,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.01,
+      "weight_decay": 0.01,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.64229145,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.87956019,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.88040472,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.88607338,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.03,
+      "weight_decay": 0.0,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.75179518,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.95885697,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.95546035,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.97074164,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.03,
+      "weight_decay": 0.0001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.75141906,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.95868855,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.95526684,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.97066569,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.03,
+      "weight_decay": 0.001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.74804086,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.95716021,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.95351832,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.96997887,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.03,
+      "weight_decay": 0.01,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.71475784,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.94070401,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.93629941,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.96283708,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.05,
+      "weight_decay": 0.0,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.78744589,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.97472858,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.96883537,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.98312025,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.05,
+      "weight_decay": 0.0001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.78680443,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.97454151,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.96859781,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.98303329,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.05,
+      "weight_decay": 0.001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.78103909,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.97282965,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.96645416,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.98224333,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 4,
+      "lr": 0.05,
+      "weight_decay": 0.01,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.72347176,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.95302693,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.94637987,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.97382351,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 8,
+      "lr": 0.005,
+      "weight_decay": 0.0,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.4589282,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.6356181,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.57651123,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.41965841,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 8,
+      "lr": 0.005,
+      "weight_decay": 0.0001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.45889044,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.63556143,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.57650277,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.41972155,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 8,
+      "lr": 0.005,
+      "weight_decay": 0.001,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.45855044,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.63505019,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.57642637,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.42028865,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    },
+    {
+      "hidden_dim": 8,
+      "lr": 0.005,
+      "weight_decay": 0.01,
+      "epochs": 600,
+      "seed": 1,
+      "folds": [
+        {
+          "sample_id": "pair_006",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.45513825,
+          "selected_unified_loss": 0.64338436,
+          "oracle_unified_loss": 0.64338436,
+          "selected_hard_score": 111.98648019333334,
+          "oracle_hard_score": 111.98648019333334,
+          "selected_jump_count": 126.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_008",
+          "predicted_method": "b2_graph_tsp_conservative_safe",
+          "label_method": "b2_graph_tsp_safe",
+          "correct": false,
+          "confidence": 0.62981909,
+          "selected_unified_loss": 0.56226469,
+          "oracle_unified_loss": 0.56226469,
+          "selected_hard_score": 23.73451052333333,
+          "oracle_hard_score": 23.73451052333333,
+          "selected_jump_count": 169.0,
+          "selected_trim_count": 26.0
+        },
+        {
+          "sample_id": "pair_010",
+          "predicted_method": "b1_conservative",
+          "label_method": "b1_conservative",
+          "correct": true,
+          "confidence": 0.5756429,
+          "selected_unified_loss": 0.6480724,
+          "oracle_unified_loss": 0.6480724,
+          "selected_hard_score": 29.495026566666667,
+          "oracle_hard_score": 29.495026566666667,
+          "selected_jump_count": 147.0,
+          "selected_trim_count": 31.0
+        },
+        {
+          "sample_id": "pair_011a",
+          "predicted_method": "b2_graph_tsp_safe",
+          "label_method": "b2_graph_tsp_conservative_safe",
+          "correct": false,
+          "confidence": 0.42584572,
+          "selected_unified_loss": 0.63043087,
+          "oracle_unified_loss": 0.63043087,
+          "selected_hard_score": 43.685718370000004,
+          "oracle_hard_score": 42.39810170333333,
+          "selected_jump_count": 131.0,
+          "selected_trim_count": 18.0
+        }
+      ],
+      "accuracy": 0.5,
+      "selected_methods": {
+        "pair_006": "b1_conservative",
+        "pair_008": "b2_graph_tsp_conservative_safe",
+        "pair_010": "b1_conservative",
+        "pair_011a": "b2_graph_tsp_safe"
+      },
+      "summary": {
+        "unified_loss": 0.62103808,
+        "hard_score": 52.22543391,
+        "jump_count": 143.25,
+        "trim_count": 25.25,
+        "off_mask_stitch_length_mm": 178.2285,
+        "visible_connector_count": 37.0
+      }
+    }
+  ],
+  "feature_count": 28,
+  "samples": [
+    "pair_006",
+    "pair_008",
+    "pair_010",
+    "pair_011a"
+  ],
+  "methods": [
+    "b1_conservative",
+    "b1_dense_thread",
+    "b1_low_connect",
+    "b1_region_fill",
+    "b2_graph_tsp_conservative_safe",
+    "b2_graph_tsp_safe"
+  ],
+  "model_output": "checkpoints/m1_direct_selector.json"
+}

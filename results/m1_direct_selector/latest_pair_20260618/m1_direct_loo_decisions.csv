@@ -1,0 +1,5 @@
+﻿sample_id,predicted_method,label_method,correct,confidence,selected_unified_loss,oracle_unified_loss,selected_hard_score,oracle_hard_score,selected_jump_count,selected_trim_count
+pair_006,b1_conservative,b1_conservative,True,0.56398093,0.64338436,0.64338436,111.98648019333334,111.98648019333334,126.0,26.0
+pair_008,b2_graph_tsp_conservative_safe,b2_graph_tsp_safe,False,0.82211318,0.56226469,0.56226469,23.73451052333333,23.73451052333333,169.0,26.0
+pair_010,b1_conservative,b1_conservative,True,0.80178927,0.6480724,0.6480724,29.495026566666667,29.495026566666667,147.0,31.0
+pair_011a,b2_graph_tsp_safe,b2_graph_tsp_conservative_safe,False,0.72942296,0.63043087,0.63043087,43.685718370000004,42.39810170333333,131.0,18.0

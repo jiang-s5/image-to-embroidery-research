@@ -1,0 +1,128 @@
+{
+  "pair_006": {
+    "predicted_method": "b1_conservative",
+    "confidence": 0.75697055949461,
+    "config_args": {
+      "--density-threshold": 0.52,
+      "--mask-threshold": 0.62,
+      "--min-active-px": 8000,
+      "--row-step-px": 2,
+      "--point-step-px": 2,
+      "--min-component-px": 24,
+      "--max-components": 74,
+      "--long-jump-weight": 0.2025,
+      "--two-opt-passes": 1,
+      "--connect-near-mm": 0.9,
+      "--continuity-order-weight": 0.7675,
+      "--continuity-connect-threshold": 0.2665,
+      "--continuity-connect-max-mm": 5.0,
+      "--max-stitch-mm": 3.82
+    },
+    "probabilities": {
+      "b1_conservative": 0.75697055949461,
+      "b1_dense_thread": 0.029781538538786182,
+      "b1_low_connect": 0.06293834719969404,
+      "b1_region_fill": 0.031152938963219204,
+      "b2_graph_tsp_conservative_safe": 0.008357243934060227,
+      "b2_graph_tsp_safe": 0.11079937186963049
+    }
+  },
+  "pair_008": {
+    "predicted_method": "b2_graph_tsp_safe",
+    "confidence": 0.5257545204318171,
+    "config_args": {
+      "--density-threshold": 0.52,
+      "--mask-threshold": 0.62,
+      "--min-active-px": 8000,
+      "--row-step-px": 2,
+      "--point-step-px": 2,
+      "--min-component-px": 24,
+      "--max-components": 74,
+      "--long-jump-weight": 0.2025,
+      "--two-opt-passes": 1,
+      "--connect-near-mm": 0.25,
+      "--continuity-order-weight": 0.7675,
+      "--continuity-connect-threshold": 0.42,
+      "--continuity-connect-max-mm": 2.0,
+      "--max-stitch-mm": 3.6,
+      "--graph-tsp-planner": true,
+      "--mask-safe-connectors": true,
+      "--graph-offmask-weight": 10.0,
+      "--graph-visible-connector-penalty": 14.0,
+      "--graph-trim-penalty": 2.0,
+      "--graph-min-inside-fraction": 0.92,
+      "--graph-max-two-opt-nodes": 60
+    },
+    "probabilities": {
+      "b1_conservative": 0.020134095582729435,
+      "b1_dense_thread": 0.09523029563268526,
+      "b1_low_connect": 0.23080832595230968,
+      "b1_region_fill": 0.029767531278159405,
+      "b2_graph_tsp_conservative_safe": 0.0983052311222991,
+      "b2_graph_tsp_safe": 0.5257545204318171
+    }
+  },
+  "pair_010": {
+    "predicted_method": "b1_conservative",
+    "confidence": 0.8593756071357082,
+    "config_args": {
+      "--density-threshold": 0.52,
+      "--mask-threshold": 0.62,
+      "--min-active-px": 8000,
+      "--row-step-px": 2,
+      "--point-step-px": 2,
+      "--min-component-px": 24,
+      "--max-components": 74,
+      "--long-jump-weight": 0.2025,
+      "--two-opt-passes": 1,
+      "--connect-near-mm": 0.9,
+      "--continuity-order-weight": 0.7675,
+      "--continuity-connect-threshold": 0.2665,
+      "--continuity-connect-max-mm": 5.0,
+      "--max-stitch-mm": 3.82
+    },
+    "probabilities": {
+      "b1_conservative": 0.8593756071357082,
+      "b1_dense_thread": 0.01689457666829555,
+      "b1_low_connect": 0.009534178358842908,
+      "b1_region_fill": 0.06679319013275792,
+      "b2_graph_tsp_conservative_safe": 0.030855904933487128,
+      "b2_graph_tsp_safe": 0.016546542770908165
+    }
+  },
+  "pair_011a": {
+    "predicted_method": "b2_graph_tsp_conservative_safe",
+    "confidence": 0.8153636216136948,
+    "config_args": {
+      "--density-threshold": 0.52,
+      "--mask-threshold": 0.62,
+      "--min-active-px": 8000,
+      "--row-step-px": 2,
+      "--point-step-px": 2,
+      "--min-component-px": 24,
+      "--max-components": 74,
+      "--long-jump-weight": 0.2025,
+      "--two-opt-passes": 1,
+      "--connect-near-mm": 0.9,
+      "--continuity-order-weight": 0.7675,
+      "--continuity-connect-threshold": 0.2665,
+      "--continuity-connect-max-mm": 5.0,
+      "--max-stitch-mm": 3.82,
+      "--graph-tsp-planner": true,
+      "--mask-safe-connectors": true,
+      "--graph-offmask-weight": 10.0,
+      "--graph-visible-connector-penalty": 14.0,
+      "--graph-trim-penalty": 2.0,
+      "--graph-min-inside-fraction": 0.92,
+      "--graph-max-two-opt-nodes": 60
+    },
+    "probabilities": {
+      "b1_conservative": 0.00913280101154703,
+      "b1_dense_thread": 0.026832490990351045,
+      "b1_low_connect": 0.01903547782832023,
+      "b1_region_fill": 0.05891711886459677,
+      "b2_graph_tsp_conservative_safe": 0.8153636216136948,
+      "b2_graph_tsp_safe": 0.07071848969149003
+    }
+  }
+}

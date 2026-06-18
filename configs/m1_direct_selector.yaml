@@ -1,0 +1,28 @@
+{
+  "description": "Strict M1 direct planner selector config. This stage maps image/geometry features directly to a planner preset/config.",
+  "trainer": {
+    "candidates_jsonl": "results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl",
+    "sweep_config": "configs/sweep_b1.yaml",
+    "feature_method": "b1_conservative",
+    "label_target": "hard_score",
+    "output_dir": "results/m1_direct_selector/latest_pair_20260618",
+    "model_output": "checkpoints/m1_direct_selector.json",
+    "hidden_dims": "4,8,16,32",
+    "lrs": "0.005,0.01,0.03,0.05",
+    "weight_decays": "0,0.0001,0.001,0.01",
+    "epochs": 600,
+    "seeds": "1,2,3,5,8,13"
+  },
+  "apply": {
+    "model": "checkpoints/m1_direct_selector.json",
+    "samples_jsonl": "results/m1_direct_selector/latest_pair_20260618/m1_direct_samples.jsonl",
+    "output_csv": "results/m1_direct_selector/latest_pair_20260618/m1_direct_applied.csv",
+    "output_json": "results/m1_direct_selector/latest_pair_20260618/m1_direct_selected_configs.json"
+  },
+  "strict_m1_requirements": {
+    "learning_model": "NumPy MLP with tanh hidden layer and softmax output",
+    "training_loss": "cross entropy",
+    "mapping": "image/geometry sample features -> planner preset/config",
+    "candidate_scoring_at_inference": false
+  }
+}

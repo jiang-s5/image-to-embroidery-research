@@ -51,7 +51,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 6. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, round-trip parse, and render-back visual checks.
 7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
 8. Geometry-to-Graph-to-TSP planning: predicted stitch regions are converted into polyline graph nodes, then ordered with TSP-style edge costs that penalize jump, trim, off-mask, and visible-connector risk.
-9. M1 learned planner selection: a lightweight ridge selector chooses among B1/B2 planner presets from pre-export image/geometry summaries and planner-parameter interaction features.
+9. Strict M1 learned planner selection: a NumPy MLP maps image/geometry summaries directly to a planner preset/config, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge.
 
 ## Architecture
 
@@ -175,11 +175,14 @@ The `b2_graph_tsp_conservative_safe` preset in `configs/sweep_b1.yaml` is the cu
 
 When `--graph-tsp-planner` is enabled, inference also writes `graph_tsp_trace.json`, containing graph nodes, selected transition edges, route node IDs, and edge-risk details. This is the bridge artifact for M1 learned preset selection and future M2 edge-level GNN routing.
 
-### M1 Learned Planner Selector
+### M0.9 and Strict M1 Planner Selectors
 
-M1 is the current learned planner-selection stage. It does not generate DST commands directly; it learns which planner preset to use for a given image/geometry summary.
+Two selector stages are available:
 
-Run the full M1 loop:
+- M0.9 candidate scorer: scores image/geometry + candidate preset features.
+- Strict M1 direct selector: predicts one planner preset/config from image/geometry features with an MLP and cross-entropy loss.
+
+Run the M0.9 candidate-scoring loop:
 
 ```powershell
 python tools/run_m1_selector_loop.py --config configs/m1_selector.yaml
@@ -187,12 +190,21 @@ python tools/run_m1_selector_loop.py --config configs/m1_selector.yaml
 
 This builds `results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl`, trains a leave-one-out ridge selector, and saves `checkpoints/m1_planner_selector.json`.
 
-Current 4-sample leave-one-out result:
+Run the strict M1 direct loop:
+
+```powershell
+python tools/run_m1_direct_loop.py --config configs/m1_direct_selector.yaml
+```
+
+This trains `checkpoints/m1_direct_selector.json` and applies it to produce `results/m1_direct_selector/latest_pair_20260618/m1_direct_selected_configs.json`.
+
+Current 4-sample leave-one-out result for strict M1:
 
 | Selector / Baseline | Unified Loss | Hard Score | Jumps | Trims |
 | --- | ---: | ---: | ---: | ---: |
 | Oracle hard-score selector | 0.621038 | 51.903530 | 143.250 | 25.250 |
-| M1 learned selector | 0.621367 | 51.927638 | 154.000 | 24.250 |
+| Strict M1 direct MLP | 0.621038 | 52.225434 | 143.250 | 25.250 |
+| M0.9 candidate scorer | 0.621367 | 51.927638 | 154.000 | 24.250 |
 | Fixed B2 Graph-TSP conservative | 0.626582 | 54.170873 | 213.500 | 26.250 |
 | Fixed B1 conservative | 0.636772 | 52.691112 | 130.750 | 25.250 |
 
