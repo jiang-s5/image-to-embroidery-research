@@ -1,0 +1,53 @@
+{
+  "version": "m1_selector_dataset_v1",
+  "sweep_results": "results\\b1_sweep\\latest_pair_graph_tsp_sweep_20260618\\sweep_results.csv",
+  "sweep_config": "configs/sweep_b1.yaml",
+  "outputs_root": "outputs\\b1_sweep_latest_pair_20260617",
+  "pair_root": "datasets\\incoming_review\\latest_dataset_20260615\\organized\\pairing_review_NOT_FOR_TRAINING_YET\\paired_candidates_FOR_APPROVAL_NOT_TRAINING",
+  "include_post_export_features": false,
+  "samples": 4,
+  "methods": [
+    "b1_conservative",
+    "b1_dense_thread",
+    "b1_low_connect",
+    "b1_region_fill",
+    "b2_graph_tsp_conservative_safe",
+    "b2_graph_tsp_safe"
+  ],
+  "rows": 24,
+  "feature_mode": "pre_export_plus_preset",
+  "hard_order_keys": [
+    "parse_fail",
+    "visible_connector_count",
+    "off_mask_stitch_length_mm",
+    "jump_count",
+    "trim_count",
+    "unified_loss"
+  ],
+  "label_rows": [
+    {
+      "sample_id": "pair_006",
+      "best_hard_method": "b2_graph_tsp_conservative_safe",
+      "best_mean_method": "b1_conservative",
+      "candidate_count": 6
+    },
+    {
+      "sample_id": "pair_008",
+      "best_hard_method": "b2_graph_tsp_safe",
+      "best_mean_method": "b2_graph_tsp_safe",
+      "candidate_count": 6
+    },
+    {
+      "sample_id": "pair_010",
+      "best_hard_method": "b2_graph_tsp_conservative_safe",
+      "best_mean_method": "b1_conservative",
+      "candidate_count": 6
+    },
+    {
+      "sample_id": "pair_011a",
+      "best_hard_method": "b2_graph_tsp_conservative_safe",
+      "best_mean_method": "b1_conservative",
+      "candidate_count": 6
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+﻿sample_id,best_hard_method,best_mean_method,candidate_count
+pair_006,b2_graph_tsp_conservative_safe,b1_conservative,6
+pair_008,b2_graph_tsp_safe,b2_graph_tsp_safe,6
+pair_010,b2_graph_tsp_conservative_safe,b1_conservative,6
+pair_011a,b2_graph_tsp_conservative_safe,b1_conservative,6

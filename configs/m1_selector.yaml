@@ -1,0 +1,25 @@
+{
+  "description": "M1 learned planner selector loop config. JSON-compatible for dependency-free tools.",
+  "dataset_builder": {
+    "sweep_results": "results/b1_sweep/latest_pair_graph_tsp_sweep_20260618/sweep_results.csv",
+    "sweep_config": "configs/sweep_b1.yaml",
+    "outputs_root": "outputs/b1_sweep_latest_pair_20260617",
+    "pair_root": "datasets/incoming_review/latest_dataset_20260615/organized/pairing_review_NOT_FOR_TRAINING_YET/paired_candidates_FOR_APPROVAL_NOT_TRAINING",
+    "output_dir": "results/m1_selector/latest_pair_20260618",
+    "include_post_export_features": false
+  },
+  "trainer": {
+    "dataset_jsonl": "results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl",
+    "output_dir": "results/m1_selector/latest_pair_20260618",
+    "model_output": "checkpoints/m1_planner_selector.json",
+    "selection_target": "hard_score",
+    "targets": "hard_score,unified_loss,hard_rank,mean_rank",
+    "alphas": "0.01,0.1,1,10,100",
+    "shrinkages": "0,0.25,0.5,0.75"
+  },
+  "notes": [
+    "M1 chooses from existing planner presets; it is not an edge-level GNN router.",
+    "The default feature set uses pre-export image/geometry summaries plus preset parameters and avoids post-export target leakage.",
+    "Use leave-one-out by sample until a larger external holdout benchmark is available."
+  ]
+}

@@ -1,0 +1,5 @@
+﻿sample_id,selected_method,oracle_method,predicted_score,actual_selection_target,oracle_selection_target,selected_unified_loss,oracle_unified_loss,selected_hard_score,oracle_hard_score,selected_visible_connector_count,selected_off_mask_stitch_length_mm,selected_jump_count,selected_trim_count
+pair_006,b2_graph_tsp_conservative_safe,b1_conservative,0.98064975,112.08291417,111.98648019,0.64470167,0.64338436,112.08291417000001,111.98648019333334,120.0,428.6257,169.0,22.0
+pair_008,b2_graph_tsp_conservative_safe,b2_graph_tsp_safe,-0.02903886,23.73451052,23.73451052,0.56226469,0.56226469,23.73451052333333,23.73451052333333,1.0,38.2313,169.0,26.0
+pair_010,b1_conservative,b1_conservative,-9.93791812,29.49502657,29.49502657,0.6480724,0.6480724,29.495026566666667,29.495026566666667,8.0,70.0023,147.0,31.0
+pair_011a,b2_graph_tsp_conservative_safe,b2_graph_tsp_conservative_safe,-94.64703837,42.3981017,42.3981017,0.63043087,0.63043087,42.39810170333333,42.39810170333333,13.0,170.3547,131.0,18.0
