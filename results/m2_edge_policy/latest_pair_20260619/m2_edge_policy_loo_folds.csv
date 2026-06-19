@@ -1,0 +1,4 @@
+﻿held_sample,decision_count,accuracy,top3_accuracy,mean_oracle_rank,train_pair_accuracy,skipped_train_decisions
+pair006,195,0.73846154,0.92307692,1.84615385,0.99061505,16
+pair008,18,0.77777778,0.94444444,1.5,0.98969386,24
+pair010,861,0.26132404,0.50987224,6.45296167,0.94355474,12

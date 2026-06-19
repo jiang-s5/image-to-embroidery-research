@@ -52,6 +52,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
 8. Geometry-to-Graph-to-TSP planning: predicted stitch regions are converted into polyline graph nodes, then ordered with TSP-style edge costs that penalize jump, trim, off-mask, and visible-connector risk.
 9. Strict M1 learned planner selection: NumPy MLP models map image/geometry summaries directly to planner presets or continuous planner configs, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge. A pairwise ranking selector is included as a preference-learning experiment, but current tiny-sample results show overfit risk rather than a confirmed improvement.
+10. M2 learned edge-policy prototype: `graph_tsp_trace.json` route decisions are converted into edge-level ranking data, then a pairwise ranker learns local next-node utilities.
 
 ## Architecture
 
@@ -217,7 +218,7 @@ Current 4-sample result:
 | Fixed B2 Graph-TSP conservative | 0.626582 | 213.500 | 26.250 | 35.250 | 175.534 |
 | Fixed B1 conservative | 0.636772 | 130.750 | 25.250 | 37.000 | 185.828 |
 
-See [docs/m1_planner_selector.md](docs/m1_planner_selector.md) for details and limitations. See [docs/closed_loop_learning_risks.md](docs/closed_loop_learning_risks.md) for the current credit-assignment, reward-hacking, and future-M2 boundary.
+See [docs/m1_planner_selector.md](docs/m1_planner_selector.md) for M1 details, [docs/m2_edge_policy.md](docs/m2_edge_policy.md) for the M2 prototype, and [docs/closed_loop_learning_risks.md](docs/closed_loop_learning_risks.md) for credit-assignment and reward-hacking boundaries.
 
 Run the ranking-preference M1 loop:
 
@@ -234,6 +235,30 @@ Current 4-sample result:
 | Oracle preset label | 0.621038 | 51.903530 | 143.250 | 25.250 | 35.750 | 178.987 |
 
 Interpretation: the ranking selector is now implemented and reproducible, but this small benchmark says it is not yet the best M1 choice. Treat it as a preference-learning diagnostic until the sweep dataset grows beyond the current 4 paired holdout samples.
+
+### M2 Edge Policy Prototype
+
+M2 is the local decision layer: it learns which graph node should be stitched next from the current node and remaining candidates.
+
+Build the edge-decision dataset from Graph-TSP traces and train the M2 ranker:
+
+```powershell
+python tools/run_m2_edge_policy_loop.py --config configs/m2_edge_policy.yaml
+```
+
+Current leave-one-sample-out result:
+
+| M2 Prototype | Decisions | Accuracy | Top-3 Accuracy | Mean Oracle Rank |
+| --- | ---: | ---: | ---: | ---: |
+| Edge utility ranker | 1074 | 0.478585 | 0.780261 | 3.000 |
+
+This satisfies the first M2 stage:
+
+```text
+graph_tsp_trace -> edge dataset -> learned edge utility -> LOO validation
+```
+
+It does not yet replace Graph-TSP during final DST generation. The next M2 step is to integrate `checkpoints/m2_edge_policy.json` as an optional graph-edge reranker and compare exported DST/PES metrics against deterministic Graph-TSP.
 
 Run command-level executability evaluation after export:
 

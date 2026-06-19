@@ -1,0 +1,5 @@
+﻿sample_id,trace_path,tasks,nodes,decisions,candidate_rows,positive_rows,skipped_single_node_tasks
+pair006,outputs\m2_trace_pair006\graph_tsp_trace.json,60,255,195,3931,195,50
+pair008,outputs\m2_trace_pair008\graph_tsp_trace.json,60,78,18,91,18,58
+pair010,outputs\m2_trace_pair010\graph_tsp_trace.json,60,921,861,315867,861,46
+pair011a,outputs\m2_trace_pair011a\graph_tsp_trace.json,60,60,0,0,0,60

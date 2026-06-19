@@ -11,10 +11,11 @@ Implemented:
 - M1 continuous config regressor: image/geometry -> numeric planner config -> DST evaluation.
 - M1 ranking selector: image/geometry + candidate config -> utility from pairwise evaluator preferences.
 - Deterministic Graph-TSP planner: segment/polyline graph -> route order through handcrafted edge costs.
+- M2 edge-policy prototype: `graph_tsp_trace.json` -> edge candidate rows -> learned pairwise next-node ranker.
 
 Not implemented yet:
 
-- learned M2 edge policy;
+- M2 integration into final DST generation;
 - GNN route model;
 - reinforcement-learning policy update;
 - joint M1/M2 closed-loop co-training.
@@ -71,9 +72,29 @@ With the current 4-sample benchmark:
 - M1 continuous config regressor is the best practical M1 result.
 - M1 ranking selector is implemented, but should be treated as a diagnostic because it underperforms on leave-one-out hard score.
 
+
+## Current M2 Prototype
+
+The first M2 learning stage is now implemented as an edge-level ranking policy:
+
+```text
+graph_tsp_trace.json
+  -> current node / candidate node rows
+  -> pairwise logistic ranker
+  -> next-node utility
+```
+
+Current leave-one-sample-out result on the paired trace set:
+
+| Decisions | Accuracy | Top-3 Accuracy | Mean Oracle Rank |
+| ---: | ---: | ---: | ---: |
+| 1074 | 0.478585 | 0.780261 | 3.000 |
+
+This means M2 exists as a learned local edge utility prototype. It is not yet the production route generator because the learned utility has not been injected back into `planner/graph_tsp.py` for DST export and command-level comparison.
+
 ## Future M2 Entry Criteria
 
-Before implementing learned M2, collect graph traces with:
+Before promoting M2 into the DST generator, collect broader graph traces with:
 
 - node geometry;
 - edge costs;
@@ -101,4 +122,4 @@ Minimum constraints:
 - route connectivity check;
 - no duplicate segment visits unless explicitly allowed.
 
-This makes M2 a constrained graph policy rather than an unconstrained image model.
+This makes the promoted M2 a constrained graph policy rather than an unconstrained image model.

@@ -1,0 +1,28 @@
+{
+  "description": "M2 learned edge-policy prototype. Builds edge-decision rows from graph_tsp_trace.json and trains a pairwise next-node ranker.",
+  "builder": {
+    "trace_globs": [
+      "outputs/m2_trace_pair*/graph_tsp_trace.json"
+    ],
+    "output_dir": "results/m2_edge_policy/latest_pair_20260619",
+    "include_start_step": false,
+    "max_negatives_per_decision": 24
+  },
+  "trainer": {
+    "dataset_jsonl": "results/m2_edge_policy/latest_pair_20260619/m2_edge_candidates.jsonl",
+    "output_dir": "results/m2_edge_policy/latest_pair_20260619",
+    "model_output": "checkpoints/m2_edge_policy.json",
+    "lrs": "0.001,0.003,0.01",
+    "weight_decays": "0,0.001,0.01",
+    "epochs_list": "100,300",
+    "seeds": "1,2,3"
+  },
+  "m2_stage_requirements": {
+    "graph_trace_to_dataset": true,
+    "learned_edge_utility": true,
+    "training_loss": "pairwise logistic loss",
+    "validation": "leave-one-sample-out",
+    "dst_generation_integration": false,
+    "note": "This completes the first M2 learning prototype, but does not yet replace Graph-TSP inside final DST generation."
+  }
+}
