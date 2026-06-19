@@ -1,0 +1,24 @@
+{
+  "description": "M1 ranking planner selector. Converts evaluator outputs into pairwise preference supervision over planner configs.",
+  "trainer": {
+    "candidates_jsonl": "results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl",
+    "sweep_config": "configs/sweep_b1.yaml",
+    "feature_method": "b1_conservative",
+    "label_target": "hard_score",
+    "min_delta": 0.000001,
+    "output_dir": "results/m1_ranking_selector/latest_pair_20260618",
+    "model_output": "checkpoints/m1_ranking_selector.json",
+    "lrs": "0.005,0.01,0.03,0.05",
+    "weight_decays": "0,0.0001,0.001,0.01",
+    "epochs_list": "300,600,1000",
+    "seeds": "1,2,3,5,8,13"
+  },
+  "strict_m1_requirements": {
+    "learning_model": "Linear pairwise ranker",
+    "training_loss": "pairwise logistic preference loss from evaluator-ranked candidate pairs",
+    "mapping": "image/geometry features + candidate config -> utility; choose highest utility",
+    "candidate_scoring_at_inference": true,
+    "dst_eval_loop": "uses sweep/evaluator metrics as preference labels",
+    "note": "This is a preference-learning M1 selector. It is not yet a learned M2 graph edge policy."
+  }
+}

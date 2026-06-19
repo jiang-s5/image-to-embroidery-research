@@ -51,7 +51,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 6. Executability-first evaluation: DST/PES outputs are scored with command-level jump, trim, long-stitch, round-trip parse, and render-back visual checks.
 7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
 8. Geometry-to-Graph-to-TSP planning: predicted stitch regions are converted into polyline graph nodes, then ordered with TSP-style edge costs that penalize jump, trim, off-mask, and visible-connector risk.
-9. Strict M1 learned planner selection: NumPy MLP models map image/geometry summaries directly to planner presets or continuous planner configs, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge.
+9. Strict M1 learned planner selection: NumPy MLP models map image/geometry summaries directly to planner presets or continuous planner configs, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge. A pairwise ranking selector is included as a preference-learning experiment, but current tiny-sample results show overfit risk rather than a confirmed improvement.
 
 ## Architecture
 
@@ -182,6 +182,7 @@ Two selector stages are available:
 - M0.9 candidate scorer: scores image/geometry + candidate preset features.
 - Strict M1 direct selector: predicts one planner preset/config from image/geometry features with an MLP and cross-entropy loss.
 - M1 continuous config regressor: predicts numeric planner parameters from image/geometry features with an MLP and MSE loss, then runs the generated config through DST/PES export.
+- M1 ranking selector: learns evaluator-derived pairwise preferences between candidate configs. This is useful for preference-learning research, but current 4-sample leave-one-out results underperform the continuous config regressor.
 
 Run the M0.9 candidate-scoring loop:
 
@@ -216,7 +217,23 @@ Current 4-sample result:
 | Fixed B2 Graph-TSP conservative | 0.626582 | 213.500 | 26.250 | 35.250 | 175.534 |
 | Fixed B1 conservative | 0.636772 | 130.750 | 25.250 | 37.000 | 185.828 |
 
-See [docs/m1_planner_selector.md](docs/m1_planner_selector.md) for details and limitations.
+See [docs/m1_planner_selector.md](docs/m1_planner_selector.md) for details and limitations. See [docs/closed_loop_learning_risks.md](docs/closed_loop_learning_risks.md) for the current credit-assignment, reward-hacking, and future-M2 boundary.
+
+Run the ranking-preference M1 loop:
+
+```powershell
+python tools/run_m1_ranking_loop.py --config configs/m1_ranking_selector.yaml
+```
+
+Current 4-sample result:
+
+| Selector / Baseline | Unified Loss | Hard Score | Jumps | Trims | Visible Connectors | Off-Mask mm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| M1 ranking selector | 0.621812 | 53.670513 | 157.500 | 24.250 | 40.250 | 176.956 |
+| M1 continuous config regressor, DST-evaluated | 0.621028 | 41.953114 | 143.500 | 25.250 | 35.750 | 179.303 |
+| Oracle preset label | 0.621038 | 51.903530 | 143.250 | 25.250 | 35.750 | 178.987 |
+
+Interpretation: the ranking selector is now implemented and reproducible, but this small benchmark says it is not yet the best M1 choice. Treat it as a preference-learning diagnostic until the sweep dataset grows beyond the current 4 paired holdout samples.
 
 Run command-level executability evaluation after export:
 

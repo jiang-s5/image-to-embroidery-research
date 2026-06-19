@@ -5,6 +5,7 @@ This document separates two stages that are easy to confuse:
 - M0.9: candidate-preset scorer, trained from sweep results, but still scores candidate presets as inputs.
 - Strict M1: direct MLP selector, mapping image/geometry features to one planner preset/config.
 - M1 config regressor: direct MLP regressor, mapping image/geometry features to a continuous planner config vector.
+- M1 ranking selector: pairwise preference learner, mapping image/geometry + candidate config to a utility score.
 
 Strict M1 is deliberately smaller than M2/M3. It selects a planner preset/config; it does not predict graph edges, route order, or DST commands directly.
 
@@ -46,6 +47,20 @@ continuous planner config
         |
 DST generation + evaluator
 ```
+
+The ranking variant keeps multiple candidate configs at inference, but changes the training signal from class labels or MSE into evaluator-derived preferences:
+
+```text
+image / predicted geometry + candidate config A/B
+        |
+pairwise logistic ranking loss
+        |
+utility(candidate)
+        |
+highest-utility planner config
+```
+
+This is useful for the "evaluator as preference signal" research direction. Current tiny-sample results do not show an improvement over the continuous config regressor.
 
 ## M0.9 Candidate Scorer Features
 
@@ -156,6 +171,24 @@ python tools/run_m1_config_eval.py `
   --reuse
 ```
 
+## Reproduce M1 Ranking Preference Loop
+
+```powershell
+python tools/run_m1_ranking_loop.py --config configs/m1_ranking_selector.yaml
+```
+
+Equivalent manual command:
+
+```powershell
+python tools/train_m1_ranking_selector.py `
+  --candidates-jsonl results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl `
+  --sweep-config configs/sweep_b1.yaml `
+  --feature-method b1_conservative `
+  --label-target hard_score `
+  --output-dir results/m1_ranking_selector/latest_pair_20260618 `
+  --model-output checkpoints/m1_ranking_selector.json
+```
+
 ## Current M0.9 Loop Result
 
 Current leave-one-out evaluation uses 4 paired holdout samples and 6 planner candidates per sample.
@@ -213,11 +246,31 @@ image -> learned model -> planner config -> DST -> evaluator
 
 It converts the parameter search problem into a learned function approximation problem. The current result is still small-sample, so it should be treated as a proof-of-loop rather than a mature generalization result.
 
+## Current M1 Ranking Preference Result
+
+The ranking selector converts evaluator outputs into pairwise preferences. It uses a linear pairwise ranker with image-geometry x planner-config interactions.
+
+| Selector / Baseline | Unified Loss | Hard Score | Jumps | Trims | Visible Connectors | Off-Mask mm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Oracle preference label | 0.621038 | 51.903530 | 143.250 | 25.250 | 35.750 | 178.987 |
+| M1 ranking selector | 0.621812 | 53.670513 | 157.500 | 24.250 | 40.250 | 176.956 |
+| M1 continuous config regressor, DST-evaluated | 0.621028 | 41.953114 | 143.500 | 25.250 | 35.750 | 179.303 |
+| Fixed B2 Graph-TSP conservative | 0.626582 | 54.170873 | 213.500 | 26.250 | 35.250 | 175.534 |
+| Fixed B1 conservative | 0.636772 | 52.691112 | 130.750 | 25.250 | 37.000 | 185.828 |
+
+Interpretation:
+
+- The preference-learning path is implemented and reproducible.
+- The current ranking selector has high training-pair accuracy but worse leave-one-out hard score than the continuous config regressor.
+- On only 4 paired holdout samples, this is evidence of overfit risk, not evidence that ranking has solved planner selection.
+- The next valid experiment is Pilot-50 / Release-200 sweep expansion before promoting ranking as the main M1 result.
+
 ## Artifacts
 
 - Selector model: `checkpoints/m1_planner_selector.json`
 - Strict M1 direct model: `checkpoints/m1_direct_selector.json`
 - M1 config regressor model: `checkpoints/m1_config_regressor.json`
+- M1 ranking selector model: `checkpoints/m1_ranking_selector.json`
 - Candidate dataset: `results/m1_selector/latest_pair_20260618/m1_selector_samples.jsonl`
 - Strict M1 sample dataset: `results/m1_direct_selector/latest_pair_20260618/m1_direct_samples.jsonl`
 - Fold decisions: `results/m1_selector/latest_pair_20260618/m1_selector_loo_decisions.csv`
@@ -225,13 +278,16 @@ It converts the parameter search problem into a learned function approximation p
 - Strict M1 selected configs: `results/m1_direct_selector/latest_pair_20260618/m1_direct_selected_configs.json`
 - M1 config predictions: `results/m1_config_regressor/latest_pair_20260618/m1_config_predictions.json`
 - M1 config DST eval report: `results/m1_config_regressor/latest_pair_20260618_eval/m1_config_eval_report.md`
+- M1 ranking report: `results/m1_ranking_selector/latest_pair_20260618/m1_ranking_report.md`
 - Optional applied selector output: `results/m1_selector/latest_pair_20260618/m1_selector_applied.csv`
 - Report: `results/m1_selector/latest_pair_20260618/m1_selector_report.md`
 - Strict M1 report: `results/m1_direct_selector/latest_pair_20260618/m1_direct_report.md`
 
 ## What M1 Is Not
 
-Strict M1 is not a graph neural network and not reinforcement learning. It does not make edge-level route decisions.
+Strict M1 and M1 ranking are not graph neural networks and not reinforcement learning. They do not make learned edge-level route decisions.
+
+The current Graph-TSP planner is a deterministic graph/path optimizer. It can produce graph traces, but it is not yet a learned M2 edge policy.
 
 The next research stage is M2:
 
