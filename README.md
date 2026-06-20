@@ -293,7 +293,7 @@ Current paired-holdout command-level result:
 | Fixed B2 Graph-TSP conservative | 0.626582 | 44.170873 | 213.500 | 26.250 | 35.250 | 175.534 |
 | Fixed B1 conservative | 0.636772 | 42.691112 | 130.750 | 25.250 | 37.000 | 185.828 |
 
-Interpretation: M2 top4 is the best current mean unified-loss and hard-score row in this 4-sample comparison, but all samples still remain `hard_fail`. Treat it as evidence that learned edge utility is useful, not as proof that DST quality is solved. The next step is segment-level/GNN M2 with stronger visual-risk and continuity constraints.
+Interpretation: M2 top4 is the best current mean unified-loss and hard-score row in this 4-sample comparison, but all samples still remain `hard_fail`. Treat it as evidence that learned edge utility is useful, not as proof that DST quality is solved. The next immediate step is M2.1 jump-aware safe-connect decoding: keep the visual-risk gains, then repair mask-safe jumps before moving to segment-level/GNN M2.
 
 Run command-level executability evaluation after export:
 

@@ -131,3 +131,104 @@ It still does not complete:
 - M1/M2 joint closed-loop training.
 
 The next M2 step is to move from scalar edge-utility reranking to segment-level/GNN policy learning with explicit continuity, visible-connector, and off-mask constraints.
+
+## M2.1 Direction: Jump-aware Safe-connect Decoding
+
+The current M2 top4 result is best interpreted as a visual-safety-first planner: it lowers mean unified loss, trim count, off-mask length, and visible connectors, but it still uses too many jumps and all four paired holdout samples remain `hard_fail`.
+
+The next optimization should therefore target decoding, not model size. The recommended M2.1 direction is:
+
+```text
+M2 top4 edge utility
+  -> visual-risk edge filter
+  -> jump-aware reranking
+  -> mask-safe connect repair
+  -> DST/PES export
+  -> eval_executability
+```
+
+### Why This Direction
+
+M2 already improves visual risk, so simply making the learned model larger is unlikely to address the immediate failure mode. The current failure mode is conservative routing: uncertain transitions become jumps. M2.1 should keep the visual-risk gains while repairing jumps that can be safely stitched inside the mask.
+
+### Proposed Decode Score
+
+For candidate outputs or candidate transition choices, add a jump-aware second-stage score:
+
+```text
+FinalScore = UnifiedLoss
+           + alpha * normalized_jump_count
+           + beta  * normalized_jump_path
+           + gamma * hard_fail_penalty
+```
+
+This keeps the existing command/visual objective but explicitly penalizes the current M2 weakness: excessive jump usage.
+
+### Safe-connect vs Risky-connect
+
+M2.1 should distinguish safe and unsafe connectors instead of treating every uncertain connection as a jump:
+
+```text
+safe_connect
+risky_connect
+jump
+trim
+```
+
+A connector is considered `safe_connect` only when all of these are true:
+
+```text
+off_mask_fraction < threshold
+visible_connector_risk < threshold
+distance_mm < threshold
+```
+
+This gives the planner a way to reduce jumps without creating visible threads across blank fabric.
+
+### Repair Pass
+
+After M2 generates a route, run a deterministic repair pass:
+
+```text
+for each jump edge:
+    test whether a connector path stays inside the active mask
+    test visible connector risk and distance
+    if safe:
+        replace jump with stitch connector
+    else:
+        keep jump or trim
+```
+
+This is the lowest-risk next experiment because it does not require retraining and directly targets the observed jump-count regression.
+
+### Target Metrics
+
+The M2.1 experiment should be considered successful only if it improves jump behavior without giving back the visual-risk gains:
+
+| Metric | Current M2 top4 | Target |
+| --- | ---: | ---: |
+| Unified Loss | 0.607582 | < 0.607 |
+| Mean Jumps | 192.750 | 140-160 |
+| Mean Trims | 20.250 | about 20 |
+| Visible Connectors | 32.500 | <= 32 |
+| Off-mask mm | 171.912 | <= 170 |
+| Hard Fail Samples | 4 / 4 | <= 2 / 4 |
+
+### Hard-fail Mining
+
+In parallel, generate `failure_edges.json` for failed outputs. Each failure edge should record whether it contributed to:
+
+- visible connector risk;
+- off-mask stitch length;
+- excessive jump count or jump path;
+- illegal or near-threshold stitch length.
+
+These failure edges can later be weighted during M2 training:
+
+```text
+hard_fail sample weight: x2-x3
+visible/off-mask edge weight: x3
+excessive jump edge weight: x2
+```
+
+This keeps M2.1 aligned with the paper direction: a constraint-aware learned graph planner, not a larger dense image model.
