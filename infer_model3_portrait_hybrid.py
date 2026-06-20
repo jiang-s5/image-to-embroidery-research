@@ -31,6 +31,7 @@ from retrieval_augmented_planner import prediction_feature_vector, retrieve_plan
 from planner.graph_tsp import (
     GraphTSPConfig,
     config_to_dict as graph_tsp_config_to_dict,
+    load_m2_edge_policy,
     order_polylines_graph_tsp_with_trace,
 )
 from planner.relation_cost import (
@@ -655,6 +656,8 @@ def export_color_planner_geometry_as_dst(
     graph_max_two_opt_nodes: int = 80,
     graph_trace_max_tasks: int = 96,
     graph_trace_max_nodes: int = 5000,
+    m2_edge_policy: dict[str, object] | None = None,
+    m2_edge_policy_top_k: int = 8,
     mask_safe_connectors: bool = False,
 ) -> dict[str, int | float | str | dict[str, int]]:
     active = mask >= threshold
@@ -691,6 +694,9 @@ def export_color_planner_geometry_as_dst(
         "selected_distance_mm": 0.0,
         "visible_risk_edges": 0.0,
         "mean_offmask_fraction_sum": 0.0,
+        "m2_policy_decisions": 0.0,
+        "m2_policy_overrides": 0.0,
+        "m2_policy_utility_sum": 0.0,
     }
     graph_tsp_trace: dict[str, object] = {
         "version": "graph_tsp_trace_v1",
@@ -699,6 +705,11 @@ def export_color_planner_geometry_as_dst(
         "tasks": [],
         "truncated": False,
         "truncation_reason": "",
+        "m2_edge_policy": {
+            "enabled": bool(m2_edge_policy),
+            "path": str(m2_edge_policy.get("path", "")) if isinstance(m2_edge_policy, dict) else "",
+            "top_k": int(m2_edge_policy_top_k),
+        },
     }
     graph_trace_nodes = 0
     graph_tsp_config = GraphTSPConfig(
@@ -838,6 +849,13 @@ def export_color_planner_geometry_as_dst(
                     scale_mm,
                     component_mask,
                     graph_tsp_config,
+                    edge_policy=m2_edge_policy,
+                    edge_policy_top_k=m2_edge_policy_top_k,
+                    task_context={
+                        "type_id": int(task["type_id"]),
+                        "area_px": int(task["area"]),
+                        "order_score": float(task["order_score"]),
+                    },
                 )
                 graph_tsp_stats["tasks"] += 1
                 graph_tsp_stats["nodes"] += float(stats.get("nodes", 0.0))
@@ -845,6 +863,9 @@ def export_color_planner_geometry_as_dst(
                 graph_tsp_stats["selected_distance_mm"] += float(stats.get("selected_distance_mm", 0.0))
                 graph_tsp_stats["visible_risk_edges"] += float(stats.get("visible_risk_edges", 0.0))
                 graph_tsp_stats["mean_offmask_fraction_sum"] += float(stats.get("mean_offmask_fraction", 0.0))
+                graph_tsp_stats["m2_policy_decisions"] += float(stats.get("m2_policy_decisions", 0.0))
+                graph_tsp_stats["m2_policy_overrides"] += float(stats.get("m2_policy_overrides", 0.0))
+                graph_tsp_stats["m2_policy_utility_sum"] += float(stats.get("m2_policy_utility_sum", 0.0))
                 graph_trace_nodes += int(stats.get("nodes", 0.0))
                 trace_tasks = graph_tsp_trace["tasks"]
                 if (
@@ -1133,6 +1154,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             retrieval_info["retrieval_weight"] = weight
             retrieval_info["applied_planner_values"] = planner_values
 
+    m2_edge_policy = load_m2_edge_policy(args.m2_edge_policy) if args.m2_edge_policy else None
+
     exporter = export_color_planner_geometry_as_dst if args.geometry_planner else export_color_planner_as_dst
     export_kwargs = {
         "mask": active.astype(np.float32),
@@ -1181,6 +1204,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 "graph_max_two_opt_nodes": args.graph_max_two_opt_nodes,
                 "graph_trace_max_tasks": args.graph_trace_max_tasks,
                 "graph_trace_max_nodes": args.graph_trace_max_nodes,
+                "m2_edge_policy": m2_edge_policy,
+                "m2_edge_policy_top_k": args.m2_edge_policy_top_k,
                 "mask_safe_connectors": args.mask_safe_connectors,
             }
         )
@@ -1199,6 +1224,11 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "planner_values": planner_values,
         "relation_planner": config_to_dict(relation_config),
         "retrieval_planner": retrieval_info,
+        "m2_edge_policy": {
+            "enabled": bool(m2_edge_policy),
+            "path": str(m2_edge_policy.get("path", "")) if isinstance(m2_edge_policy, dict) else "",
+            "top_k": int(args.m2_edge_policy_top_k),
+        },
         "dst_summary": dst_summary,
         "files": [
             "input_256.png",
@@ -1265,6 +1295,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--graph-trace-max-tasks", type=int, default=96)
     parser.add_argument("--graph-trace-max-nodes", type=int, default=5000)
     parser.add_argument("--mask-safe-connectors", action="store_true", help="Only use STITCH connectors when the connector path stays inside the active component mask.")
+    parser.add_argument("--m2-edge-policy", default="", help="Optional learned M2 edge-policy JSON used to rerank Graph-TSP candidate edges.")
+    parser.add_argument("--m2-edge-policy-top-k", type=int, default=8, help="Number of lowest-cost Graph-TSP candidate edges reranked by M2; 0 means all candidates.")
     parser.add_argument("--retrieval-index", default="", help="Optional retrieval planner index JSON built from similar designs.")
     parser.add_argument("--retrieval-top-k", type=int, default=5)
     parser.add_argument("--retrieval-weight", type=float, default=0.45)

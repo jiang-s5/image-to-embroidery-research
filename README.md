@@ -52,7 +52,7 @@ See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 7. Unified planner selection: command metrics and visual-risk metrics are combined into a single `ExecScore + VisualRisk` objective for B1/B1_clean planner sweeps.
 8. Geometry-to-Graph-to-TSP planning: predicted stitch regions are converted into polyline graph nodes, then ordered with TSP-style edge costs that penalize jump, trim, off-mask, and visible-connector risk.
 9. Strict M1 learned planner selection: NumPy MLP models map image/geometry summaries directly to planner presets or continuous planner configs, while the earlier ridge scorer is kept as an M0.9 candidate-scoring bridge. A pairwise ranking selector is included as a preference-learning experiment, but current tiny-sample results show overfit risk rather than a confirmed improvement.
-10. M2 learned edge-policy prototype: `graph_tsp_trace.json` route decisions are converted into edge-level ranking data, then a pairwise ranker learns local next-node utilities.
+10. M2 learned edge-policy reranker: `graph_tsp_trace.json` route decisions are converted into edge-level ranking data, then a pairwise ranker is optionally injected back into Graph-TSP as a local next-node utility reranker.
 
 ## Architecture
 
@@ -211,6 +211,7 @@ Current 4-sample result:
 
 | Selector / Baseline | Unified Loss | Jumps | Trims | Visible Connectors | Off-Mask mm |
 | --- | ---: | ---: | ---: | ---: | ---: |
+| M2 edge policy top4, DST-evaluated | 0.607582 | 192.750 | 20.250 | 32.500 | 171.912 |
 | M1 continuous config regressor, DST-evaluated | 0.621028 | 143.500 | 25.250 | 35.750 | 179.303 |
 | Oracle preset label | 0.621038 | 143.250 | 25.250 | 35.750 | 178.987 |
 | Strict M1 direct preset MLP | 0.621038 | 143.250 | 25.250 | 37.000 | 178.229 |
@@ -258,7 +259,41 @@ This satisfies the first M2 stage:
 graph_tsp_trace -> edge dataset -> learned edge utility -> LOO validation
 ```
 
-It does not yet replace Graph-TSP during final DST generation. The next M2 step is to integrate `checkpoints/m2_edge_policy.json` as an optional graph-edge reranker and compare exported DST/PES metrics against deterministic Graph-TSP.
+It now also satisfies the M2-DST integration smoke stage:
+
+```text
+Graph-TSP candidate edges -> optional M2 utility rerank -> DST/PES export -> executability eval
+```
+
+Run inference with the learned edge utility enabled:
+
+```powershell
+python infer_model3_portrait_hybrid.py inputs/your_image.png `
+  --checkpoint checkpoints/best_model13_multiformat_all_vector_continuity.pt `
+  --output-dir outputs/your_image_m2_top4 `
+  --planner-config configs/relation_planner.yaml `
+  --geometry-planner `
+  --model-path-order `
+  --use-continuity-planner `
+  --serpentine-fill `
+  --graph-tsp-planner `
+  --mask-safe-connectors `
+  --m2-edge-policy checkpoints/m2_edge_policy.json `
+  --m2-edge-policy-top-k 4
+```
+
+Current paired-holdout command-level result:
+
+| Method | Unified Loss | Hard Score | Jumps | Trims | Visible Connectors | Off-Mask mm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| M2 edge policy top4 | 0.607582 | 41.652422 | 192.750 | 20.250 | 32.500 | 171.912 |
+| M2 edge policy top2 | 0.608222 | 41.888061 | 196.750 | 21.750 | 32.500 | 171.912 |
+| M2 edge policy top8 | 0.610504 | 42.110343 | 203.500 | 20.750 | 32.500 | 171.912 |
+| M1 continuous config regressor | 0.621028 | 41.953114 | 143.500 | 25.250 | 35.750 | 179.303 |
+| Fixed B2 Graph-TSP conservative | 0.626582 | 44.170873 | 213.500 | 26.250 | 35.250 | 175.534 |
+| Fixed B1 conservative | 0.636772 | 42.691112 | 130.750 | 25.250 | 37.000 | 185.828 |
+
+Interpretation: M2 top4 is the best current mean unified-loss and hard-score row in this 4-sample comparison, but all samples still remain `hard_fail`. Treat it as evidence that learned edge utility is useful, not as proof that DST quality is solved. The next step is segment-level/GNN M2 with stronger visual-risk and continuity constraints.
 
 Run command-level executability evaluation after export:
 

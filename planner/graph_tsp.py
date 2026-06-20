@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -215,6 +217,131 @@ def build_node_record(node_id: int, coords: Polyline, width: int, height: int, s
     }
 
 
+def safe_float(value: Any, default: float = 0.0) -> float:
+    if isinstance(value, bool):
+        return 1.0 if value else 0.0
+    if isinstance(value, (int, float)):
+        parsed = float(value)
+    else:
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return default
+    if np.isnan(parsed) or np.isinf(parsed):
+        return default
+    return parsed
+
+
+def load_m2_edge_policy(path: str | Path) -> dict[str, Any]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    normalization = payload.get("normalization", {}) if isinstance(payload.get("normalization", {}), dict) else {}
+    return {
+        "path": str(path),
+        "feature_names": [str(item) for item in payload.get("feature_names", [])],
+        "mean": np.asarray(normalization.get("mean", []), dtype=np.float64),
+        "std": np.asarray(normalization.get("std", []), dtype=np.float64),
+        "weights": np.asarray(payload.get("weights", []), dtype=np.float64),
+        "clip": float(payload.get("feature_clip_after_normalization", 5.0)),
+        "version": str(payload.get("version", "")),
+    }
+
+
+def node_exit_after_visit(node: dict[str, Any], reverse: bool) -> Point:
+    point = node.get("start_mm" if reverse else "end_mm", [0.0, 0.0])
+    if not isinstance(point, list) or len(point) < 2:
+        return (0.0, 0.0)
+    return (safe_float(point[0]), safe_float(point[1]))
+
+
+def m2_node_bbox_features(node: dict[str, Any]) -> dict[str, float]:
+    bbox = node.get("bbox_px", [0.0, 0.0, 0.0, 0.0])
+    if not isinstance(bbox, list) or len(bbox) < 4:
+        bbox = [0.0, 0.0, 0.0, 0.0]
+    width = max(0.0, safe_float(bbox[2]) - safe_float(bbox[0]))
+    height = max(0.0, safe_float(bbox[3]) - safe_float(bbox[1]))
+    return {
+        "candidate_bbox_width_px": width,
+        "candidate_bbox_height_px": height,
+        "candidate_bbox_area_px": width * height,
+        "candidate_bbox_aspect": width / max(1e-6, height),
+    }
+
+
+def m2_edge_features(
+    task_context: dict[str, Any] | None,
+    node: dict[str, Any],
+    previous_node: dict[str, Any],
+    current_mm: Point,
+    step_index: int,
+    remaining_count: int,
+    details: dict[str, float],
+) -> dict[str, float]:
+    context = task_context or {}
+    start_mm = node.get("start_mm", [0.0, 0.0])
+    end_mm = node.get("end_mm", [0.0, 0.0])
+    if not isinstance(start_mm, list) or len(start_mm) < 2:
+        start_mm = [0.0, 0.0]
+    if not isinstance(end_mm, list) or len(end_mm) < 2:
+        end_mm = [0.0, 0.0]
+    start = (safe_float(start_mm[0]), safe_float(start_mm[1]))
+    end = (safe_float(end_mm[0]), safe_float(end_mm[1]))
+    dist_start = distance_mm(current_mm, start)
+    dist_end = distance_mm(current_mm, end)
+    target = end if dist_end < dist_start else start
+    dx = target[0] - current_mm[0]
+    dy = target[1] - current_mm[1]
+    prev_length = safe_float(previous_node.get("length_mm"))
+    prev_points = safe_float(previous_node.get("point_count"))
+    candidate_length = safe_float(node.get("length_mm"))
+    candidate_points = safe_float(node.get("point_count"))
+    task_type = int(safe_float(context.get("type_id")))
+    features = {
+        "distance_to_start_mm": dist_start,
+        "distance_to_end_mm": dist_end,
+        "min_endpoint_distance_mm": min(dist_start, dist_end),
+        "endpoint_distance_gap_mm": abs(dist_start - dist_end),
+        "choose_reverse_by_distance": 1.0 if dist_end < dist_start else 0.0,
+        "dx_best_endpoint_mm": dx,
+        "dy_best_endpoint_mm": dy,
+        "abs_dx_best_endpoint_mm": abs(dx),
+        "abs_dy_best_endpoint_mm": abs(dy),
+        "candidate_length_mm": candidate_length,
+        "candidate_point_count": candidate_points,
+        "previous_length_mm": prev_length,
+        "previous_point_count": prev_points,
+        "length_ratio_to_previous": candidate_length / max(1e-6, prev_length),
+        "point_ratio_to_previous": candidate_points / max(1e-6, prev_points),
+        "remaining_count": float(remaining_count),
+        "step_index": float(step_index),
+        "task_area_px": safe_float(context.get("area_px")),
+        "task_order_score": safe_float(context.get("order_score")),
+        "task_type_running": 1.0 if task_type == 1 else 0.0,
+        "task_type_satin": 1.0 if task_type == 2 else 0.0,
+        "task_type_fill": 1.0 if task_type == 3 else 0.0,
+        "selected_edge_distance_mm": safe_float(details.get("distance_mm")),
+        "selected_edge_cost": safe_float(details.get("cost")),
+    }
+    features.update(m2_node_bbox_features(node))
+    return features
+
+
+def m2_edge_utility(policy: dict[str, Any], features: dict[str, float]) -> float:
+    names = policy.get("feature_names", [])
+    weights = np.asarray(policy.get("weights", []), dtype=np.float64)
+    mean = np.asarray(policy.get("mean", []), dtype=np.float64)
+    std = np.asarray(policy.get("std", []), dtype=np.float64)
+    if len(names) == 0 or weights.shape[0] != len(names):
+        return 0.0
+    values = np.asarray([safe_float(features.get(str(name))) for name in names], dtype=np.float64)
+    if mean.shape[0] != values.shape[0] or std.shape[0] != values.shape[0]:
+        return 0.0
+    std = std.copy()
+    std[std < 1e-8] = 1.0
+    clip = float(policy.get("clip", 5.0))
+    normalized = np.clip((values - mean) / std, -clip, clip)
+    return float(normalized @ weights)
+
+
 def order_polylines_graph_tsp_with_trace(
     polylines: list[Polyline],
     current_mm: Point,
@@ -223,9 +350,13 @@ def order_polylines_graph_tsp_with_trace(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    edge_policy: dict[str, Any] | None = None,
+    edge_policy_top_k: int = 8,
+    task_context: dict[str, Any] | None = None,
 ) -> tuple[list[Polyline], dict[str, float], dict[str, Any]]:
     items = [{"node_id": index, "coords": coords} for index, coords in enumerate(polylines) if len(coords) >= 2]
     nodes = [build_node_record(int(item["node_id"]), item["coords"], width, height, scale_mm) for item in items]
+    nodes_by_id = {int(node["node_id"]): node for node in nodes}
     remaining = [{**item, "coords": list(item["coords"])} for item in items]
     ordered_items: list[dict[str, Any]] = []
     selected_edges: list[dict[str, Any]] = []
@@ -237,23 +368,54 @@ def order_polylines_graph_tsp_with_trace(
         "selected_offmask_fraction": 0.0,
         "visible_risk_edges": 0.0,
         "max_transition_mm": 0.0,
+        "m2_policy_decisions": 0.0,
+        "m2_policy_overrides": 0.0,
+        "m2_policy_utility_sum": 0.0,
     }
     start_mm = current_mm
     current = current_mm
     previous_node = -1
     while remaining:
-        best_index = 0
-        best_cost = float("inf")
-        best_reverse = False
-        best_details: dict[str, float] = {}
+        deterministic_best_index = 0
+        deterministic_best_cost = float("inf")
+        candidate_records: list[dict[str, Any]] = []
         for index, item in enumerate(remaining):
             cost, reverse, details = transition_cost(current, item["coords"], width, height, scale_mm, mask, config)
             stats["edges_considered"] += 1.0
-            if cost < best_cost:
-                best_cost = cost
-                best_index = index
-                best_reverse = reverse
-                best_details = details
+            record = {"index": index, "item": item, "cost": cost, "reverse": reverse, "details": details}
+            candidate_records.append(record)
+            if cost < deterministic_best_cost:
+                deterministic_best_cost = cost
+                deterministic_best_index = index
+        chosen = candidate_records[deterministic_best_index]
+        if edge_policy is not None and previous_node >= 0 and len(candidate_records) > 1:
+            previous_record = nodes_by_id.get(int(previous_node))
+            if previous_record is not None:
+                top_k = int(edge_policy_top_k or 0)
+                policy_pool = sorted(candidate_records, key=lambda record: float(record["cost"]))
+                if top_k > 0:
+                    policy_pool = policy_pool[:top_k]
+                for record in policy_pool:
+                    node_record = nodes_by_id.get(int(record["item"]["node_id"]), {})
+                    features = m2_edge_features(
+                        task_context,
+                        node_record,
+                        previous_record,
+                        current,
+                        int(len(ordered_items)),
+                        int(len(remaining)),
+                        record["details"],
+                    )
+                    record["m2_utility"] = m2_edge_utility(edge_policy, features)
+                chosen = max(policy_pool, key=lambda record: (float(record.get("m2_utility", 0.0)), -float(record["cost"])))
+                stats["m2_policy_decisions"] += 1.0
+                stats["m2_policy_utility_sum"] += float(chosen.get("m2_utility", 0.0))
+                if int(chosen["index"]) != int(deterministic_best_index):
+                    stats["m2_policy_overrides"] += 1.0
+        best_index = int(chosen["index"])
+        best_cost = float(chosen["cost"])
+        best_reverse = bool(chosen["reverse"])
+        best_details = chosen["details"]
         item = remaining.pop(best_index)
         coords = item["coords"]
         if best_reverse:
@@ -272,6 +434,9 @@ def order_polylines_graph_tsp_with_trace(
                 "offmask_fraction": round(float(best_details.get("offmask_fraction", 0.0)), 6),
                 "visible_risk": round(float(best_details.get("visible_risk", 0.0)), 4),
                 "trim_risk": round(float(best_details.get("trim_risk", 0.0)), 4),
+                "deterministic_best_node": int(candidate_records[deterministic_best_index]["item"]["node_id"]),
+                "m2_policy_used": bool(edge_policy is not None and previous_node >= 0 and len(candidate_records) > 1),
+                "m2_utility": round(float(chosen.get("m2_utility", 0.0)), 6),
             }
         )
         stats["selected_cost"] += float(best_details.get("cost", best_cost))
@@ -289,6 +454,10 @@ def order_polylines_graph_tsp_with_trace(
     else:
         stats["mean_selected_cost"] = 0.0
         stats["mean_offmask_fraction"] = 0.0
+    if stats["m2_policy_decisions"] > 0:
+        stats["m2_policy_mean_selected_utility"] = stats["m2_policy_utility_sum"] / stats["m2_policy_decisions"]
+    else:
+        stats["m2_policy_mean_selected_utility"] = 0.0
     graph = {
         "nodes": nodes,
         "selected_edges": selected_edges,
@@ -307,6 +476,9 @@ def order_polylines_graph_tsp(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    edge_policy: dict[str, Any] | None = None,
+    edge_policy_top_k: int = 8,
+    task_context: dict[str, Any] | None = None,
 ) -> tuple[list[Polyline], dict[str, float]]:
     ordered, stats, _graph = order_polylines_graph_tsp_with_trace(
         polylines,
@@ -316,5 +488,8 @@ def order_polylines_graph_tsp(
         scale_mm,
         mask,
         config,
+        edge_policy=edge_policy,
+        edge_policy_top_k=edge_policy_top_k,
+        task_context=task_context,
     )
     return ordered, stats

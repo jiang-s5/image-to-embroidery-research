@@ -1,0 +1,94 @@
+{
+  "rows": [
+    {
+      "eval_json": "outputs/m2_dst_pair_006/executability_eval.json",
+      "sample_id": "m2_dst_pair_006",
+      "method": "outputs",
+      "jump_count": 149,
+      "jump_path_mm": 678.8156,
+      "max_jump_mm": 7.4813,
+      "off_mask_stitch_length_mm": 421.8983,
+      "round_trip_parse_success": true,
+      "stitch_count": 3079,
+      "stitch_path_mm": 3096.0046,
+      "trim_count": 17,
+      "visible_connector_count": 111,
+      "visible_connector_length_mm": 359.9238,
+      "unified_loss": 0.6237221,
+      "exec_score": 0.3237221,
+      "visual_risk": 0.3,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_dst_pair_008/executability_eval.json",
+      "sample_id": "m2_dst_pair_008",
+      "method": "outputs",
+      "jump_count": 135,
+      "jump_path_mm": 743.6894,
+      "max_jump_mm": 7.4953,
+      "off_mask_stitch_length_mm": 39.7567,
+      "round_trip_parse_success": true,
+      "stitch_count": 1960,
+      "stitch_path_mm": 2777.7019,
+      "trim_count": 23,
+      "visible_connector_count": 1,
+      "visible_connector_length_mm": 2.3022,
+      "unified_loss": 0.55506913,
+      "exec_score": 0.34379806,
+      "visual_risk": 0.21127107,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_dst_pair_010/executability_eval.json",
+      "sample_id": "m2_dst_pair_010",
+      "method": "outputs",
+      "jump_count": 416,
+      "jump_path_mm": 1338.6445,
+      "max_jump_mm": 7.4947,
+      "off_mask_stitch_length_mm": 62.1593,
+      "round_trip_parse_success": true,
+      "stitch_count": 4781,
+      "stitch_path_mm": 3796.1253,
+      "trim_count": 26,
+      "visible_connector_count": 3,
+      "visible_connector_length_mm": 9.6256,
+      "unified_loss": 0.64208782,
+      "exec_score": 0.36283662,
+      "visual_risk": 0.2792512,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_dst_pair_011a/executability_eval.json",
+      "sample_id": "m2_dst_pair_011a",
+      "method": "outputs",
+      "jump_count": 114,
+      "jump_path_mm": 597.9792,
+      "max_jump_mm": 7.4404,
+      "off_mask_stitch_length_mm": 163.8339,
+      "round_trip_parse_success": true,
+      "stitch_count": 1228,
+      "stitch_path_mm": 1247.1828,
+      "trim_count": 17,
+      "visible_connector_count": 15,
+      "visible_connector_length_mm": 51.1719,
+      "unified_loss": 0.62113533,
+      "exec_score": 0.32113533,
+      "visual_risk": 0.3,
+      "quality_level": "hard_fail"
+    }
+  ],
+  "summary": {
+    "methods": {
+      "outputs": {
+        "samples": 4,
+        "mean_unified_loss": 0.61050359,
+        "mean_exec_score": 0.33787303,
+        "mean_visual_risk": 0.27263057,
+        "hard_fail": 4,
+        "warning": 0,
+        "pass": 0,
+        "excellent": 0
+      }
+    }
+  }
+}

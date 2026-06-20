@@ -22,7 +22,7 @@ Graph-TSP selected next node = positive
 other remaining nodes = negatives
 ```
 
-The model learns a utility score for each candidate edge. At inference inside the prototype evaluator, the candidate with highest utility is selected.
+The model learns a utility score for each candidate edge. During final DST export, Graph-TSP can optionally restrict candidates to the deterministic top-k pool and let M2 rerank that local pool.
 
 ## Reproduce
 
@@ -88,19 +88,46 @@ Per fold:
 | pair008 | 18 | 0.833333 | 0.944444 | 1.333 |
 | pair010 | 861 | 0.403020 | 0.742160 | 3.334 |
 
-## Stage Boundary
+## DST Integration Result
 
-This completes the first M2 learning stage:
+The edge utility is now wired into the Graph-TSP planner as an optional local reranker:
 
 ```text
-graph trace -> edge dataset -> learned edge utility -> LOO validation
+Graph-TSP candidate pool -> M2 edge utility rerank -> route order -> DST/PES export -> eval_executability
 ```
 
-It does not yet complete:
+Use `--m2-edge-policy checkpoints/m2_edge_policy.json` together with `--graph-tsp-planner`. The current best local pool size is `--m2-edge-policy-top-k 4`.
 
-- replacing Graph-TSP inside final DST generation;
-- proving command-level DST improvement from M2;
+Current 4-sample paired-holdout comparison:
+
+| Method | Unified Loss | Hard Score | Jumps | Trims | Visible Connectors | Off-Mask mm |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| M2 top4 | 0.607582 | 41.652422 | 192.750 | 20.250 | 32.500 | 171.912 |
+| M2 top2 | 0.608222 | 41.888061 | 196.750 | 21.750 | 32.500 | 171.912 |
+| M2 top8 | 0.610504 | 42.110343 | 203.500 | 20.750 | 32.500 | 171.912 |
+| M1 config regressor | 0.621028 | 41.953114 | 143.500 | 25.250 | 35.750 | 179.303 |
+| Graph-TSP conservative-safe | 0.626582 | 44.170873 | 213.500 | 26.250 | 35.250 | 175.534 |
+| B1 conservative | 0.636772 | 42.691112 | 130.750 | 25.250 | 37.000 | 185.828 |
+
+Per-sample and top-k sweep artifacts are stored in:
+
+```text
+results/m2_dst_integration/latest_pair_20260620/
+```
+
+## Stage Boundary
+
+This now completes the second M2 prototype stage:
+
+```text
+graph trace -> edge dataset -> learned edge utility -> Graph-TSP rerank -> M2-DST -> eval comparison
+```
+
+It still does not complete:
+
 - GNN or RL-based edge policy;
+- segment-level action masking;
+- resolving all `hard_fail` cases;
 - M1/M2 joint closed-loop training.
 
-The next M2 step is to integrate `checkpoints/m2_edge_policy.json` as an optional edge reranker inside the graph planner, then rerun DST/PES export and executability evaluation.
+The next M2 step is to move from scalar edge-utility reranking to segment-level/GNN policy learning with explicit continuity, visible-connector, and off-mask constraints.

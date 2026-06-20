@@ -1,0 +1,54 @@
+{
+  "m2_edge_policy_top8": {
+    "samples": 4,
+    "mean_unified_loss": 0.61050359,
+    "mean_hard_score": 42.11034318,
+    "mean_exec_score": 0.33787303,
+    "mean_visual_risk": 0.27263057,
+    "mean_jump_count": 203.5,
+    "mean_trim_count": 20.75,
+    "mean_off_mask_stitch_length_mm": 171.91205,
+    "mean_visible_connector_count": 32.5,
+    "mean_visible_connector_length_mm": 105.755875,
+    "hard_fail": 4
+  },
+  "m1_config_regressor": {
+    "samples": 4,
+    "mean_unified_loss": 0.6210282,
+    "mean_hard_score": 41.95311361,
+    "mean_exec_score": 0.34321043,
+    "mean_visual_risk": 0.27781777,
+    "mean_jump_count": 143.5,
+    "mean_trim_count": 25.25,
+    "mean_off_mask_stitch_length_mm": 179.30335,
+    "mean_visible_connector_count": 35.75,
+    "mean_visible_connector_length_mm": 107.129075,
+    "hard_fail": 4
+  },
+  "b2_graph_tsp_conservative_safe": {
+    "samples": 4,
+    "mean_unified_loss": 0.62658244,
+    "mean_hard_score": 44.17087306,
+    "mean_exec_score": 0.34937127,
+    "mean_visual_risk": 0.27721117,
+    "mean_jump_count": 213.5,
+    "mean_trim_count": 26.25,
+    "mean_off_mask_stitch_length_mm": 175.534325,
+    "mean_visible_connector_count": 35.25,
+    "mean_visible_connector_length_mm": 106.07195,
+    "hard_fail": 4
+  },
+  "b1_conservative": {
+    "samples": 4,
+    "mean_unified_loss": 0.63677208,
+    "mean_hard_score": 42.69111166,
+    "mean_exec_score": 0.34206658,
+    "mean_visual_risk": 0.2947055,
+    "mean_jump_count": 130.75,
+    "mean_trim_count": 25.25,
+    "mean_off_mask_stitch_length_mm": 185.82805,
+    "mean_visible_connector_count": 37.0,
+    "mean_visible_connector_length_mm": 110.029125,
+    "hard_fail": 4
+  }
+}

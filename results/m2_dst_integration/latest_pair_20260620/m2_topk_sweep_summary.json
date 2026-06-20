@@ -1,0 +1,47 @@
+{
+  "m2_edge_policy_top4": {
+    "samples": 4,
+    "mean_unified_loss": 0.60758225,
+    "mean_hard_score": 41.65242183,
+    "mean_exec_score": 0.33495168,
+    "mean_visual_risk": 0.27263057,
+    "mean_jump_count": 192.75,
+    "mean_trim_count": 20.25,
+    "mean_off_mask_stitch_length_mm": 171.91205,
+    "mean_visible_connector_count": 32.5,
+    "mean_visible_connector_length_mm": 105.755875,
+    "mean_m2_policy_decisions": 262.0,
+    "mean_m2_policy_overrides": 95.75,
+    "hard_fail": 4
+  },
+  "m2_edge_policy_top2": {
+    "samples": 4,
+    "mean_unified_loss": 0.60822166,
+    "mean_hard_score": 41.88806124,
+    "mean_exec_score": 0.3355911,
+    "mean_visual_risk": 0.27263057,
+    "mean_jump_count": 196.75,
+    "mean_trim_count": 21.75,
+    "mean_off_mask_stitch_length_mm": 171.91205,
+    "mean_visible_connector_count": 32.5,
+    "mean_visible_connector_length_mm": 105.755875,
+    "mean_m2_policy_decisions": 262.0,
+    "mean_m2_policy_overrides": 68.0,
+    "hard_fail": 4
+  },
+  "m2_edge_policy_top8": {
+    "samples": 4,
+    "mean_unified_loss": 0.61050359,
+    "mean_hard_score": 42.11034318,
+    "mean_exec_score": 0.33787303,
+    "mean_visual_risk": 0.27263057,
+    "mean_jump_count": 203.5,
+    "mean_trim_count": 20.75,
+    "mean_off_mask_stitch_length_mm": 171.91205,
+    "mean_visible_connector_count": 32.5,
+    "mean_visible_connector_length_mm": 105.755875,
+    "mean_m2_policy_decisions": 262.0,
+    "mean_m2_policy_overrides": 111.5,
+    "hard_fail": 4
+  }
+}
