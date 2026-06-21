@@ -1,0 +1,94 @@
+{
+  "rows": [
+    {
+      "eval_json": "outputs/m2_2_retrained_globalrepair20_pair_006/executability_eval.json",
+      "sample_id": "m2_2_retrained_globalrepair20_pair_006",
+      "method": "outputs",
+      "jump_count": 70,
+      "jump_path_mm": 389.4728,
+      "max_jump_mm": 7.2201,
+      "off_mask_stitch_length_mm": 424.029,
+      "round_trip_parse_success": true,
+      "stitch_count": 3189,
+      "stitch_path_mm": 3387.4688,
+      "trim_count": 10,
+      "visible_connector_count": 111,
+      "visible_connector_length_mm": 359.9238,
+      "unified_loss": 0.57246313,
+      "exec_score": 0.27246313,
+      "visual_risk": 0.3,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_2_retrained_globalrepair20_pair_008/executability_eval.json",
+      "sample_id": "m2_2_retrained_globalrepair20_pair_008",
+      "method": "outputs",
+      "jump_count": 97,
+      "jump_path_mm": 596.8719,
+      "max_jump_mm": 7.4953,
+      "off_mask_stitch_length_mm": 40.5377,
+      "round_trip_parse_success": true,
+      "stitch_count": 2013,
+      "stitch_path_mm": 2924.4375,
+      "trim_count": 21,
+      "visible_connector_count": 1,
+      "visible_connector_length_mm": 2.3022,
+      "unified_loss": 0.55037097,
+      "exec_score": 0.3390999,
+      "visual_risk": 0.21127107,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_2_retrained_globalrepair20_pair_010/executability_eval.json",
+      "sample_id": "m2_2_retrained_globalrepair20_pair_010",
+      "method": "outputs",
+      "jump_count": 75,
+      "jump_path_mm": 473.8851,
+      "max_jump_mm": 7.524,
+      "off_mask_stitch_length_mm": 64.1116,
+      "round_trip_parse_success": true,
+      "stitch_count": 5195,
+      "stitch_path_mm": 4598.7061,
+      "trim_count": 16,
+      "visible_connector_count": 3,
+      "visible_connector_length_mm": 9.6256,
+      "unified_loss": 0.59041552,
+      "exec_score": 0.31116432,
+      "visual_risk": 0.2792512,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_2_retrained_globalrepair20_pair_011a/executability_eval.json",
+      "sample_id": "m2_2_retrained_globalrepair20_pair_011a",
+      "method": "outputs",
+      "jump_count": 86,
+      "jump_path_mm": 501.1968,
+      "max_jump_mm": 7.4404,
+      "off_mask_stitch_length_mm": 165.9038,
+      "round_trip_parse_success": true,
+      "stitch_count": 1264,
+      "stitch_path_mm": 1343.9685,
+      "trim_count": 16,
+      "visible_connector_count": 15,
+      "visible_connector_length_mm": 51.1719,
+      "unified_loss": 0.6120383,
+      "exec_score": 0.3120383,
+      "visual_risk": 0.3,
+      "quality_level": "hard_fail"
+    }
+  ],
+  "summary": {
+    "methods": {
+      "outputs": {
+        "samples": 4,
+        "mean_unified_loss": 0.58132198,
+        "mean_exec_score": 0.30869141,
+        "mean_visual_risk": 0.27263057,
+        "hard_fail": 4,
+        "warning": 0,
+        "pass": 0,
+        "excellent": 0
+      }
+    }
+  }
+}

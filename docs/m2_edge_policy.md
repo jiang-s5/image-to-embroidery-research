@@ -115,9 +115,61 @@ Per-sample and top-k sweep artifacts are stored in:
 results/m2_dst_integration/latest_pair_20260620/
 ```
 
+
+## M2.1 / M2.2 Loop Result
+
+The jump-aware decode loop has now been implemented and evaluated:
+
+```text
+Graph-TSP candidate edges
+  -> hard-safe filter
+  -> M2 risk-aware ranking
+  -> jump-aware rerank
+  -> global-mask safe-connect repair
+  -> eval_executability
+  -> hard-mined M2 retraining check
+```
+
+Current 4-sample paired-holdout comparison:
+
+| Method | Unified Loss | Hard Score | Jumps | Trims | Jump Path mm | Visible Connectors | Off-Mask mm | Safe Repairs |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| M2.1 global repair20 | 0.580058 | 37.151575 | 83.000 | 15.500 | 497.720 | 32.500 | 173.146 | 94.500 |
+| M2.2 retrained policy + repair20 | 0.581322 | 37.187846 | 82.000 | 15.750 | 490.357 | 32.500 | 173.646 | 95.250 |
+| M2 top4 baseline | 0.607582 | 41.652422 | 192.750 | 20.250 | 842.240 | 32.500 | 171.912 | 0.000 |
+
+The promoted setting is **M2.1 global repair20**, not M2.2. M2.1 improves mean unified loss by 4.53% relative to M2 top4 and reduces mean jumps by 109.75, while visible connector count stays unchanged in this benchmark. The retrained M2.2 ranker learned the hard-mined route decisions, but it was slightly worse than the deterministic repair20 decode in DST-level evaluation.
+
+Recommended inference flags:
+
+```powershell
+--m2-edge-policy checkpoints/m2_edge_policy.json `
+--m2-edge-policy-top-k 4 `
+--m2-hard-safe-filter `
+--m2-safe-min-inside-fraction 0.96 `
+--m2-jump-aware-weight 0.25 `
+--m2-offmask-weight 0.5 `
+--m2-visible-weight 1.0 `
+--m2-trim-weight 0.25 `
+--safe-connect-repair `
+--safe-connect-repair-max-mm 20.0 `
+--safe-connect-repair-min-inside-fraction 0.90 `
+--safe-connect-repair-global-mask
+```
+
+Artifacts:
+
+```text
+results/m2_1_decoding/latest_pair_20260620/m2_1_decode_comparison_report.md
+results/m2_edge_policy/m2_1_globalrepair20_20260620/m2_edge_policy_report.md
+checkpoints/m2_edge_policy_m2_1_globalrepair20.json
+```
+
+Important boundary: all four samples still remain `hard_fail`. M2.1 fixes a routing/executability problem, especially excessive jumps. It does not solve upstream segmentation, mask, or visible/off-mask geometry errors.
+
 ## Stage Boundary
 
-This now completes the second M2 prototype stage:
+This now completes the second M2 prototype stage and the M2.1 decode-loop stage:
 
 ```text
 graph trace -> edge dataset -> learned edge utility -> Graph-TSP rerank -> M2-DST -> eval comparison

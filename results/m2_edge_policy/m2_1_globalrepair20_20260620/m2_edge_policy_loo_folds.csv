@@ -1,0 +1,4 @@
+﻿held_sample,decision_count,accuracy,top3_accuracy,mean_oracle_rank,train_pair_accuracy,skipped_train_decisions
+m2_1_globalrepair20_pair_006,195,0.81025641,0.93846154,1.48205128,0.92358262,16
+m2_1_globalrepair20_pair_008,18,0.94444444,1.0,1.05555556,0.92851831,24
+m2_1_globalrepair20_pair_010,861,0.50987224,0.79674797,2.95818815,0.95392749,12

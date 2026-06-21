@@ -468,12 +468,16 @@ def add_polyline_nearest(
     continuity_connect_max_mm: float = 0.0,
     connector_mask: np.ndarray | None = None,
     connector_min_inside_fraction: float = 0.88,
+    safe_connect_repair: bool = False,
+    safe_connect_repair_max_mm: float = 0.0,
+    safe_connect_repair_min_inside_fraction: float = 0.96,
+    safe_connect_repair_mask: np.ndarray | None = None,
     max_stitch_mm: float = 4.0,
     max_jump_mm: float = 7.5,
     trim_jump_threshold_mm: float = 10.0,
-) -> tuple[int, int, int, int, float, float, tuple[float, float]]:
+) -> tuple[int, int, int, int, int, float, float, tuple[float, float]]:
     if len(coords) < 2:
-        return 0, 0, 0, 0, 0.0, 0.0, current
+        return 0, 0, 0, 0, 0, 0.0, 0.0, current
     _dist2, reverse = best_polyline_distance2(current, coords, width, height, scale_mm)
     if reverse:
         coords = list(reversed(coords))
@@ -484,23 +488,38 @@ def add_polyline_nearest(
         current_px = mm_to_coord(current, width, height, scale_mm)
         near_signal = line_map_mean(continuity_near, current_px, coords[0])
         continuity_connect = bool(jump_mm <= continuity_connect_max_mm and near_signal >= continuity_connect_threshold)
+    current_px = mm_to_coord(current, width, height, scale_mm)
     connector_allowed = True
     if connector_mask is not None:
-        current_px = mm_to_coord(current, width, height, scale_mm)
         connector_allowed = segment_inside_mask(
             connector_mask,
             current_px,
             coords[0],
             min_inside_fraction=connector_min_inside_fraction,
         )
+    repair_connect = False
+    if safe_connect_repair and safe_connect_repair_max_mm > 0.0 and jump_mm <= safe_connect_repair_max_mm:
+        repair_mask = safe_connect_repair_mask if safe_connect_repair_mask is not None else connector_mask
+        if repair_mask is None:
+            repair_connect = True
+        else:
+            repair_connect = segment_inside_mask(
+                repair_mask,
+                current_px,
+                coords[0],
+                min_inside_fraction=safe_connect_repair_min_inside_fraction,
+            )
     stitch_count = 0
     jump_count = 0
     trim_count = 0
     connector_count = 0
-    if connector_allowed and ((connect_near_mm > 0.0 and jump_mm <= connect_near_mm) or continuity_connect):
+    repair_count = 0
+    normal_connect = connector_allowed and ((connect_near_mm > 0.0 and jump_mm <= connect_near_mm) or continuity_connect)
+    if normal_connect or repair_connect:
         added, _distance = add_stitch_segment(pattern, current, first, max_stitch_mm)
         stitch_count += added
         connector_count += 1
+        repair_count += 1 if repair_connect and not normal_connect else 0
     else:
         added_jumps, added_trims, _distance = add_jump_segment(
             pattern,
@@ -520,7 +539,7 @@ def add_polyline_nearest(
         path_mm += distance
         stitch_count += added
         last = current_mm
-    return stitch_count, jump_count, trim_count, connector_count, jump_mm, path_mm, current_mm
+    return stitch_count, jump_count, trim_count, connector_count, repair_count, jump_mm, path_mm, current_mm
 
 
 def add_stitch_segment(
@@ -658,6 +677,17 @@ def export_color_planner_geometry_as_dst(
     graph_trace_max_nodes: int = 5000,
     m2_edge_policy: dict[str, object] | None = None,
     m2_edge_policy_top_k: int = 8,
+    m2_hard_safe_filter: bool = False,
+    m2_safe_min_inside_fraction: float = 0.92,
+    m2_safe_max_distance_mm: float = 0.0,
+    m2_jump_aware_weight: float = 0.0,
+    m2_offmask_weight: float = 0.0,
+    m2_visible_weight: float = 0.0,
+    m2_trim_weight: float = 0.0,
+    safe_connect_repair: bool = False,
+    safe_connect_repair_max_mm: float = 0.0,
+    safe_connect_repair_min_inside_fraction: float = 0.96,
+    safe_connect_repair_global_mask: bool = False,
     mask_safe_connectors: bool = False,
 ) -> dict[str, int | float | str | dict[str, int]]:
     active = mask >= threshold
@@ -686,6 +716,7 @@ def export_color_planner_geometry_as_dst(
     component_count = 0
     outline_count = 0
     connector_count = 0
+    repair_count = 0
     type_counts = {"running": 0, "satin": 0, "fill": 0}
     graph_tsp_stats = {
         "tasks": 0,
@@ -697,6 +728,8 @@ def export_color_planner_geometry_as_dst(
         "m2_policy_decisions": 0.0,
         "m2_policy_overrides": 0.0,
         "m2_policy_utility_sum": 0.0,
+        "m2_hard_safe_filtered": 0.0,
+        "m2_decode_penalty_sum": 0.0,
     }
     graph_tsp_trace: dict[str, object] = {
         "version": "graph_tsp_trace_v1",
@@ -709,6 +742,19 @@ def export_color_planner_geometry_as_dst(
             "enabled": bool(m2_edge_policy),
             "path": str(m2_edge_policy.get("path", "")) if isinstance(m2_edge_policy, dict) else "",
             "top_k": int(m2_edge_policy_top_k),
+            "hard_safe_filter": bool(m2_hard_safe_filter),
+            "safe_min_inside_fraction": float(m2_safe_min_inside_fraction),
+            "safe_max_distance_mm": float(m2_safe_max_distance_mm),
+            "jump_aware_weight": float(m2_jump_aware_weight),
+            "offmask_weight": float(m2_offmask_weight),
+            "visible_weight": float(m2_visible_weight),
+            "trim_weight": float(m2_trim_weight),
+        },
+        "safe_connect_repair": {
+            "enabled": bool(safe_connect_repair),
+            "max_mm": float(safe_connect_repair_max_mm),
+            "min_inside_fraction": float(safe_connect_repair_min_inside_fraction),
+            "global_mask": bool(safe_connect_repair_global_mask),
         },
     }
     graph_trace_nodes = 0
@@ -851,6 +897,13 @@ def export_color_planner_geometry_as_dst(
                     graph_tsp_config,
                     edge_policy=m2_edge_policy,
                     edge_policy_top_k=m2_edge_policy_top_k,
+                    edge_policy_hard_safe_filter=m2_hard_safe_filter,
+                    edge_policy_safe_min_inside_fraction=m2_safe_min_inside_fraction,
+                    edge_policy_safe_max_distance_mm=m2_safe_max_distance_mm,
+                    edge_policy_jump_aware_weight=m2_jump_aware_weight,
+                    edge_policy_offmask_weight=m2_offmask_weight,
+                    edge_policy_visible_weight=m2_visible_weight,
+                    edge_policy_trim_weight=m2_trim_weight,
                     task_context={
                         "type_id": int(task["type_id"]),
                         "area_px": int(task["area"]),
@@ -866,6 +919,8 @@ def export_color_planner_geometry_as_dst(
                 graph_tsp_stats["m2_policy_decisions"] += float(stats.get("m2_policy_decisions", 0.0))
                 graph_tsp_stats["m2_policy_overrides"] += float(stats.get("m2_policy_overrides", 0.0))
                 graph_tsp_stats["m2_policy_utility_sum"] += float(stats.get("m2_policy_utility_sum", 0.0))
+                graph_tsp_stats["m2_hard_safe_filtered"] += float(stats.get("m2_hard_safe_filtered", 0.0))
+                graph_tsp_stats["m2_decode_penalty_sum"] += float(stats.get("m2_decode_penalty_sum", 0.0))
                 graph_trace_nodes += int(stats.get("nodes", 0.0))
                 trace_tasks = graph_tsp_trace["tasks"]
                 if (
@@ -917,7 +972,7 @@ def export_color_planner_geometry_as_dst(
                     relation_config=relation_config,
                 )
             for coords in ordered_polylines:
-                sc, jc, tc, cc, jump_mm, path_mm, current = add_polyline_nearest(
+                sc, jc, tc, cc, rc, jump_mm, path_mm, current = add_polyline_nearest(
                     pattern,
                     coords,
                     current,
@@ -930,6 +985,10 @@ def export_color_planner_geometry_as_dst(
                     continuity_connect_max_mm=continuity_connect_max_mm,
                     connector_mask=component_mask if mask_safe_connectors else None,
                     connector_min_inside_fraction=graph_min_inside_fraction,
+                    safe_connect_repair=safe_connect_repair,
+                    safe_connect_repair_max_mm=safe_connect_repair_max_mm,
+                    safe_connect_repair_min_inside_fraction=safe_connect_repair_min_inside_fraction,
+                    safe_connect_repair_mask=active if safe_connect_repair_global_mask else (component_mask if mask_safe_connectors else None),
                     max_stitch_mm=max_stitch_mm,
                     max_jump_mm=max_jump_mm,
                     trim_jump_threshold_mm=trim_jump_threshold_mm,
@@ -938,6 +997,7 @@ def export_color_planner_geometry_as_dst(
                 jump_count += jc
                 trim_count += tc
                 connector_count += cc
+                repair_count += rc
                 if jc:
                     jump_distance_mm += jump_mm
                     observed_max_jump_mm = max(observed_max_jump_mm, jump_mm)
@@ -968,6 +1028,7 @@ def export_color_planner_geometry_as_dst(
         "trims": trim_count,
         "components": component_count,
         "continuity_connectors": connector_count,
+        "safe_connect_repairs": repair_count,
         "outline_stitches": outline_count,
         "type_component_counts": type_counts,
         "target_width_mm": target_width_mm,
@@ -986,6 +1047,21 @@ def export_color_planner_geometry_as_dst(
         "max_stitch_mm": max_stitch_mm,
         "max_jump_mm_limit": max_jump_mm,
         "trim_jump_threshold_mm": trim_jump_threshold_mm,
+        "safe_connect_repair": {
+            "enabled": safe_connect_repair,
+            "max_mm": safe_connect_repair_max_mm,
+            "min_inside_fraction": safe_connect_repair_min_inside_fraction,
+            "global_mask": safe_connect_repair_global_mask,
+        },
+        "m2_decode": {
+            "hard_safe_filter": m2_hard_safe_filter,
+            "safe_min_inside_fraction": m2_safe_min_inside_fraction,
+            "safe_max_distance_mm": m2_safe_max_distance_mm,
+            "jump_aware_weight": m2_jump_aware_weight,
+            "offmask_weight": m2_offmask_weight,
+            "visible_weight": m2_visible_weight,
+            "trim_weight": m2_trim_weight,
+        },
         "relation_planner": config_to_dict(relation_config),
         "graph_tsp_planner": graph_tsp_planner,
         "graph_tsp_config": graph_tsp_config_to_dict(graph_tsp_config) if graph_tsp_planner else None,
@@ -1206,6 +1282,17 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 "graph_trace_max_nodes": args.graph_trace_max_nodes,
                 "m2_edge_policy": m2_edge_policy,
                 "m2_edge_policy_top_k": args.m2_edge_policy_top_k,
+                "m2_hard_safe_filter": args.m2_hard_safe_filter,
+                "m2_safe_min_inside_fraction": args.m2_safe_min_inside_fraction,
+                "m2_safe_max_distance_mm": args.m2_safe_max_distance_mm,
+                "m2_jump_aware_weight": args.m2_jump_aware_weight,
+                "m2_offmask_weight": args.m2_offmask_weight,
+                "m2_visible_weight": args.m2_visible_weight,
+                "m2_trim_weight": args.m2_trim_weight,
+                "safe_connect_repair": args.safe_connect_repair,
+                "safe_connect_repair_max_mm": args.safe_connect_repair_max_mm,
+                "safe_connect_repair_min_inside_fraction": args.safe_connect_repair_min_inside_fraction,
+                "safe_connect_repair_global_mask": args.safe_connect_repair_global_mask,
                 "mask_safe_connectors": args.mask_safe_connectors,
             }
         )
@@ -1228,6 +1315,19 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "enabled": bool(m2_edge_policy),
             "path": str(m2_edge_policy.get("path", "")) if isinstance(m2_edge_policy, dict) else "",
             "top_k": int(args.m2_edge_policy_top_k),
+            "hard_safe_filter": bool(args.m2_hard_safe_filter),
+            "safe_min_inside_fraction": float(args.m2_safe_min_inside_fraction),
+            "safe_max_distance_mm": float(args.m2_safe_max_distance_mm),
+            "jump_aware_weight": float(args.m2_jump_aware_weight),
+            "offmask_weight": float(args.m2_offmask_weight),
+            "visible_weight": float(args.m2_visible_weight),
+            "trim_weight": float(args.m2_trim_weight),
+        },
+        "safe_connect_repair": {
+            "enabled": bool(args.safe_connect_repair),
+            "max_mm": float(args.safe_connect_repair_max_mm),
+            "min_inside_fraction": float(args.safe_connect_repair_min_inside_fraction),
+            "global_mask": bool(args.safe_connect_repair_global_mask),
         },
         "dst_summary": dst_summary,
         "files": [
@@ -1297,6 +1397,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--mask-safe-connectors", action="store_true", help="Only use STITCH connectors when the connector path stays inside the active component mask.")
     parser.add_argument("--m2-edge-policy", default="", help="Optional learned M2 edge-policy JSON used to rerank Graph-TSP candidate edges.")
     parser.add_argument("--m2-edge-policy-top-k", type=int, default=8, help="Number of lowest-cost Graph-TSP candidate edges reranked by M2; 0 means all candidates.")
+    parser.add_argument("--m2-hard-safe-filter", action="store_true", help="Filter M2 rerank candidates to mask-safe edges when possible.")
+    parser.add_argument("--m2-safe-min-inside-fraction", type=float, default=0.92)
+    parser.add_argument("--m2-safe-max-distance-mm", type=float, default=0.0, help="Optional max distance for hard-safe M2 candidates; 0 disables the distance cap.")
+    parser.add_argument("--m2-jump-aware-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for longer transition distances.")
+    parser.add_argument("--m2-offmask-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for off-mask fraction.")
+    parser.add_argument("--m2-visible-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for visible connector risk.")
+    parser.add_argument("--m2-trim-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for trim-risk transitions.")
+    parser.add_argument("--safe-connect-repair", action="store_true", help="Replace jump transitions with STITCH connectors when the connector path is mask-safe.")
+    parser.add_argument("--safe-connect-repair-max-mm", type=float, default=0.0)
+    parser.add_argument("--safe-connect-repair-min-inside-fraction", type=float, default=0.96)
+    parser.add_argument("--safe-connect-repair-global-mask", action="store_true", help="Use the full active embroidery mask, not only the current component, when deciding safe-connect repair.")
     parser.add_argument("--retrieval-index", default="", help="Optional retrieval planner index JSON built from similar designs.")
     parser.add_argument("--retrieval-top-k", type=int, default=5)
     parser.add_argument("--retrieval-weight", type=float, default=0.45)

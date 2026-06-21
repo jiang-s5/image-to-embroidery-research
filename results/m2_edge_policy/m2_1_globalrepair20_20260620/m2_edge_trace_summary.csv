@@ -1,0 +1,5 @@
+﻿sample_id,trace_path,tasks,nodes,decisions,candidate_rows,positive_rows,skipped_single_node_tasks
+m2_1_globalrepair20_pair_006,outputs\m2_1_globalrepair20_pair_006\graph_tsp_trace.json,60,255,195,3931,195,50
+m2_1_globalrepair20_pair_008,outputs\m2_1_globalrepair20_pair_008\graph_tsp_trace.json,60,78,18,91,18,58
+m2_1_globalrepair20_pair_010,outputs\m2_1_globalrepair20_pair_010\graph_tsp_trace.json,60,921,861,315867,861,46
+m2_1_globalrepair20_pair_011a,outputs\m2_1_globalrepair20_pair_011a\graph_tsp_trace.json,60,60,0,0,0,60

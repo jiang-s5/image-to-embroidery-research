@@ -1,0 +1,5 @@
+﻿eval_json,sample_id,method,jump_count,jump_path_mm,max_jump_mm,off_mask_stitch_length_mm,round_trip_parse_success,stitch_count,stitch_path_mm,trim_count,visible_connector_count,visible_connector_length_mm,unified_loss,exec_score,visual_risk,quality_level
+outputs/m2_1_globalrepair20_pair_006/executability_eval.json,m2_1_globalrepair20_pair_006,outputs,74,433.9887,7.4813,423.3043,True,3181,3372.3745,12,111,359.9238,0.58588764,0.28588764,0.3,hard_fail
+outputs/m2_1_globalrepair20_pair_008/executability_eval.json,m2_1_globalrepair20_pair_008,outputs,97,596.8719,7.4953,40.5377,True,2013,2924.5259,21,1,2.3022,0.55037097,0.3390999,0.21127107,hard_fail
+outputs/m2_1_globalrepair20_pair_010/executability_eval.json,m2_1_globalrepair20_pair_010,outputs,75,458.8226,7.218,62.8361,True,5217,4745.361,13,3,9.6256,0.57193352,0.29268232,0.2792512,hard_fail
+outputs/m2_1_globalrepair20_pair_011a/executability_eval.json,m2_1_globalrepair20_pair_011a,outputs,86,501.1968,7.4404,165.9038,True,1264,1343.9685,16,15,51.1719,0.6120383,0.3120383,0.3,hard_fail

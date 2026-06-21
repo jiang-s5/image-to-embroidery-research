@@ -1,0 +1,53 @@
+{
+  "version": "m2_edge_dataset_v1",
+  "trace_count": 4,
+  "raw_candidate_rows": 319889,
+  "candidate_rows": 22663,
+  "positive_rows": 1074,
+  "decision_count": 1074,
+  "sample_count": 3,
+  "max_negatives_per_decision": 24,
+  "trace_summaries": [
+    {
+      "sample_id": "m2_1_globalrepair20_pair_006",
+      "trace_path": "outputs\\m2_1_globalrepair20_pair_006\\graph_tsp_trace.json",
+      "tasks": 60,
+      "nodes": 255,
+      "decisions": 195,
+      "candidate_rows": 3931,
+      "positive_rows": 195,
+      "skipped_single_node_tasks": 50
+    },
+    {
+      "sample_id": "m2_1_globalrepair20_pair_008",
+      "trace_path": "outputs\\m2_1_globalrepair20_pair_008\\graph_tsp_trace.json",
+      "tasks": 60,
+      "nodes": 78,
+      "decisions": 18,
+      "candidate_rows": 91,
+      "positive_rows": 18,
+      "skipped_single_node_tasks": 58
+    },
+    {
+      "sample_id": "m2_1_globalrepair20_pair_010",
+      "trace_path": "outputs\\m2_1_globalrepair20_pair_010\\graph_tsp_trace.json",
+      "tasks": 60,
+      "nodes": 921,
+      "decisions": 861,
+      "candidate_rows": 315867,
+      "positive_rows": 861,
+      "skipped_single_node_tasks": 46
+    },
+    {
+      "sample_id": "m2_1_globalrepair20_pair_011a",
+      "trace_path": "outputs\\m2_1_globalrepair20_pair_011a\\graph_tsp_trace.json",
+      "tasks": 60,
+      "nodes": 60,
+      "decisions": 0,
+      "candidate_rows": 0,
+      "positive_rows": 0,
+      "skipped_single_node_tasks": 60
+    }
+  ],
+  "output_jsonl": "results\\m2_edge_policy\\m2_1_globalrepair20_20260620\\m2_edge_candidates.jsonl"
+}

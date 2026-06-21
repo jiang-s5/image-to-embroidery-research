@@ -33,6 +33,9 @@ external/
 *.zip
 *.7z
 
+# Generated training rows
+results/m2_edge_policy/**/m2_edge_candidates.jsonl
+
 # Local reports and logs
 *.log
 *.err

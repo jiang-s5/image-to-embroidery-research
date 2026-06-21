@@ -295,6 +295,11 @@ def m2_edge_features(
     candidate_length = safe_float(node.get("length_mm"))
     candidate_points = safe_float(node.get("point_count"))
     task_type = int(safe_float(context.get("type_id")))
+    edge_distance = safe_float(details.get("distance_mm"))
+    inside_fraction = safe_float(details.get("inside_fraction"), 1.0)
+    offmask_fraction = safe_float(details.get("offmask_fraction"))
+    visible_risk = safe_float(details.get("visible_risk"))
+    trim_risk = safe_float(details.get("trim_risk"))
     features = {
         "distance_to_start_mm": dist_start,
         "distance_to_end_mm": dist_end,
@@ -318,8 +323,14 @@ def m2_edge_features(
         "task_type_running": 1.0 if task_type == 1 else 0.0,
         "task_type_satin": 1.0 if task_type == 2 else 0.0,
         "task_type_fill": 1.0 if task_type == 3 else 0.0,
-        "selected_edge_distance_mm": safe_float(details.get("distance_mm")),
+        "selected_edge_distance_mm": edge_distance,
         "selected_edge_cost": safe_float(details.get("cost")),
+        "selected_edge_inside_fraction": inside_fraction,
+        "selected_edge_offmask_fraction": offmask_fraction,
+        "selected_edge_visible_risk": visible_risk,
+        "selected_edge_trim_risk": trim_risk,
+        "selected_edge_long_jump_margin_mm": max(0.0, edge_distance - safe_float(context.get("long_jump_threshold_mm"), 8.0)),
+        "selected_edge_safe_connect_candidate": 1.0 if inside_fraction >= safe_float(context.get("safe_min_inside_fraction"), 0.92) and visible_risk <= 0.0 else 0.0,
     }
     features.update(m2_node_bbox_features(node))
     return features
@@ -352,6 +363,13 @@ def order_polylines_graph_tsp_with_trace(
     config: GraphTSPConfig,
     edge_policy: dict[str, Any] | None = None,
     edge_policy_top_k: int = 8,
+    edge_policy_hard_safe_filter: bool = False,
+    edge_policy_safe_min_inside_fraction: float = 0.92,
+    edge_policy_safe_max_distance_mm: float = 0.0,
+    edge_policy_jump_aware_weight: float = 0.0,
+    edge_policy_offmask_weight: float = 0.0,
+    edge_policy_visible_weight: float = 0.0,
+    edge_policy_trim_weight: float = 0.0,
     task_context: dict[str, Any] | None = None,
 ) -> tuple[list[Polyline], dict[str, float], dict[str, Any]]:
     items = [{"node_id": index, "coords": coords} for index, coords in enumerate(polylines) if len(coords) >= 2]
@@ -371,6 +389,8 @@ def order_polylines_graph_tsp_with_trace(
         "m2_policy_decisions": 0.0,
         "m2_policy_overrides": 0.0,
         "m2_policy_utility_sum": 0.0,
+        "m2_hard_safe_filtered": 0.0,
+        "m2_decode_penalty_sum": 0.0,
     }
     start_mm = current_mm
     current = current_mm
@@ -395,10 +415,29 @@ def order_polylines_graph_tsp_with_trace(
                 policy_pool = sorted(candidate_records, key=lambda record: float(record["cost"]))
                 if top_k > 0:
                     policy_pool = policy_pool[:top_k]
+                if edge_policy_hard_safe_filter:
+                    before_filter = len(policy_pool)
+                    safe_pool = [
+                        record
+                        for record in policy_pool
+                        if safe_float(record["details"].get("inside_fraction"), 1.0) >= edge_policy_safe_min_inside_fraction
+                        and (
+                            edge_policy_safe_max_distance_mm <= 0.0
+                            or safe_float(record["details"].get("distance_mm")) <= edge_policy_safe_max_distance_mm
+                        )
+                    ]
+                    if safe_pool:
+                        policy_pool = safe_pool
+                        stats["m2_hard_safe_filtered"] += float(before_filter - len(policy_pool))
                 for record in policy_pool:
                     node_record = nodes_by_id.get(int(record["item"]["node_id"]), {})
+                    context = {
+                        **(task_context or {}),
+                        "long_jump_threshold_mm": float(config.long_jump_threshold_mm),
+                        "safe_min_inside_fraction": float(edge_policy_safe_min_inside_fraction),
+                    }
                     features = m2_edge_features(
-                        task_context,
+                        context,
                         node_record,
                         previous_record,
                         current,
@@ -406,10 +445,29 @@ def order_polylines_graph_tsp_with_trace(
                         int(len(remaining)),
                         record["details"],
                     )
-                    record["m2_utility"] = m2_edge_utility(edge_policy, features)
-                chosen = max(policy_pool, key=lambda record: (float(record.get("m2_utility", 0.0)), -float(record["cost"])))
+                    utility = m2_edge_utility(edge_policy, features)
+                    details = record["details"]
+                    distance = safe_float(details.get("distance_mm"))
+                    decode_penalty = (
+                        edge_policy_jump_aware_weight * max(0.0, distance / max(1e-6, config.long_jump_threshold_mm))
+                        + edge_policy_offmask_weight * safe_float(details.get("offmask_fraction"))
+                        + edge_policy_visible_weight * safe_float(details.get("visible_risk"))
+                        + edge_policy_trim_weight * safe_float(details.get("trim_risk"))
+                    )
+                    record["m2_utility"] = utility
+                    record["m2_decode_penalty"] = decode_penalty
+                    record["m2_decode_score"] = utility - decode_penalty
+                chosen = max(
+                    policy_pool,
+                    key=lambda record: (
+                        float(record.get("m2_decode_score", record.get("m2_utility", 0.0))),
+                        float(record.get("m2_utility", 0.0)),
+                        -float(record["cost"]),
+                    ),
+                )
                 stats["m2_policy_decisions"] += 1.0
                 stats["m2_policy_utility_sum"] += float(chosen.get("m2_utility", 0.0))
+                stats["m2_decode_penalty_sum"] += float(chosen.get("m2_decode_penalty", 0.0))
                 if int(chosen["index"]) != int(deterministic_best_index):
                     stats["m2_policy_overrides"] += 1.0
         best_index = int(chosen["index"])
@@ -437,6 +495,8 @@ def order_polylines_graph_tsp_with_trace(
                 "deterministic_best_node": int(candidate_records[deterministic_best_index]["item"]["node_id"]),
                 "m2_policy_used": bool(edge_policy is not None and previous_node >= 0 and len(candidate_records) > 1),
                 "m2_utility": round(float(chosen.get("m2_utility", 0.0)), 6),
+                "m2_decode_score": round(float(chosen.get("m2_decode_score", chosen.get("m2_utility", 0.0))), 6),
+                "m2_decode_penalty": round(float(chosen.get("m2_decode_penalty", 0.0)), 6),
             }
         )
         stats["selected_cost"] += float(best_details.get("cost", best_cost))
@@ -478,6 +538,13 @@ def order_polylines_graph_tsp(
     config: GraphTSPConfig,
     edge_policy: dict[str, Any] | None = None,
     edge_policy_top_k: int = 8,
+    edge_policy_hard_safe_filter: bool = False,
+    edge_policy_safe_min_inside_fraction: float = 0.92,
+    edge_policy_safe_max_distance_mm: float = 0.0,
+    edge_policy_jump_aware_weight: float = 0.0,
+    edge_policy_offmask_weight: float = 0.0,
+    edge_policy_visible_weight: float = 0.0,
+    edge_policy_trim_weight: float = 0.0,
     task_context: dict[str, Any] | None = None,
 ) -> tuple[list[Polyline], dict[str, float]]:
     ordered, stats, _graph = order_polylines_graph_tsp_with_trace(
@@ -490,6 +557,13 @@ def order_polylines_graph_tsp(
         config,
         edge_policy=edge_policy,
         edge_policy_top_k=edge_policy_top_k,
+        edge_policy_hard_safe_filter=edge_policy_hard_safe_filter,
+        edge_policy_safe_min_inside_fraction=edge_policy_safe_min_inside_fraction,
+        edge_policy_safe_max_distance_mm=edge_policy_safe_max_distance_mm,
+        edge_policy_jump_aware_weight=edge_policy_jump_aware_weight,
+        edge_policy_offmask_weight=edge_policy_offmask_weight,
+        edge_policy_visible_weight=edge_policy_visible_weight,
+        edge_policy_trim_weight=edge_policy_trim_weight,
         task_context=task_context,
     )
     return ordered, stats

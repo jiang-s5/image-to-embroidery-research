@@ -1,0 +1,94 @@
+{
+  "rows": [
+    {
+      "eval_json": "outputs/m2_1_balanced_pair_006/executability_eval.json",
+      "sample_id": "m2_1_balanced_pair_006",
+      "method": "outputs",
+      "jump_count": 150,
+      "jump_path_mm": 687.6883,
+      "max_jump_mm": 7.4813,
+      "off_mask_stitch_length_mm": 421.8983,
+      "round_trip_parse_success": true,
+      "stitch_count": 3082,
+      "stitch_path_mm": 3118.6639,
+      "trim_count": 16,
+      "visible_connector_count": 111,
+      "visible_connector_length_mm": 359.9238,
+      "unified_loss": 0.61800603,
+      "exec_score": 0.31800603,
+      "visual_risk": 0.3,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_1_balanced_pair_008/executability_eval.json",
+      "sample_id": "m2_1_balanced_pair_008",
+      "method": "outputs",
+      "jump_count": 135,
+      "jump_path_mm": 743.6894,
+      "max_jump_mm": 7.4953,
+      "off_mask_stitch_length_mm": 39.7567,
+      "round_trip_parse_success": true,
+      "stitch_count": 1960,
+      "stitch_path_mm": 2777.7019,
+      "trim_count": 23,
+      "visible_connector_count": 1,
+      "visible_connector_length_mm": 2.3022,
+      "unified_loss": 0.55506913,
+      "exec_score": 0.34379806,
+      "visual_risk": 0.21127107,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_1_balanced_pair_010/executability_eval.json",
+      "sample_id": "m2_1_balanced_pair_010",
+      "method": "outputs",
+      "jump_count": 368,
+      "jump_path_mm": 1386.686,
+      "max_jump_mm": 7.4673,
+      "off_mask_stitch_length_mm": 62.1593,
+      "round_trip_parse_success": true,
+      "stitch_count": 4839,
+      "stitch_path_mm": 3817.4586,
+      "trim_count": 28,
+      "visible_connector_count": 3,
+      "visible_connector_length_mm": 9.6256,
+      "unified_loss": 0.64362515,
+      "exec_score": 0.36437395,
+      "visual_risk": 0.2792512,
+      "quality_level": "hard_fail"
+    },
+    {
+      "eval_json": "outputs/m2_1_balanced_pair_011a/executability_eval.json",
+      "sample_id": "m2_1_balanced_pair_011a",
+      "method": "outputs",
+      "jump_count": 114,
+      "jump_path_mm": 597.9792,
+      "max_jump_mm": 7.4404,
+      "off_mask_stitch_length_mm": 163.8339,
+      "round_trip_parse_success": true,
+      "stitch_count": 1228,
+      "stitch_path_mm": 1247.1828,
+      "trim_count": 17,
+      "visible_connector_count": 15,
+      "visible_connector_length_mm": 51.1719,
+      "unified_loss": 0.62113533,
+      "exec_score": 0.32113533,
+      "visual_risk": 0.3,
+      "quality_level": "hard_fail"
+    }
+  ],
+  "summary": {
+    "methods": {
+      "outputs": {
+        "samples": 4,
+        "mean_unified_loss": 0.60945891,
+        "mean_exec_score": 0.33682834,
+        "mean_visual_risk": 0.27263057,
+        "hard_fail": 4,
+        "warning": 0,
+        "pass": 0,
+        "excellent": 0
+      }
+    }
+  }
+}

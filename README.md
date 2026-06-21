@@ -279,13 +279,25 @@ python infer_model3_portrait_hybrid.py inputs/your_image.png `
   --graph-tsp-planner `
   --mask-safe-connectors `
   --m2-edge-policy checkpoints/m2_edge_policy.json `
-  --m2-edge-policy-top-k 4
+  --m2-edge-policy-top-k 4 `
+  --m2-hard-safe-filter `
+  --m2-safe-min-inside-fraction 0.96 `
+  --m2-jump-aware-weight 0.25 `
+  --m2-offmask-weight 0.5 `
+  --m2-visible-weight 1.0 `
+  --m2-trim-weight 0.25 `
+  --safe-connect-repair `
+  --safe-connect-repair-max-mm 20.0 `
+  --safe-connect-repair-min-inside-fraction 0.90 `
+  --safe-connect-repair-global-mask
 ```
 
 Current paired-holdout command-level result:
 
 | Method | Unified Loss | Hard Score | Jumps | Trims | Visible Connectors | Off-Mask mm |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| M2.1 global safe-connect repair20 | 0.580058 | 37.151575 | 83.000 | 15.500 | 32.500 | 173.146 |
+| M2.2 retrained policy + repair20 | 0.581322 | 37.187846 | 82.000 | 15.750 | 32.500 | 173.646 |
 | M2 edge policy top4 | 0.607582 | 41.652422 | 192.750 | 20.250 | 32.500 | 171.912 |
 | M2 edge policy top2 | 0.608222 | 41.888061 | 196.750 | 21.750 | 32.500 | 171.912 |
 | M2 edge policy top8 | 0.610504 | 42.110343 | 203.500 | 20.750 | 32.500 | 171.912 |
@@ -293,7 +305,7 @@ Current paired-holdout command-level result:
 | Fixed B2 Graph-TSP conservative | 0.626582 | 44.170873 | 213.500 | 26.250 | 35.250 | 175.534 |
 | Fixed B1 conservative | 0.636772 | 42.691112 | 130.750 | 25.250 | 37.000 | 185.828 |
 
-Interpretation: M2 top4 is the best current mean unified-loss and hard-score row in this 4-sample comparison, but all samples still remain `hard_fail`. Treat it as evidence that learned edge utility is useful, not as proof that DST quality is solved. The next immediate step is M2.1 jump-aware safe-connect decoding: keep the visual-risk gains, then repair mask-safe jumps before moving to segment-level/GNN M2.
+Interpretation: M2.1 global safe-connect repair20 is the current promoted M2 decoding result. It reduces mean unified loss by 4.53% relative to M2 top4 and cuts mean jumps from 192.75 to 83.00 while keeping visible connector count unchanged on this 4-sample paired holdout. M2.2 retraining on hard-mined traces was tested, but it did not beat the deterministic repair20 decode, so it is kept as an artifact rather than the promoted setting. All samples still remain `hard_fail`, which means the next bottleneck is upstream mask/geometry quality and stricter segment-level constraints, not simply larger M2 training.
 
 Run command-level executability evaluation after export:
 

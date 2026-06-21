@@ -1,0 +1,5 @@
+﻿eval_json,sample_id,method,jump_count,jump_path_mm,max_jump_mm,off_mask_stitch_length_mm,round_trip_parse_success,stitch_count,stitch_path_mm,trim_count,visible_connector_count,visible_connector_length_mm,unified_loss,exec_score,visual_risk,quality_level
+outputs/m2_1_balanced_pair_006/executability_eval.json,m2_1_balanced_pair_006,outputs,150,687.6883,7.4813,421.8983,True,3082,3118.6639,16,111,359.9238,0.61800603,0.31800603,0.3,hard_fail
+outputs/m2_1_balanced_pair_008/executability_eval.json,m2_1_balanced_pair_008,outputs,135,743.6894,7.4953,39.7567,True,1960,2777.7019,23,1,2.3022,0.55506913,0.34379806,0.21127107,hard_fail
+outputs/m2_1_balanced_pair_010/executability_eval.json,m2_1_balanced_pair_010,outputs,368,1386.686,7.4673,62.1593,True,4839,3817.4586,28,3,9.6256,0.64362515,0.36437395,0.2792512,hard_fail
+outputs/m2_1_balanced_pair_011a/executability_eval.json,m2_1_balanced_pair_011a,outputs,114,597.9792,7.4404,163.8339,True,1228,1247.1828,17,15,51.1719,0.62113533,0.32113533,0.3,hard_fail
