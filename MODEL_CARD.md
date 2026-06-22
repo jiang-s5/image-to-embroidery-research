@@ -72,6 +72,12 @@ M2.15 tested a first satin-column candidate, but it was not promoted. It improve
 
 The result suggests that true satin behavior needs paired inner/outer rails and stitch-style classification rather than simple centroid-normal columns.
 
+## Later Experiment: M2.16 Satin-Rail Probe
+
+M2.16 tested continuous outer/inner rail zigzag stitching, but it was not promoted. It tied M2.15 on public LOO and did not improve core-to-full or incoming-review results.
+
+The result suggests that paired rails should be derived from distance-transform level sets instead of centroid-normal projections.
+
 ## Later Experiment: model14B
 
 ```text

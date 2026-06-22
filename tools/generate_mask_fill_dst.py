@@ -203,6 +203,83 @@ def component_satin_columns(
     return columns
 
 
+def stitch_point_sequence(
+    pattern: EmbPattern,
+    sequence: list[tuple[int, int]],
+    current_mm: tuple[float, float] | None,
+    current_px: tuple[int, int] | None,
+    connector_mask: np.ndarray,
+    shape: tuple[int, int],
+    target_width_mm: float,
+    max_stitch_mm: float,
+    max_connect_mm: float,
+    min_connect_inside_fraction: float,
+    use_mask_path_connectors: bool,
+    max_mask_path_px: float,
+    max_mask_path_expansions: int,
+) -> tuple[tuple[float, float] | None, tuple[int, int] | None, dict[str, int]]:
+    stats = {
+        "jumps": 0,
+        "safe_connects": 0,
+        "mask_path_connects": 0,
+        "rejected_connects": 0,
+        "rejected_mask_paths": 0,
+        "stitch_segments": 0,
+        "sequence_segments": 0,
+        "sequence_rejected": 0,
+    }
+    if not sequence:
+        return current_mm, current_px, stats
+
+    current_mm, current_px, connect_stats = connect_to_point(
+        pattern,
+        current_mm,
+        current_px,
+        sequence[0],
+        connector_mask,
+        shape,
+        target_width_mm,
+        max_stitch_mm,
+        max_connect_mm,
+        min_connect_inside_fraction,
+        use_mask_path_connectors,
+        max_mask_path_px,
+        max_mask_path_expansions,
+    )
+    merge_connect_stats(stats, connect_stats)
+
+    for next_px in sequence[1:]:
+        if current_mm is None:
+            break
+        next_mm = pixel_to_mm_xy(next_px[0], next_px[1], shape, target_width_mm)
+        distance = math.dist(current_mm, next_mm)
+        inside = segment_inside_fraction(connector_mask, current_mm, next_mm, target_width_mm)
+        if distance <= max_connect_mm and inside >= min_connect_inside_fraction:
+            stats["stitch_segments"] += add_segment(pattern, current_mm, next_mm, max_stitch_mm)
+            stats["sequence_segments"] += 1
+            current_mm = next_mm
+            current_px = next_px
+            continue
+        current_mm, current_px, connect_stats = connect_to_point(
+            pattern,
+            current_mm,
+            current_px,
+            next_px,
+            connector_mask,
+            shape,
+            target_width_mm,
+            max_stitch_mm,
+            max_connect_mm,
+            min_connect_inside_fraction,
+            use_mask_path_connectors,
+            max_mask_path_px,
+            max_mask_path_expansions,
+        )
+        merge_connect_stats(stats, connect_stats)
+        stats["sequence_rejected"] += 1
+    return current_mm, current_px, stats
+
+
 def connect_to_point(
     pattern: EmbPattern,
     current_mm: tuple[float, float] | None,
@@ -462,6 +539,12 @@ def generate_mask_fill_dst(
     satin_outer_inset_px: int = 2,
     satin_min_area_px: int = 64,
     satin_max_columns_per_component: int = 180,
+    add_satin_rail_border: bool = False,
+    satin_rail_width_px: int = 8,
+    satin_rail_step_px: int = 7,
+    satin_rail_outer_inset_px: int = 4,
+    satin_rail_min_area_px: int = 64,
+    satin_rail_max_pairs_per_component: int = 180,
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
@@ -488,6 +571,9 @@ def generate_mask_fill_dst(
     outline_points = 0
     satin_columns = 0
     satin_skipped = 0
+    satin_rail_pairs = 0
+    satin_rail_segments = 0
+    satin_rail_rejected = 0
     components_used = 0
     current_px: tuple[int, int] | None = None
 
@@ -601,6 +687,48 @@ def generate_mask_fill_dst(
                 satin_columns += 1
                 prefer_outer = not prefer_outer
 
+        if add_satin_rail_border:
+            rail_columns = component_satin_columns(
+                component_mask,
+                satin_rail_min_area_px,
+                satin_rail_step_px,
+                satin_rail_width_px,
+                satin_rail_outer_inset_px,
+                satin_rail_max_pairs_per_component,
+            )
+            rail_sequence: list[tuple[int, int]] = []
+            for outer_px, inner_px in rail_columns:
+                outer_mm = pixel_to_mm_xy(outer_px[0], outer_px[1], mask.shape, target_width_mm)
+                inner_mm = pixel_to_mm_xy(inner_px[0], inner_px[1], mask.shape, target_width_mm)
+                if segment_inside_fraction(connector_mask, outer_mm, inner_mm, target_width_mm) < min_connect_inside_fraction:
+                    satin_rail_rejected += 1
+                    continue
+                rail_sequence.extend([outer_px, inner_px])
+                satin_rail_pairs += 1
+            current_mm, current_px, rail_stats = stitch_point_sequence(
+                pattern,
+                rail_sequence,
+                current_mm,
+                current_px,
+                connector_mask,
+                mask.shape,
+                target_width_mm,
+                max_stitch_mm,
+                max_connect_mm,
+                min_connect_inside_fraction,
+                use_mask_path_connectors,
+                max_mask_path_px,
+                max_mask_path_expansions,
+            )
+            jumps += rail_stats["jumps"]
+            safe_connects += rail_stats["safe_connects"]
+            mask_path_connects += rail_stats["mask_path_connects"]
+            rejected_connects += rail_stats["rejected_connects"]
+            rejected_mask_paths += rail_stats["rejected_mask_paths"]
+            stitch_segments += rail_stats["stitch_segments"]
+            satin_rail_segments += rail_stats["sequence_segments"]
+            satin_rail_rejected += rail_stats["sequence_rejected"]
+
     if current_mm is None:
         current_mm = (0.0, 0.0)
         add_abs(pattern, JUMP, current_mm)
@@ -649,6 +777,15 @@ def generate_mask_fill_dst(
         "satin_outer_inset_px": satin_outer_inset_px,
         "satin_min_area_px": satin_min_area_px,
         "satin_max_columns_per_component": satin_max_columns_per_component,
+        "add_satin_rail_border": add_satin_rail_border,
+        "satin_rail_pairs": satin_rail_pairs,
+        "satin_rail_segments": satin_rail_segments,
+        "satin_rail_rejected": satin_rail_rejected,
+        "satin_rail_width_px": satin_rail_width_px,
+        "satin_rail_step_px": satin_rail_step_px,
+        "satin_rail_outer_inset_px": satin_rail_outer_inset_px,
+        "satin_rail_min_area_px": satin_rail_min_area_px,
+        "satin_rail_max_pairs_per_component": satin_rail_max_pairs_per_component,
     }
 
 
@@ -679,6 +816,12 @@ def main() -> int:
     parser.add_argument("--satin-outer-inset-px", type=int, default=2)
     parser.add_argument("--satin-min-area-px", type=int, default=64)
     parser.add_argument("--satin-max-columns-per-component", type=int, default=180)
+    parser.add_argument("--add-satin-rail-border", action="store_true")
+    parser.add_argument("--satin-rail-width-px", type=int, default=8)
+    parser.add_argument("--satin-rail-step-px", type=int, default=7)
+    parser.add_argument("--satin-rail-outer-inset-px", type=int, default=4)
+    parser.add_argument("--satin-rail-min-area-px", type=int, default=64)
+    parser.add_argument("--satin-rail-max-pairs-per-component", type=int, default=180)
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
@@ -706,6 +849,12 @@ def main() -> int:
         satin_outer_inset_px=args.satin_outer_inset_px,
         satin_min_area_px=args.satin_min_area_px,
         satin_max_columns_per_component=args.satin_max_columns_per_component,
+        add_satin_rail_border=args.add_satin_rail_border,
+        satin_rail_width_px=args.satin_rail_width_px,
+        satin_rail_step_px=args.satin_rail_step_px,
+        satin_rail_outer_inset_px=args.satin_rail_outer_inset_px,
+        satin_rail_min_area_px=args.satin_rail_min_area_px,
+        satin_rail_max_pairs_per_component=args.satin_rail_max_pairs_per_component,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)
