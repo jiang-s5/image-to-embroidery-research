@@ -47,24 +47,24 @@ continuity_mae: 0.1324329144
 
 ## Current Planner Selector
 
-The current best planning package is M2.13:
+The current best planning package is M2.14:
 
 ```text
-models/model_m2_13_current_best/
-configs/best_current_model_m2_13_edgewalk_selector.json
+models/model_m2_14_current_best/
+configs/best_current_model_m2_14_outline_selector.json
 ```
 
-M2.13 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds a mask-internal edge-walk fill candidate to the M2.12 hard-safe selector.
+M2.14 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds a gated inset-outline candidate to the M2.13 hard-safe selector.
 
 Summary results:
 
 | Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Coverage |
 | --- | ---: | ---: | ---: | ---: |
-| Public ext33 LOO | 0 | 0.096830 | 8.939394 | 0.843746 |
-| Core-to-full holdout | 0 | 0.111771 | 10.3125 | 0.826159 |
+| Public ext33 LOO | 0 | 0.096228 | 8.848485 | 0.855224 |
+| Core-to-full holdout | 0 | 0.111060 | 10.1875 | 0.826159 |
 | Incoming review holdout | 0 | 0.090709 | 7.5000 | 0.856321 |
 
-The edge-walk fill branch is not a full professional digitizer, but it is the first fill candidate that improves coverage and incoming-review executable quality when selected by the hard-safe filter.
+The edge-walk fill branch remains the main fill improvement. The inset-outline branch is a gated candidate: direct outlines were unsafe, while inset outlines can help selected public/holdout samples without regressing incoming review.
 
 ## Later Experiment: model14B
 

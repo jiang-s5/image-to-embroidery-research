@@ -42,11 +42,11 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-models/model_m2_13_current_best
-configs/best_current_model_m2_13_edgewalk_selector.json
+models/model_m2_14_current_best
+configs/best_current_model_m2_14_outline_selector.json
 ```
 
-M2.13 extends the M2.12 hard-safe selector with a mask-internal edge-walk fill candidate. It improves public leave-one-out executable quality and substantially improves coverage on core-to-full and incoming review evaluations. The fill branch is still candidate-gated: it is used only when the selector judges it executable.
+M2.14 extends the M2.13 hard-safe selector with a gated inset-outline candidate. It slightly improves public leave-one-out and core-to-full metrics while preserving the M2.13 incoming-review gain. The outline branch is not mandatory because direct contour outlines can increase off-mask risk; it is used only when the selector judges it safe.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 

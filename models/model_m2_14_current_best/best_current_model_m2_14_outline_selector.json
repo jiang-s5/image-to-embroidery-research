@@ -1,0 +1,113 @@
+{
+  "name": "best_current_model_m2_14_outline_selector",
+  "status": "recommended_current_best_outline_gated_pipeline",
+  "selection_date": "2026-06-22",
+  "base_checkpoint": "checkpoints/best_model13_multiformat_all_vector_continuity.pt",
+  "base_edge_policy": "checkpoints/m2_edge_policy_m2_1_globalrepair20.json",
+  "upgrade_from_m2_13": "Adds an inset-outline fill candidate to the M2.13 edge-walk candidate pool. The selector can use the outline branch only when it is executable and improves the learned score.",
+  "candidate_generation_upgrade": {
+    "new_candidate": "mask_fill_edgewalk_outline_ext_in3_rows16_p40",
+    "generator": "tools/generate_mask_fill_dst.py",
+    "batch_eval": "tools/run_mask_fill_eval.py",
+    "generator_flags": {
+      "row_spacing_mm": 1.6,
+      "max_connect_mm": 6.0,
+      "min_connect_inside_fraction": 0.95,
+      "min_component_pixels": 64,
+      "min_run_mm": 1.0,
+      "use_mask_path_connectors": true,
+      "max_mask_path_mm": 40.0,
+      "add_outline": true,
+      "outline_external_only": true,
+      "outline_inset_px": 3,
+      "outline_stride_px": 2,
+      "outline_min_area_px": 64
+    },
+    "important_result": "Direct boundary outline was too risky because it increased off-mask and visible-connector metrics. Inset outline is safer, but still candidate-gated rather than always used."
+  },
+  "selector": {
+    "type": "ridge_candidate_score_regressor_with_hard_safe_filter",
+    "alpha": 10.0,
+    "exclude_hard_fail": true,
+    "enforce_coverage_floor": false,
+    "feature_count": 19,
+    "model_file": "results/public_benchmark_v1_ext33_m2_14_outline_selector/m2_candidate_selector_model.json"
+  },
+  "leave_one_out": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_14_outline_selector",
+    "samples": 33,
+    "candidate_rows": 462,
+    "oracle_match": 24,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.11731,
+    "mean_unified_loss": 0.096228,
+    "mean_jump_count": 8.848485,
+    "mean_trim_count": 3.484848,
+    "mean_off_mask_stitch_length_mm": 0.090794,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.855224,
+    "mean_stitch_precision_ratio": 0.837897
+  },
+  "core_to_full_holdout": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_14_outline_core_to_full",
+    "train_samples": 17,
+    "test_samples": 16,
+    "candidate_rows_train": 238,
+    "candidate_rows_test": 224,
+    "oracle_match": 13,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.131945,
+    "mean_unified_loss": 0.11106,
+    "mean_jump_count": 10.1875,
+    "mean_trim_count": 3.75,
+    "mean_off_mask_stitch_length_mm": 0.187262,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.826159,
+    "mean_stitch_precision_ratio": 0.843477
+  },
+  "incoming_review_eval_only": {
+    "dataset": "datasets/incoming_review_eval_v1",
+    "status": "evaluation_only_not_training",
+    "result_dir": "results/incoming_review_eval_v1_m2_14_outline_applied",
+    "samples": 4,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.103303,
+    "mean_unified_loss": 0.090709,
+    "mean_jump_count": 7.5,
+    "mean_trim_count": 4.75,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.856321,
+    "mean_stitch_precision_ratio": 0.79218,
+    "chosen_counts": {
+      "auto_evalrepair_r10_c20": 2,
+      "mask_fill_edgewalk_rows16_p40": 2
+    }
+  },
+  "comparison_to_m2_13": {
+    "public_leave_one_out": {
+      "m2_13_mean_unified_loss": 0.09683,
+      "m2_14_mean_unified_loss": 0.096228,
+      "m2_13_mean_jump_count": 8.939394,
+      "m2_14_mean_jump_count": 8.848485,
+      "m2_13_mean_coverage_ratio": 0.843746,
+      "m2_14_mean_coverage_ratio": 0.855224
+    },
+    "core_to_full_holdout": {
+      "m2_13_mean_unified_loss": 0.111771,
+      "m2_14_mean_unified_loss": 0.11106,
+      "m2_13_mean_jump_count": 10.3125,
+      "m2_14_mean_jump_count": 10.1875,
+      "m2_13_mean_coverage_ratio": 0.826159,
+      "m2_14_mean_coverage_ratio": 0.826159
+    },
+    "incoming_review_eval_only": {
+      "m2_13_mean_unified_loss": 0.090709,
+      "m2_14_mean_unified_loss": 0.090709,
+      "m2_13_mean_coverage_ratio": 0.856321,
+      "m2_14_mean_coverage_ratio": 0.856321
+    }
+  },
+  "selection_rationale": "M2.14 is promoted because it slightly improves public LOO and core-to-full metrics over M2.13 while preserving zero hard_fail and not regressing incoming review evaluation. The outline branch is useful only as a gated candidate.",
+  "boundary": "M2.14 still is not a professional satin/underlay digitizer. It adds safer inset-outline candidates, but the next major step remains learned segment-style classification and true satin/tatami layer generation."
+}

@@ -66,6 +66,11 @@ def main() -> int:
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
+    parser.add_argument("--add-outline", action="store_true")
+    parser.add_argument("--outline-stride-px", type=int, default=2)
+    parser.add_argument("--outline-min-area-px", type=int, default=64)
+    parser.add_argument("--outline-external-only", action="store_true")
+    parser.add_argument("--outline-inset-px", type=int, default=0)
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -100,6 +105,11 @@ def main() -> int:
             use_mask_path_connectors=args.use_mask_path_connectors,
             max_mask_path_mm=args.max_mask_path_mm,
             max_mask_path_expansions=args.max_mask_path_expansions,
+            add_outline=args.add_outline,
+            outline_stride_px=args.outline_stride_px,
+            outline_min_area_px=args.outline_min_area_px,
+            outline_include_holes=not args.outline_external_only,
+            outline_inset_px=args.outline_inset_px,
         )
         (sample_out / "generator_report.json").write_text(json.dumps(generator_report, ensure_ascii=False, indent=2), encoding="utf-8")
         pred = analyze_file(
@@ -123,7 +133,7 @@ def main() -> int:
                 "sample_id": sample_id,
                 "source_name": row.get("source_name", ""),
                 "category": row.get("category", ""),
-                "mode": "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine",
+                "mode": ("mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
                 "unified_loss": score["unified_loss"],
                 "exec_score": score["exec_score"],
                 "visual_risk": score["visual_risk"],
@@ -139,6 +149,8 @@ def main() -> int:
                 "mask_path_connects": generator_report["mask_path_connects"],
                 "rejected_connects": generator_report["rejected_connects"],
                 "rejected_mask_paths": generator_report["rejected_mask_paths"],
+                "outline_paths": generator_report["outline_paths"],
+                "outline_points": generator_report["outline_points"],
             }
         )
         coverage_rows.append(

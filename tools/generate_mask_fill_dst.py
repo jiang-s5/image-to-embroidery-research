@@ -92,6 +92,104 @@ def add_polyline_px(
     return stitch_segments
 
 
+def contour_to_path(contour: np.ndarray, stride_px: int) -> list[tuple[int, int]]:
+    raw = contour.reshape(-1, 2)
+    if raw.shape[0] == 0:
+        return []
+    stride = max(1, stride_px)
+    points = [(int(point[0]), int(point[1])) for point in raw[::stride]]
+    if points and points[0] != points[-1]:
+        points.append(points[0])
+    return points
+
+
+def component_outline_paths(
+    component_mask: np.ndarray,
+    min_area_px: int,
+    stride_px: int,
+    include_holes: bool,
+    inset_px: int,
+) -> list[list[tuple[int, int]]]:
+    if inset_px > 0:
+        kernel_size = max(1, inset_px * 2 + 1)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+        component_mask = cv2.erode(component_mask.astype(np.uint8), kernel, iterations=1)
+        if int(component_mask.sum()) <= 0:
+            return []
+    mode = cv2.RETR_CCOMP if include_holes else cv2.RETR_EXTERNAL
+    contours, _hierarchy = cv2.findContours((component_mask > 0).astype(np.uint8) * 255, mode, cv2.CHAIN_APPROX_NONE)
+    paths: list[list[tuple[int, int]]] = []
+    for contour in contours:
+        area = abs(float(cv2.contourArea(contour)))
+        if area < min_area_px:
+            continue
+        path = contour_to_path(contour, stride_px)
+        if len(path) >= 3:
+            paths.append(path)
+    return sorted(paths, key=lambda path: len(path), reverse=True)
+
+
+def connect_to_point(
+    pattern: EmbPattern,
+    current_mm: tuple[float, float] | None,
+    current_px: tuple[int, int] | None,
+    target_px: tuple[int, int],
+    connector_mask: np.ndarray,
+    shape: tuple[int, int],
+    target_width_mm: float,
+    max_stitch_mm: float,
+    max_connect_mm: float,
+    min_connect_inside_fraction: float,
+    use_mask_path_connectors: bool,
+    max_mask_path_px: float,
+    max_mask_path_expansions: int,
+) -> tuple[tuple[float, float], tuple[int, int], dict[str, int]]:
+    target_mm = pixel_to_mm_xy(target_px[0], target_px[1], shape, target_width_mm)
+    stats = {
+        "jumps": 0,
+        "safe_connects": 0,
+        "mask_path_connects": 0,
+        "rejected_connects": 0,
+        "rejected_mask_paths": 0,
+        "stitch_segments": 0,
+    }
+    if current_mm is None:
+        add_abs(pattern, JUMP, target_mm)
+        stats["jumps"] += 1
+        return target_mm, target_px, stats
+
+    distance = math.dist(current_mm, target_mm)
+    inside = segment_inside_fraction(connector_mask, current_mm, target_mm, target_width_mm)
+    if distance <= max_connect_mm and inside >= min_connect_inside_fraction:
+        stats["stitch_segments"] += add_segment(pattern, current_mm, target_mm, max_stitch_mm)
+        stats["safe_connects"] += 1
+        return target_mm, target_px, stats
+
+    if use_mask_path_connectors and current_px is not None:
+        path = astar_mask_path(
+            connector_mask,
+            current_px,
+            target_px,
+            max_mask_path_px,
+            max_mask_path_expansions,
+        )
+        if path is not None:
+            stats["stitch_segments"] += add_polyline_px(pattern, path, shape, target_width_mm, max_stitch_mm)
+            stats["mask_path_connects"] += 1
+            return target_mm, target_px, stats
+        stats["rejected_mask_paths"] += 1
+
+    add_abs(pattern, JUMP, target_mm)
+    stats["jumps"] += 1
+    stats["rejected_connects"] += 1
+    return target_mm, target_px, stats
+
+
+def merge_connect_stats(totals: dict[str, int], update: dict[str, int]) -> None:
+    for key, value in update.items():
+        totals[key] = totals.get(key, 0) + int(value)
+
+
 def nearest_foreground(mask: np.ndarray, point: tuple[int, int], radius: int = 3) -> tuple[int, int] | None:
     x, y = point
     height, width = mask.shape
@@ -279,6 +377,11 @@ def generate_mask_fill_dst(
     use_mask_path_connectors: bool = False,
     max_mask_path_mm: float = 24.0,
     max_mask_path_expansions: int = 8000,
+    add_outline: bool = False,
+    outline_stride_px: int = 2,
+    outline_min_area_px: int = 64,
+    outline_include_holes: bool = True,
+    outline_inset_px: int = 0,
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
@@ -301,6 +404,8 @@ def generate_mask_fill_dst(
     rejected_mask_paths = 0
     stitch_segments = 0
     fill_rows = 0
+    outline_paths = 0
+    outline_points = 0
     components_used = 0
     current_px: tuple[int, int] | None = None
 
@@ -313,39 +418,61 @@ def generate_mask_fill_dst(
         for start_px, end_px in rows:
             start_mm = pixel_to_mm_xy(start_px[0], start_px[1], mask.shape, target_width_mm)
             end_mm = pixel_to_mm_xy(end_px[0], end_px[1], mask.shape, target_width_mm)
-            if current_mm is None:
-                add_abs(pattern, JUMP, start_mm)
-                jumps += 1
-            else:
-                distance = math.dist(current_mm, start_mm)
-                inside = segment_inside_fraction(connector_mask, current_mm, start_mm, target_width_mm)
-                if distance <= max_connect_mm and inside >= min_connect_inside_fraction:
-                    stitch_segments += add_segment(pattern, current_mm, start_mm, max_stitch_mm)
-                    safe_connects += 1
-                elif use_mask_path_connectors and current_px is not None:
-                    path = astar_mask_path(
-                        connector_mask,
-                        current_px,
-                        start_px,
-                        max_mask_path_px,
-                        max_mask_path_expansions,
-                    )
-                    if path is not None:
-                        stitch_segments += add_polyline_px(pattern, path, mask.shape, target_width_mm, max_stitch_mm)
-                        mask_path_connects += 1
-                    else:
-                        add_abs(pattern, JUMP, start_mm)
-                        jumps += 1
-                        rejected_connects += 1
-                        rejected_mask_paths += 1
-                else:
-                    add_abs(pattern, JUMP, start_mm)
-                    jumps += 1
-                    rejected_connects += 1
+            current_mm, current_px, connect_stats = connect_to_point(
+                pattern,
+                current_mm,
+                current_px,
+                start_px,
+                connector_mask,
+                mask.shape,
+                target_width_mm,
+                max_stitch_mm,
+                max_connect_mm,
+                min_connect_inside_fraction,
+                use_mask_path_connectors,
+                max_mask_path_px,
+                max_mask_path_expansions,
+            )
+            jumps += connect_stats["jumps"]
+            safe_connects += connect_stats["safe_connects"]
+            mask_path_connects += connect_stats["mask_path_connects"]
+            rejected_connects += connect_stats["rejected_connects"]
+            rejected_mask_paths += connect_stats["rejected_mask_paths"]
+            stitch_segments += connect_stats["stitch_segments"]
             stitch_segments += add_segment(pattern, start_mm, end_mm, max_stitch_mm)
             fill_rows += 1
             current_mm = end_mm
             current_px = end_px
+
+        if add_outline:
+            for path in component_outline_paths(component_mask, outline_min_area_px, outline_stride_px, outline_include_holes, outline_inset_px):
+                start_px = path[0]
+                current_mm, current_px, connect_stats = connect_to_point(
+                    pattern,
+                    current_mm,
+                    current_px,
+                    start_px,
+                    connector_mask,
+                    mask.shape,
+                    target_width_mm,
+                    max_stitch_mm,
+                    max_connect_mm,
+                    min_connect_inside_fraction,
+                    use_mask_path_connectors,
+                    max_mask_path_px,
+                    max_mask_path_expansions,
+                )
+                jumps += connect_stats["jumps"]
+                safe_connects += connect_stats["safe_connects"]
+                mask_path_connects += connect_stats["mask_path_connects"]
+                rejected_connects += connect_stats["rejected_connects"]
+                rejected_mask_paths += connect_stats["rejected_mask_paths"]
+                stitch_segments += connect_stats["stitch_segments"]
+                stitch_segments += add_polyline_px(pattern, path, mask.shape, target_width_mm, max_stitch_mm)
+                current_px = path[-1]
+                current_mm = pixel_to_mm_xy(current_px[0], current_px[1], mask.shape, target_width_mm)
+                outline_paths += 1
+                outline_points += len(path)
 
     if current_mm is None:
         current_mm = (0.0, 0.0)
@@ -380,6 +507,13 @@ def generate_mask_fill_dst(
         "max_mask_path_mm": max_mask_path_mm,
         "max_mask_path_px": max_mask_path_px,
         "max_mask_path_expansions": max_mask_path_expansions,
+        "add_outline": add_outline,
+        "outline_paths": outline_paths,
+        "outline_points": outline_points,
+        "outline_stride_px": outline_stride_px,
+        "outline_min_area_px": outline_min_area_px,
+        "outline_include_holes": outline_include_holes,
+        "outline_inset_px": outline_inset_px,
     }
 
 
@@ -399,6 +533,11 @@ def main() -> int:
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
+    parser.add_argument("--add-outline", action="store_true")
+    parser.add_argument("--outline-stride-px", type=int, default=2)
+    parser.add_argument("--outline-min-area-px", type=int, default=64)
+    parser.add_argument("--outline-external-only", action="store_true")
+    parser.add_argument("--outline-inset-px", type=int, default=0)
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
@@ -415,6 +554,11 @@ def main() -> int:
         use_mask_path_connectors=args.use_mask_path_connectors,
         max_mask_path_mm=args.max_mask_path_mm,
         max_mask_path_expansions=args.max_mask_path_expansions,
+        add_outline=args.add_outline,
+        outline_stride_px=args.outline_stride_px,
+        outline_min_area_px=args.outline_min_area_px,
+        outline_include_holes=not args.outline_external_only,
+        outline_inset_px=args.outline_inset_px,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)
