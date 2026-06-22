@@ -1,0 +1,34 @@
+﻿sample_id,source_name,category,mode,fill_mask_source,unified_loss,exec_score,visual_risk,quality_level,jump_count,trim_count,jump_path_mm,off_mask_stitch_length_mm,visible_connector_count,visible_connector_length_mm,fill_rows,safe_connects,mask_path_connects,rejected_connects,rejected_mask_paths,outline_paths,outline_points,satin_columns,satin_skipped,satin_rail_pairs,satin_rail_segments,satin_rail_rejected,dt_satin_pairs,dt_satin_segments,dt_satin_rejected,style_running_components,style_fill_components,style_running_paths,style_running_points,style_fallback_fill_components
+ocp_001,Openclipart,flower,mask_fill_edgewalk,dataset_mask,0.09814515,0.07268865,0.0254565,excellent,8,1,84.0204,1.1314,0,0.0,112,103,7,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_002,Openclipart,butterfly,mask_fill_edgewalk,dataset_mask,0.05652508,0.05652508,0.0,excellent,6,1,78.9087,0.0,0,0.0,50,43,5,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_003,Openclipart,cat,mask_fill_edgewalk,dataset_mask,0.03313396,0.03313396,0.0,excellent,4,0,35.4364,0.0,0,0.0,53,49,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_004,Openclipart,koi_fish,mask_fill_edgewalk,dataset_mask,0.07231227,0.07231227,0.0,excellent,8,1,72.2585,0.0,0,0.0,55,47,6,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_005,Openclipart,public_domain_logo,mask_fill_edgewalk,dataset_mask,0.03311236,0.03311236,0.0,excellent,4,0,34.7612,0.0,0,0.0,16,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_006,Openclipart,butterfly_2,mask_fill_edgewalk,dataset_mask,0.0642997,0.0642997,0.0,excellent,7,1,71.8655,0.0,0,0.0,45,36,7,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_007,Openclipart,sitting_cat,mask_fill_edgewalk,dataset_mask,0.1373412,0.1373412,0.0,pass,15,2,166.9126,0.0,0,0.0,69,64,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_008,Openclipart,fish,mask_fill_edgewalk,dataset_mask,0.10346588,0.10346588,0.0,pass,11,2,108.3088,0.0,0,0.0,72,61,8,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_009,Openclipart,flower_2,mask_fill_edgewalk,dataset_mask,0.06442548,0.06442548,0.0,excellent,7,1,75.7962,0.0,0,0.0,105,89,14,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+ocp_010,Openclipart,thought_bubble,mask_fill_edgewalk,dataset_mask,0.05565725,0.05565725,0.0,excellent,6,1,51.7892,0.0,0,0.0,30,23,5,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_001,OpenMoji,heart,mask_fill_edgewalk,dataset_mask,0.07241489,0.07241489,0.0,excellent,8,1,75.4654,0.0,0,0.0,38,34,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_002,OpenMoji,star,mask_fill_edgewalk,dataset_mask,0.06389415,0.06389415,0.0,excellent,7,1,59.1921,0.0,0,0.0,42,37,3,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_003,OpenMoji,butterfly,mask_fill_edgewalk,dataset_mask,0.1148195,0.10367075,0.01114875,pass,11,2,114.7108,0.4955,0,0.0,47,41,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_004,OpenMoji,fish,mask_fill_edgewalk,dataset_mask,0.04876926,0.02458176,0.0241875,excellent,3,0,18.1799,1.075,0,0.0,38,35,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_005,OpenMoji,sun,mask_fill_edgewalk,dataset_mask,0.08906568,0.08906568,0.0,excellent,10,1,95.8024,0.0,0,0.0,61,53,6,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_006,OpenMoji,cherry_blossom,mask_fill_edgewalk,dataset_mask,0.0246882,0.0246882,0.0,excellent,3,0,21.5061,0.0,0,0.0,51,47,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_007,OpenMoji,ribbon,mask_fill_edgewalk,dataset_mask,0.08920968,0.08920968,0.0,excellent,10,1,100.3026,0.0,0,0.0,65,53,9,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_008,OpenMoji,paw_prints,mask_fill_edgewalk,dataset_mask,0.09494591,0.09494591,0.0,excellent,10,2,92.0597,0.0,0,0.0,81,67,10,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_009,OpenMoji,lady_beetle,mask_fill_edgewalk,dataset_mask,0.05602895,0.05602895,0.0,excellent,6,1,63.4047,0.0,0,0.0,55,46,7,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+omj_010,OpenMoji,seedling,mask_fill_edgewalk,dataset_mask,0.05566039,0.05566039,0.0,excellent,6,1,51.8871,0.0,0,0.0,43,37,3,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_001,QuickDraw,cat,mask_fill_edgewalk,dataset_mask,0.09780368,0.09780368,0.0,pass,11,1,118.865,0.0,0,0.0,127,118,5,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_002,QuickDraw,dog,mask_fill_edgewalk,dataset_mask,0.07256709,0.07256709,0.0,excellent,8,1,80.2215,0.0,0,0.0,138,130,6,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_003,QuickDraw,fish,mask_fill_edgewalk,dataset_mask,0.08985826,0.08985826,0.0,excellent,10,1,120.5705,0.0,0,0.0,74,68,4,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_004,QuickDraw,flower,mask_fill_edgewalk,dataset_mask,0.13462811,0.13462811,0.0,pass,14,3,144.6283,0.0,0,0.0,88,78,6,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_005,QuickDraw,bicycle,mask_fill_edgewalk,dataset_mask,0.07272604,0.07272604,0.0,excellent,8,1,85.1889,0.0,0,0.0,118,110,6,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_006,QuickDraw,bird,mask_fill_edgewalk,dataset_mask,0.0810433,0.0810433,0.0,excellent,9,1,95.1031,0.0,0,0.0,69,60,7,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_007,QuickDraw,moon,mask_fill_edgewalk,dataset_mask,0.1429336,0.1429336,0.0,pass,15,3,154.175,0.0,0,0.0,119,107,7,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+qd_008,QuickDraw,star,mask_fill_edgewalk,dataset_mask,0.03308916,0.03308916,0.0,excellent,4,0,34.0361,0.0,0,0.0,106,103,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+txt_001,Rendered text,AI,mask_fill_edgewalk,dataset_mask,0.008,0.008,0.0,excellent,1,0,0.0,0.0,0,0.0,31,29,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+txt_002,Rendered text,DST,mask_fill_edgewalk,dataset_mask,0.04727158,0.04727158,0.0,excellent,5,1,39.7368,0.0,0,0.0,50,43,5,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+txt_003,Rendered text,WKU,mask_fill_edgewalk,dataset_mask,0.03293545,0.03293545,0.0,excellent,4,0,29.2329,0.0,0,0.0,76,66,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+txt_004,Rendered text,2026,mask_fill_edgewalk,dataset_mask,0.06417366,0.06417366,0.0,excellent,7,1,67.9269,0.0,0,0.0,69,64,3,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+txt_005,Rendered text,HELLO,mask_fill_edgewalk,dataset_mask,0.14271031,0.14271031,0.0,pass,15,3,147.1972,0.0,0,0.0,65,55,6,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

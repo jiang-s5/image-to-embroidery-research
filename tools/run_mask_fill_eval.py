@@ -65,6 +65,10 @@ def main() -> int:
     parser.add_argument("--min-component-pixels", type=int, default=64)
     parser.add_argument("--min-run-mm", type=float, default=1.0)
     parser.add_argument("--fill-inset-px", type=int, default=0)
+    parser.add_argument("--adaptive-fill-inset", action="store_true")
+    parser.add_argument("--adaptive-fill-inset-max-px", type=int, default=2)
+    parser.add_argument("--adaptive-fill-inset-thin-max-distance-px", type=float, default=3.0)
+    parser.add_argument("--adaptive-fill-inset-mid-max-distance-px", type=float, default=6.0)
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
@@ -136,6 +140,10 @@ def main() -> int:
             min_component_pixels=args.min_component_pixels,
             min_run_mm=args.min_run_mm,
             fill_inset_px=args.fill_inset_px,
+            adaptive_fill_inset=args.adaptive_fill_inset,
+            adaptive_fill_inset_max_px=args.adaptive_fill_inset_max_px,
+            adaptive_fill_inset_thin_max_distance_px=args.adaptive_fill_inset_thin_max_distance_px,
+            adaptive_fill_inset_mid_max_distance_px=args.adaptive_fill_inset_mid_max_distance_px,
             use_mask_path_connectors=args.use_mask_path_connectors,
             max_mask_path_mm=args.max_mask_path_mm,
             max_mask_path_expansions=args.max_mask_path_expansions,

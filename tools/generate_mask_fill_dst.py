@@ -189,6 +189,43 @@ def erode_mask(mask: np.ndarray, inset_px: int) -> np.ndarray:
     return cv2.erode(mask.astype(np.uint8), kernel, iterations=1)
 
 
+def distance_transform_stats(mask: np.ndarray) -> tuple[float, float]:
+    binary = (mask > 0).astype(np.uint8)
+    if int(binary.sum()) <= 0:
+        return 0.0, 0.0
+    distance = cv2.distanceTransform(binary, cv2.DIST_L2, 5)
+    active = distance[binary > 0]
+    return float(distance.max()), float(active.mean()) if active.size else 0.0
+
+
+def adaptive_fill_inset_px_for_component(
+    component_mask: np.ndarray,
+    enabled: bool,
+    fixed_inset_px: int,
+    max_inset_px: int,
+    thin_max_distance_px: float,
+    mid_max_distance_px: float,
+) -> int:
+    if not enabled:
+        return max(0, fixed_inset_px)
+    max_distance, _mean_distance = distance_transform_stats(component_mask)
+    if max_distance <= thin_max_distance_px:
+        return 0
+    if max_distance <= mid_max_distance_px:
+        return min(1, max(0, max_inset_px))
+    return max(0, max_inset_px)
+
+
+def erode_mask_with_fallback(mask: np.ndarray, inset_px: int) -> tuple[np.ndarray, int]:
+    inset = max(0, inset_px)
+    while inset > 0:
+        eroded = erode_mask(mask, inset)
+        if int(eroded.sum()) > 0:
+            return eroded, inset
+        inset -= 1
+    return mask.astype(np.uint8), 0
+
+
 def point_inside(mask: np.ndarray, point: tuple[int, int]) -> bool:
     x, y = point
     return 0 <= y < mask.shape[0] and 0 <= x < mask.shape[1] and mask[y, x] > 0
@@ -835,6 +872,10 @@ def generate_mask_fill_dst(
     min_component_pixels: int = 64,
     min_run_mm: float = 1.0,
     fill_inset_px: int = 0,
+    adaptive_fill_inset: bool = False,
+    adaptive_fill_inset_max_px: int = 2,
+    adaptive_fill_inset_thin_max_distance_px: float = 3.0,
+    adaptive_fill_inset_mid_max_distance_px: float = 6.0,
     use_mask_path_connectors: bool = False,
     max_mask_path_mm: float = 24.0,
     max_mask_path_expansions: int = 8000,
@@ -910,13 +951,23 @@ def generate_mask_fill_dst(
     style_running_points = 0
     style_fallback_fill_components = 0
     style_component_reports: list[dict[str, Any]] = []
+    adaptive_fill_inset_counts: dict[int, int] = {}
     components_used = 0
     current_px: tuple[int, int] | None = None
 
     ordered_labels = component_order(labels, stats, min_component_pixels, component_order_strategy)
     for component_index, label in enumerate(ordered_labels):
         component_mask = (labels == label).astype(np.uint8)
-        fill_component_mask = erode_mask(component_mask, fill_inset_px)
+        component_fill_inset_px = adaptive_fill_inset_px_for_component(
+            component_mask,
+            adaptive_fill_inset,
+            fill_inset_px,
+            adaptive_fill_inset_max_px,
+            adaptive_fill_inset_thin_max_distance_px,
+            adaptive_fill_inset_mid_max_distance_px,
+        )
+        fill_component_mask, component_fill_inset_px = erode_mask_with_fallback(component_mask, component_fill_inset_px)
+        adaptive_fill_inset_counts[component_fill_inset_px] = adaptive_fill_inset_counts.get(component_fill_inset_px, 0) + 1
         component_skeleton = ((skeleton > 0) & (component_mask > 0)).astype(np.uint8) if skeleton is not None else None
         style_report = classify_component_style(
             component_mask,
@@ -1248,6 +1299,11 @@ def generate_mask_fill_dst(
         "min_run_mm": min_run_mm,
         "min_run_px": min_run_px,
         "fill_inset_px": fill_inset_px,
+        "adaptive_fill_inset": adaptive_fill_inset,
+        "adaptive_fill_inset_max_px": adaptive_fill_inset_max_px,
+        "adaptive_fill_inset_thin_max_distance_px": adaptive_fill_inset_thin_max_distance_px,
+        "adaptive_fill_inset_mid_max_distance_px": adaptive_fill_inset_mid_max_distance_px,
+        "adaptive_fill_inset_counts": adaptive_fill_inset_counts,
         "use_mask_path_connectors": use_mask_path_connectors,
         "max_mask_path_mm": max_mask_path_mm,
         "max_mask_path_px": max_mask_path_px,
@@ -1317,6 +1373,10 @@ def main() -> int:
     parser.add_argument("--min-component-pixels", type=int, default=64)
     parser.add_argument("--min-run-mm", type=float, default=1.0)
     parser.add_argument("--fill-inset-px", type=int, default=0)
+    parser.add_argument("--adaptive-fill-inset", action="store_true")
+    parser.add_argument("--adaptive-fill-inset-max-px", type=int, default=2)
+    parser.add_argument("--adaptive-fill-inset-thin-max-distance-px", type=float, default=3.0)
+    parser.add_argument("--adaptive-fill-inset-mid-max-distance-px", type=float, default=6.0)
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
@@ -1368,6 +1428,10 @@ def main() -> int:
         min_component_pixels=args.min_component_pixels,
         min_run_mm=args.min_run_mm,
         fill_inset_px=args.fill_inset_px,
+        adaptive_fill_inset=args.adaptive_fill_inset,
+        adaptive_fill_inset_max_px=args.adaptive_fill_inset_max_px,
+        adaptive_fill_inset_thin_max_distance_px=args.adaptive_fill_inset_thin_max_distance_px,
+        adaptive_fill_inset_mid_max_distance_px=args.adaptive_fill_inset_mid_max_distance_px,
         use_mask_path_connectors=args.use_mask_path_connectors,
         max_mask_path_mm=args.max_mask_path_mm,
         max_mask_path_expansions=args.max_mask_path_expansions,
