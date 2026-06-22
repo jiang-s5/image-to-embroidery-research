@@ -1,0 +1,66 @@
+{
+  "mode": "apply",
+  "samples": 4,
+  "candidate_rows": 60,
+  "exclude_hard_fail": true,
+  "enforce_coverage_floor": false,
+  "enforce_adaptive_coverage_floor": false,
+  "coverage_floor_tolerance": 0.0,
+  "coverage_floor_mode": "branch",
+  "coverage_floor_line_sources": [
+    "QuickDraw",
+    "Rendered text"
+  ],
+  "style_aware_hard_gate": false,
+  "mask_fill_hard_gate": false,
+  "config_json": "results\\public_benchmark_v1_ext33_m2_30_nearestrow_selector\\calibrated_config.json",
+  "config": {
+    "unified_weight": 1.0,
+    "coverage_profile": "public_soft",
+    "coverage_weight": 0.2,
+    "precision_weight": 0.05,
+    "jump_weight": 0.01,
+    "trim_weight": 0.01,
+    "off_mask_weight": 0.1,
+    "visible_weight": 0.05,
+    "hard_fail_penalty": 0.04,
+    "min_coverage": 0.8,
+    "adaptive_flat_min_coverage": 0.84,
+    "adaptive_line_min_coverage": 0.58,
+    "min_precision": 0.72,
+    "jump_scale": 20.0,
+    "trim_scale": 8.0,
+    "style_aware_max_off_mask_mm": 0.5,
+    "style_aware_max_jump_count": 24.0,
+    "style_aware_max_trim_count": 5.0,
+    "style_aware_min_precision": 0.68,
+    "style_aware_min_coverage": 0.78,
+    "mask_fill_max_off_mask_mm": 0.5,
+    "mask_fill_max_jump_count": 24.0,
+    "mask_fill_max_trim_count": 5.0,
+    "mask_fill_min_precision": 0.68,
+    "mask_fill_min_coverage": 0.78
+  },
+  "applied": {
+    "samples": 4,
+    "hard_fail": 0,
+    "mean_calibrated_score": 0.102411,
+    "mean_unified_loss": 0.084419,
+    "mean_jump_count": 6.75,
+    "mean_trim_count": 4.75,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.856344,
+    "mean_effective_min_coverage": 0.78,
+    "mean_coverage_margin": 0.076344,
+    "mean_stitch_precision_ratio": 0.793664,
+    "chosen_counts": {
+      "auto_evalrepair_r10_c20": 2,
+      "mask_fill_edgewalk_nearestrow_rows16_p40": 1,
+      "mask_fill_edgewalk_rows16_p40": 1
+    },
+    "coverage_profile_counts": {
+      "public_soft": 4
+    }
+  }
+}

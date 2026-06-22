@@ -94,6 +94,8 @@ def main() -> int:
     parser.add_argument("--style-running-skeleton-ratio", type=float, default=0.08)
     parser.add_argument("--style-running-max-distance-px", type=float, default=4.5)
     parser.add_argument("--style-running-min-skeleton-pixels", type=int, default=4)
+    parser.add_argument("--component-order", choices=["area", "nearest_centroid"], default="area")
+    parser.add_argument("--row-order", choices=["serpentine", "nearest_endpoint"], default="serpentine")
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -158,6 +160,8 @@ def main() -> int:
             style_running_skeleton_ratio=args.style_running_skeleton_ratio,
             style_running_max_distance_px=args.style_running_max_distance_px,
             style_running_min_skeleton_pixels=args.style_running_min_skeleton_pixels,
+            component_order_strategy=args.component_order,
+            row_order_strategy=args.row_order,
         )
         (sample_out / "generator_report.json").write_text(json.dumps(generator_report, ensure_ascii=False, indent=2), encoding="utf-8")
         pred = analyze_file(

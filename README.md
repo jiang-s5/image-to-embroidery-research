@@ -42,11 +42,11 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-models/model_m2_14_current_best
-configs/best_current_model_m2_14_outline_selector.json
+models/model_m2_30_current_best
+configs/best_current_model_m2_30_nearestrow_selector.json
 ```
 
-M2.14 extends the M2.13 hard-safe selector with a gated inset-outline candidate. It slightly improves public leave-one-out and core-to-full metrics while preserving the M2.13 incoming-review gain. The outline branch is not mandatory because direct contour outlines can increase off-mask risk; it is used only when the selector judges it safe.
+M2.30 adds a nearest-endpoint row-order fill candidate. It improves the public core-to-full holdout unified loss from M2.14's `0.111060` to `0.074071`, while increasing coverage from `0.826159` to `0.927512` and keeping `0` hard_fail. Incoming review also improves from `0.090709` to `0.084419`.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 

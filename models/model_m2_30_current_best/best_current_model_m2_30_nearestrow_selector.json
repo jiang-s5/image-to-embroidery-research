@@ -1,0 +1,112 @@
+{
+  "name": "best_current_model_m2_30_nearestrow_selector",
+  "status": "recommended_current_best_nearestrow_pipeline",
+  "selection_date": "2026-06-22",
+  "base_checkpoint": "checkpoints/best_model13_multiformat_all_vector_continuity.pt",
+  "base_edge_policy": "checkpoints/m2_edge_policy_m2_1_globalrepair20.json",
+  "upgrade_from_m2_14": "Adds a high-coverage nearest-endpoint row-order fill candidate and uses a calibrated selector to choose among skeleton, auto-repair, mask-fill, outline, style-aware, satin, and nearest-row candidates.",
+  "candidate_generation_upgrade": {
+    "new_candidate": "mask_fill_edgewalk_nearestrow_rows16_p40",
+    "generator": "tools/generate_mask_fill_dst.py",
+    "batch_eval": "tools/run_mask_fill_eval.py",
+    "generator_flags": {
+      "row_spacing_mm": 1.6,
+      "max_connect_mm": 6.0,
+      "min_connect_inside_fraction": 0.95,
+      "min_component_pixels": 64,
+      "min_run_mm": 1.0,
+      "use_mask_path_connectors": true,
+      "max_mask_path_mm": 40.0,
+      "row_order": "nearest_endpoint",
+      "component_order": "area"
+    },
+    "important_result": "Nearest-endpoint row ordering preserves near-complete mask coverage while reducing jumps and trims compared with scanline mask-fill. It creates a stronger high-coverage candidate for the M2 selector."
+  },
+  "selector": {
+    "type": "two_stage_calibrated_candidate_selector",
+    "exclude_hard_fail": true,
+    "enforce_coverage_floor": false,
+    "enforce_adaptive_coverage_floor": false,
+    "calibrated_config_file": "results/public_benchmark_v1_ext33_m2_30_nearestrow_selector/calibrated_config.json",
+    "calibrated_config": {
+      "unified_weight": 1.0,
+      "coverage_profile": "public_soft",
+      "coverage_weight": 0.2,
+      "precision_weight": 0.05,
+      "jump_weight": 0.01,
+      "trim_weight": 0.01,
+      "off_mask_weight": 0.1,
+      "visible_weight": 0.05,
+      "hard_fail_penalty": 0.04,
+      "min_coverage": 0.8,
+      "adaptive_flat_min_coverage": 0.84,
+      "adaptive_line_min_coverage": 0.58,
+      "min_precision": 0.72,
+      "jump_scale": 20.0,
+      "trim_scale": 8.0
+    }
+  },
+  "public_core_to_full_holdout": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_30_nearestrow_selector",
+    "train_samples": 17,
+    "test_samples": 16,
+    "candidate_rows_train": 272,
+    "candidate_rows_test": 256,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.074071,
+    "mean_jump_count": 6.9375,
+    "mean_trim_count": 2.0625,
+    "mean_off_mask_stitch_length_mm": 0.187256,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.927512,
+    "mean_stitch_precision_ratio": 0.801813
+  },
+  "public_all_apply": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_30_nearestrow_applied_all",
+    "samples": 33,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.065631,
+    "mean_jump_count": 6.333333,
+    "mean_trim_count": 1.787879,
+    "mean_off_mask_stitch_length_mm": 0.105806,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.888958,
+    "mean_stitch_precision_ratio": 0.80209
+  },
+  "incoming_review_eval_only": {
+    "dataset": "datasets/incoming_review_eval_v1",
+    "status": "evaluation_only_not_training",
+    "result_dir": "results/incoming_review_eval_v1_m2_30_nearestrow_applied",
+    "samples": 4,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.084419,
+    "mean_jump_count": 6.75,
+    "mean_trim_count": 4.75,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.856344,
+    "mean_stitch_precision_ratio": 0.793664
+  },
+  "comparison_to_m2_14": {
+    "public_core_to_full_holdout": {
+      "m2_14_mean_unified_loss": 0.11106,
+      "m2_30_mean_unified_loss": 0.074071,
+      "m2_14_mean_jump_count": 10.1875,
+      "m2_30_mean_jump_count": 6.9375,
+      "m2_14_mean_trim_count": 3.75,
+      "m2_30_mean_trim_count": 2.0625,
+      "m2_14_mean_coverage_ratio": 0.826159,
+      "m2_30_mean_coverage_ratio": 0.927512
+    },
+    "incoming_review_eval_only": {
+      "m2_14_mean_unified_loss": 0.090709,
+      "m2_30_mean_unified_loss": 0.084419,
+      "m2_14_mean_jump_count": 7.5,
+      "m2_30_mean_jump_count": 6.75,
+      "m2_14_mean_coverage_ratio": 0.856321,
+      "m2_30_mean_coverage_ratio": 0.856344
+    }
+  },
+  "selection_rationale": "M2.30 is promoted because it improves public core-to-full holdout loss, jump count, trim count, and coverage over M2.14, while also improving incoming review loss with zero hard_fail.",
+  "boundary": "M2.30 improves path continuity and coverage through nearest-endpoint row ordering, but it is still not a full professional digitizer with learned satin, tatami, underlay, pull compensation, and color-layer sequencing."
+}

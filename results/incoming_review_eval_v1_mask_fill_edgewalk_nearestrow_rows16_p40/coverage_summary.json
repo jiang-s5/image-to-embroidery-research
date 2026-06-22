@@ -1,0 +1,6 @@
+{
+  "samples": 4,
+  "hard_fail": 0,
+  "mean_coverage_ratio": 0.996959,
+  "mean_stitch_precision_ratio": 0.752316
+}

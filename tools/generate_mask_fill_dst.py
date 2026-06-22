@@ -656,33 +656,92 @@ def component_fill_rows(
     row_spacing_px: int,
     min_run_px: int,
     reverse_first: bool = False,
+    row_order_strategy: str = "serpentine",
+    entry_px: tuple[int, int] | None = None,
 ) -> list[tuple[tuple[int, int], tuple[int, int]]]:
     ys, xs = np.where(component_mask > 0)
     if ys.size == 0:
         return []
     y_min = int(ys.min())
     y_max = int(ys.max())
+    raw_rows: list[tuple[tuple[int, int], tuple[int, int]]] = []
     rows: list[tuple[tuple[int, int], tuple[int, int]]] = []
     reverse = reverse_first
     for y in range(y_min, y_max + 1, max(1, row_spacing_px)):
         runs = row_runs(component_mask, y, min_run_px)
-        if reverse:
-            runs = list(reversed(runs))
         for x0, x1 in runs:
+            raw_rows.append(((x0, y), (x1, y)))
+        if row_order_strategy != "nearest_endpoint":
             if reverse:
-                rows.append(((x1, y), (x0, y)))
-            else:
-                rows.append(((x0, y), (x1, y)))
+                runs = list(reversed(runs))
+            for x0, x1 in runs:
+                if reverse:
+                    rows.append(((x1, y), (x0, y)))
+                else:
+                    rows.append(((x0, y), (x1, y)))
+                reverse = not reverse
+    if row_order_strategy != "nearest_endpoint":
+        return rows
+
+    remaining = list(raw_rows)
+    current = entry_px
+    while remaining:
+        if current is None:
+            index = 0
+            start, end = remaining.pop(index)
+            if reverse:
+                start, end = end, start
+            rows.append((start, end))
+            current = end
             reverse = not reverse
+            continue
+        index, start, end = min(
+            (
+                (index, segment[0], segment[1])
+                for index, segment in enumerate(remaining)
+            ),
+            key=lambda item: min(math.dist(current, item[1]), math.dist(current, item[2])),
+        )
+        remaining.pop(index)
+        if math.dist(current, end) < math.dist(current, start):
+            start, end = end, start
+        rows.append((start, end))
+        current = end
     return rows
 
 
-def component_order(labels: np.ndarray, stats: np.ndarray, min_component_pixels: int) -> list[int]:
+def component_order(labels: np.ndarray, stats: np.ndarray, min_component_pixels: int, strategy: str = "area") -> list[int]:
     labels_out = []
     for label in range(1, stats.shape[0]):
         area = int(stats[label, cv2.CC_STAT_AREA])
         if area >= min_component_pixels:
             labels_out.append(label)
+    if strategy == "nearest_centroid" and labels_out:
+        remaining = set(labels_out)
+        current = max(remaining, key=lambda label: int(stats[label, cv2.CC_STAT_AREA]))
+        ordered = [current]
+        remaining.remove(current)
+        while remaining:
+            current_center = (
+                float(stats[current, cv2.CC_STAT_LEFT]) + float(stats[current, cv2.CC_STAT_WIDTH]) / 2.0,
+                float(stats[current, cv2.CC_STAT_TOP]) + float(stats[current, cv2.CC_STAT_HEIGHT]) / 2.0,
+            )
+            current = min(
+                remaining,
+                key=lambda label: (
+                    math.dist(
+                        current_center,
+                        (
+                            float(stats[label, cv2.CC_STAT_LEFT]) + float(stats[label, cv2.CC_STAT_WIDTH]) / 2.0,
+                            float(stats[label, cv2.CC_STAT_TOP]) + float(stats[label, cv2.CC_STAT_HEIGHT]) / 2.0,
+                        ),
+                    ),
+                    -int(stats[label, cv2.CC_STAT_AREA]),
+                ),
+            )
+            ordered.append(current)
+            remaining.remove(current)
+        return ordered
     return sorted(labels_out, key=lambda label: int(stats[label, cv2.CC_STAT_AREA]), reverse=True)
 
 
@@ -729,6 +788,8 @@ def generate_mask_fill_dst(
     style_running_skeleton_ratio: float = 0.08,
     style_running_max_distance_px: float = 4.5,
     style_running_min_skeleton_pixels: int = 4,
+    component_order_strategy: str = "area",
+    row_order_strategy: str = "serpentine",
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
@@ -771,7 +832,8 @@ def generate_mask_fill_dst(
     components_used = 0
     current_px: tuple[int, int] | None = None
 
-    for component_index, label in enumerate(component_order(labels, stats, min_component_pixels)):
+    ordered_labels = component_order(labels, stats, min_component_pixels, component_order_strategy)
+    for component_index, label in enumerate(ordered_labels):
         component_mask = (labels == label).astype(np.uint8)
         component_skeleton = ((skeleton > 0) & (component_mask > 0)).astype(np.uint8) if skeleton is not None else None
         style_report = classify_component_style(
@@ -790,11 +852,25 @@ def generate_mask_fill_dst(
                 style_running_components += 1
                 style_component_reports.append({"label": int(label), **style_report, "paths": len(skeleton_paths)})
             else:
-                rows = component_fill_rows(component_mask, row_spacing_px, min_run_px, reverse_first=component_index % 2 == 1)
+                rows = component_fill_rows(
+                    component_mask,
+                    row_spacing_px,
+                    min_run_px,
+                    reverse_first=component_index % 2 == 1,
+                    row_order_strategy=row_order_strategy,
+                    entry_px=current_px,
+                )
                 style = "fill"
                 style_fallback_fill_components += 1
         else:
-            rows = component_fill_rows(component_mask, row_spacing_px, min_run_px, reverse_first=component_index % 2 == 1)
+            rows = component_fill_rows(
+                component_mask,
+                row_spacing_px,
+                min_run_px,
+                reverse_first=component_index % 2 == 1,
+                row_order_strategy=row_order_strategy,
+                entry_px=current_px,
+            )
 
         if style != "running" and not rows:
             continue
@@ -1035,6 +1111,8 @@ def generate_mask_fill_dst(
         "output_dst": str(output_dst),
         "components_total": int(count - 1),
         "components_used": components_used,
+        "component_order_strategy": component_order_strategy,
+        "row_order_strategy": row_order_strategy,
         "fill_rows": fill_rows,
         "jump_commands_added": jumps,
         "safe_connects": safe_connects,
@@ -1147,6 +1225,8 @@ def main() -> int:
     parser.add_argument("--style-running-skeleton-ratio", type=float, default=0.08)
     parser.add_argument("--style-running-max-distance-px", type=float, default=4.5)
     parser.add_argument("--style-running-min-skeleton-pixels", type=int, default=4)
+    parser.add_argument("--component-order", choices=["area", "nearest_centroid"], default="area")
+    parser.add_argument("--row-order", choices=["serpentine", "nearest_endpoint"], default="serpentine")
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
@@ -1192,6 +1272,8 @@ def main() -> int:
         style_running_skeleton_ratio=args.style_running_skeleton_ratio,
         style_running_max_distance_px=args.style_running_max_distance_px,
         style_running_min_skeleton_pixels=args.style_running_min_skeleton_pixels,
+        component_order_strategy=args.component_order,
+        row_order_strategy=args.row_order,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)

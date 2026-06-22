@@ -47,24 +47,36 @@ continuity_mae: 0.1324329144
 
 ## Current Planner Selector
 
-The current best planning package is M2.14:
+The current best planning package is M2.30:
 
 ```text
-models/model_m2_14_current_best/
-configs/best_current_model_m2_14_outline_selector.json
+models/model_m2_30_current_best/
+configs/best_current_model_m2_30_nearestrow_selector.json
 ```
 
-M2.14 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds a gated inset-outline candidate to the M2.13 hard-safe selector.
+M2.30 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds a nearest-endpoint row-order mask-fill candidate, `mask_fill_edgewalk_nearestrow_rows16_p40`, and uses a calibrated candidate selector.
 
 Summary results:
+
+| Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Trim Count | Mean Coverage |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Public core-to-full holdout | 0 | 0.074071 | 6.9375 | 2.0625 | 0.927512 |
+| Public ext33 all apply | 0 | 0.065631 | 6.333333 | 1.787879 | 0.888958 |
+| Incoming review holdout | 0 | 0.084419 | 6.7500 | 4.7500 | 0.856344 |
+
+Compared with M2.14, M2.30 improves public core-to-full unified loss from `0.111060` to `0.074071`, improves coverage from `0.826159` to `0.927512`, and improves incoming review unified loss from `0.090709` to `0.084419`.
+
+The main lesson is that the high-coverage fill family was not intrinsically bad; the fixed scanline row order caused excessive jumps and trims. Nearest-endpoint row ordering makes the same family executable enough for the selector to use.
+
+## Previous Current Best: M2.14
+
+M2.14 added a gated inset-outline candidate to the M2.13 hard-safe selector. It is no longer current best, but remains an important previous baseline.
 
 | Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Coverage |
 | --- | ---: | ---: | ---: | ---: |
 | Public ext33 LOO | 0 | 0.096228 | 8.848485 | 0.855224 |
 | Core-to-full holdout | 0 | 0.111060 | 10.1875 | 0.826159 |
 | Incoming review holdout | 0 | 0.090709 | 7.5000 | 0.856321 |
-
-The edge-walk fill branch remains the main fill improvement. The inset-outline branch is a gated candidate: direct outlines were unsafe, while inset outlines can help selected public/holdout samples without regressing incoming review.
 
 ## Later Experiment: M2.15 Satin-Column Probe
 
