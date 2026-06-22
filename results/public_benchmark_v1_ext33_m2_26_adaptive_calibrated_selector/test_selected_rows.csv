@@ -1,0 +1,17 @@
+﻿sample_id,source_name,category,target_branch,oracle_score,oracle_quality_level,unified_loss,jump_count,trim_count,off_mask_stitch_length_mm,visible_connector_count,coverage_ratio,stitch_precision_ratio,coverage_deficit,precision_deficit,hard_penalty,is_oracle_choice,chosen_candidate,quality_level,coverage_profile,calibrated_score,effective_min_coverage,jump_norm,trim_norm,off_mask_penalty,visible_penalty
+ocp_006,Openclipart,butterfly_2,flat_icon_fill,0.14899964,warning,0.14899964,5,18,0.0,0,0.966139,0.978372,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,warning,public_soft,0.17399964,0.82,0.25,2.25,0.0,0.0
+ocp_007,Openclipart,sitting_cat,flat_icon_fill,0.08902364,pass,0.08902364,5,8,0.0,0,0.989164,0.945665,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,pass,public_soft,0.10152364,0.82,0.25,1.0,0.0,0.0
+ocp_008,Openclipart,fish,flat_icon_fill,0.28700153,pass,0.10601473,12,1,0.0,0,0.297533,0.9,0.522467,0.0,0.0,0,skeleton_c30_m20,pass,public_soft,0.21775813,0.82,0.6,0.125,0.0,0.0
+ocp_009,Openclipart,flower_2,flat_icon_fill,0.2671869,warning,0.1547081,18,1,0.0,0,0.468803,0.873245,0.351197,0.0,0.0,1,skeleton_c30_m12,warning,public_soft,0.2351975,0.82,0.9,0.125,0.0,0.0
+ocp_010,Openclipart,thought_bubble,flat_icon_fill,0.0324356,excellent,0.008,1,0,0.0,0,0.688911,0.988028,0.131089,0.0,0.0,1,auto_evalrepair_r10_c20,excellent,public_soft,0.0347178,0.82,0.05,0.0,0.0,0.0
+omj_006,OpenMoji,cherry_blossom,flat_icon_fill,0.24493464,excellent,0.07215824,8,1,0.0,0,0.318059,0.968,0.461941,0.0,0.0,0,skeleton_c30_m8,excellent,public_soft,0.16979644,0.78,0.4,0.125,0.0,0.0
+omj_007,OpenMoji,ribbon,flat_icon_fill,0.2731814,excellent,0.0474694,5,1,0.0,0,0.18572,1.0,0.59428,0.0,0.0,0,skeleton_c30_m8,excellent,public_soft,0.1700754,0.78,0.25,0.125,0.0,0.0
+omj_008,OpenMoji,paw_prints,flat_icon_fill,0.12918417,pass,0.12918417,12,3,0.4955,0,1.0,0.772169,0.0,0.0,0.0,1,mask_fill_edgewalk_satin_w8_s7_i4,pass,public_soft,0.16370917,0.78,0.6,0.375,0.024775,0.0
+omj_009,OpenMoji,lady_beetle,flat_icon_fill,0.14656692,pass,0.14656692,12,8,0.0,0,0.988936,0.89792,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,pass,public_soft,0.16256692,0.78,0.6,1.0,0.0,0.0
+omj_010,OpenMoji,seedling,line_text_skeleton,0.06926814,excellent,0.06398694,7,1,0.0,0,1.0,0.664792,0.0,0.055208,0.0,0,mask_fill_edgewalk_rows16_p40,excellent,public_soft,0.07149734,0.78,0.35,0.125,0.0,0.0
+qd_006,QuickDraw,bird,line_text_skeleton,0.08259368,excellent,0.08144543,9,1,0.0,0,0.957422,0.692345,0.0,0.027655,0.0,1,skeleton_c30_m8,excellent,public_soft,0.08857818,0.55,0.45,0.125,0.0,0.0
+qd_007,QuickDraw,moon,line_text_skeleton,0.19236944,warning,0.18653714,21,2,0.0,0,0.919866,0.661118,0.0,0.058882,0.0,1,skeleton_c30_m20,warning,public_soft,0.20248124,0.55,1.05,0.25,0.0,0.0
+qd_008,QuickDraw,star,line_text_skeleton,0.11641339,pass,0.11241589,12,2,0.0,0,0.995764,0.67335,0.0,0.04665,0.0,1,skeleton_c20_m4,pass,public_soft,0.12324839,0.55,0.6,0.25,0.0,0.0
+txt_003,Rendered text,WKU,line_text_skeleton,0.03285763,excellent,0.03285763,4,0,0.0,0,0.609455,0.923899,0.0,0.0,0.0,1,skeleton_c30_m4,excellent,public_soft,0.03485763,0.55,0.2,0.0,0.0,0.0
+txt_004,Rendered text,2026,line_text_skeleton,0.08885311,excellent,0.08885311,10,1,0.0,0,0.651574,0.912042,0.0,0.0,0.0,1,skeleton_c20_m4,excellent,public_soft,0.09510311,0.55,0.5,0.125,0.0,0.0
+txt_005,Rendered text,HELLO,line_text_skeleton,0.05804891,excellent,0.05804891,7,0,0.0,0,0.71109,0.860291,0.0,0.0,0.0,1,skeleton_c30_m4,excellent,public_soft,0.06154891,0.55,0.35,0.0,0.0,0.0

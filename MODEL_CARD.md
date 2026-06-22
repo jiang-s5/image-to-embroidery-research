@@ -102,6 +102,12 @@ M2.22-M2.25 added an interpretable calibrated selector that ranks candidates by 
 
 These were not promoted. The next selector should use adaptive coverage targets rather than a fixed coverage floor.
 
+## Later Experiment: M2.26-M2.29 Adaptive Coverage Selector
+
+M2.26-M2.29 tested source-aware adaptive coverage targets. M2.26 lowered public-full loss from M2.14's `0.111060` to `0.095392`, with lower jump and trim counts, but coverage dropped from `0.826159` to `0.734277`. M2.28-M2.29 added adaptive coverage floors and recovered coverage to `0.844804`, but loss regressed to `0.122887`.
+
+These were not promoted. The result supports adaptive coverage as a useful direction, but the next version should use a smooth coverage-risk curve rather than a hard floor.
+
 ## Later Experiment: model14B
 
 ```text
