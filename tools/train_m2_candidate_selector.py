@@ -239,6 +239,61 @@ def target_select_direction(target: str) -> str:
     return "max" if target == "oracle_choice" else "min"
 
 
+def fit_pairwise_ranker(
+    rows: list[dict[str, Any]],
+    names: list[str],
+    alpha: float,
+    min_score_gap: float = 0.0,
+) -> dict[str, Any]:
+    x = matrix(rows, names)
+    mean_x = x.mean(axis=0)
+    std_x = x.std(axis=0)
+    std_x[std_x < 1e-8] = 1.0
+    xz = (x - mean_x) / std_x
+
+    row_groups: dict[str, list[int]] = defaultdict(list)
+    for index, row in enumerate(rows):
+        row_groups[str(row["sample_id"])].append(index)
+
+    diff_rows: list[np.ndarray] = []
+    diff_targets: list[float] = []
+    for indices in row_groups.values():
+        for left_pos, left_index in enumerate(indices):
+            left_score = safe_float(rows[left_index].get("oracle_score"))
+            for right_index in indices[left_pos + 1 :]:
+                right_score = safe_float(rows[right_index].get("oracle_score"))
+                gap = left_score - right_score
+                if abs(gap) < min_score_gap:
+                    continue
+                diff_rows.append(xz[left_index] - xz[right_index])
+                diff_targets.append(gap)
+                diff_rows.append(xz[right_index] - xz[left_index])
+                diff_targets.append(-gap)
+
+    if not diff_rows:
+        return fit_ridge(rows, names, alpha, target="oracle_score")
+
+    design = np.stack(diff_rows, axis=0)
+    y = np.asarray(diff_targets, dtype=np.float64)
+    reg = np.eye(design.shape[1], dtype=np.float64) * alpha
+    try:
+        weights = np.linalg.solve(design.T @ design + reg, design.T @ y)
+    except np.linalg.LinAlgError:
+        weights = np.linalg.pinv(design.T @ design + reg) @ design.T @ y
+    return {
+        "type": "ridge_pairwise_candidate_ranker",
+        "target": "pairwise_score_delta",
+        "select_direction": "min",
+        "alpha": alpha,
+        "pairwise_min_score_gap": min_score_gap,
+        "feature_names": names,
+        "mean": mean_x.tolist(),
+        "std": std_x.tolist(),
+        "weights": weights.tolist(),
+        "pairwise_examples": len(diff_targets),
+    }
+
+
 def fit_ridge(rows: list[dict[str, Any]], names: list[str], alpha: float, target: str = "oracle_score") -> dict[str, Any]:
     x = matrix(rows, names)
     y = np.array([target_value(row, target) for row in rows], dtype=np.float64)
@@ -272,9 +327,23 @@ def predict(model: dict[str, Any], rows: list[dict[str, Any]]) -> list[float]:
     std_x = np.array(model["std"], dtype=np.float64)
     std_x[std_x < 1e-8] = 1.0
     xz = (x - mean_x) / std_x
-    design = np.concatenate([np.ones((xz.shape[0], 1), dtype=np.float64), xz], axis=1)
     weights = np.array(model["weights"], dtype=np.float64)
+    if model.get("type") == "ridge_pairwise_candidate_ranker":
+        return (xz @ weights).tolist()
+    design = np.concatenate([np.ones((xz.shape[0], 1), dtype=np.float64), xz], axis=1)
     return (design @ weights).tolist()
+
+
+def fit_selector_model(
+    rows: list[dict[str, Any]],
+    names: list[str],
+    alpha: float,
+    target: str,
+    pairwise_min_score_gap: float = 0.0,
+) -> dict[str, Any]:
+    if target == "pairwise_score_delta":
+        return fit_pairwise_ranker(rows, names, alpha, pairwise_min_score_gap)
+    return fit_ridge(rows, names, alpha, target)
 
 
 def groups_by_sample(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
@@ -466,6 +535,7 @@ def leave_one_out(
     names: list[str],
     alpha: float,
     target: str = "oracle_score",
+    pairwise_min_score_gap: float = 0.0,
     exclude_hard_fail: bool = False,
     enforce_coverage_floor: bool = False,
     flat_min_coverage: float = 0.75,
@@ -491,7 +561,7 @@ def leave_one_out(
     for sample_id in sorted(groups):
         train = [row for row in rows if row["sample_id"] != sample_id]
         held = groups[sample_id]
-        model = fit_ridge(train, names, alpha, target)
+        model = fit_selector_model(train, names, alpha, target, pairwise_min_score_gap)
         selectable = selectable_candidates(
             held,
             exclude_hard_fail,
@@ -515,7 +585,7 @@ def leave_one_out(
             mask_fill_min_coverage,
         )
         preds = predict(model, selectable)
-        reverse = target_select_direction(target) == "max"
+        reverse = str(model.get("select_direction", target_select_direction(target))) == "max"
         ranked = sorted(zip(selectable, preds), key=lambda item: item[1], reverse=reverse)
         chosen_row = dict(ranked[0][0])
         oracle_pool = selectable_candidates(
@@ -576,7 +646,8 @@ def main() -> int:
     parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
     parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     parser.add_argument("--alpha", type=float, default=1.0)
-    parser.add_argument("--target", choices=["oracle_score", "oracle_choice"], default="oracle_score")
+    parser.add_argument("--target", choices=["oracle_score", "oracle_choice", "pairwise_score_delta"], default="oracle_score")
+    parser.add_argument("--pairwise-min-score-gap", type=float, default=0.0)
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -608,6 +679,7 @@ def main() -> int:
         names,
         args.alpha,
         args.target,
+        args.pairwise_min_score_gap,
         args.exclude_hard_fail,
         args.enforce_coverage_floor,
         args.flat_min_coverage,
@@ -629,7 +701,7 @@ def main() -> int:
         args.mask_fill_min_coverage,
     )
     write_csv([{key: value for key, value in row.items() if key != "features"} for row in loo_rows], output_dir / "loo_selected_rows.csv")
-    model = fit_ridge(rows, names, args.alpha, args.target)
+    model = fit_selector_model(rows, names, args.alpha, args.target, args.pairwise_min_score_gap)
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
         "samples": len(groups_by_sample(rows)),
@@ -638,6 +710,7 @@ def main() -> int:
         "alpha": args.alpha,
         "target": args.target,
         "select_direction": target_select_direction(args.target),
+        "pairwise_min_score_gap": args.pairwise_min_score_gap,
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,
