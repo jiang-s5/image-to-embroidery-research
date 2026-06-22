@@ -84,6 +84,12 @@ M2.17 implemented distance-transform rail pairing, deriving outer and inner sati
 
 This result narrows the next direction: distance-transform rails are useful geometry primitives, but satin cannot be an additive after-pass on top of fill rows. The next upgrade should classify stitch style first, then generate fill/running/satin routes separately.
 
+## Later Experiment: M2.18 Component-Level Style-Aware Routing
+
+M2.18 implemented the first component-level style gate: thin or line-like connected components are routed through skeleton running stitches, while broader components continue through the edge-walk fill branch. It also added explicit candidate-type features to the M2 selector.
+
+This was not promoted. Standalone style-aware fill substantially reduced jump and trim counts compared with previous fill candidates, but the learned selector over-selected it on incoming review, increasing unified loss and off-mask length. The result supports stitch-style classification as the next research direction, but the style gate must become hard-safe before replacing M2.14.
+
 ## Later Experiment: model14B
 
 ```text

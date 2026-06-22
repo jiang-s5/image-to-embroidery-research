@@ -90,6 +90,10 @@ def main() -> int:
     parser.add_argument("--dt-satin-min-area-px", type=int, default=64)
     parser.add_argument("--dt-satin-max-pair-px", type=int, default=18)
     parser.add_argument("--dt-satin-max-pairs-per-component", type=int, default=180)
+    parser.add_argument("--use-style-aware-components", action="store_true")
+    parser.add_argument("--style-running-skeleton-ratio", type=float, default=0.08)
+    parser.add_argument("--style-running-max-distance-px", type=float, default=4.5)
+    parser.add_argument("--style-running-min-skeleton-pixels", type=int, default=4)
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -110,10 +114,12 @@ def main() -> int:
         sample_out = output_dir / sample_id
         sample_out.mkdir(parents=True, exist_ok=True)
         output_dst = sample_out / "prediction.dst"
+        skeleton_path = dataset_dir / row["skeleton_path"] if args.use_style_aware_components and row.get("skeleton_path") else None
         generator_report = generate_mask_fill_dst(
             dataset_dir / row["mask_path"],
             output_dst,
             connector_mask_path=eval_mask,
+            skeleton_path=skeleton_path,
             target_width_mm=args.target_width_mm,
             row_spacing_mm=args.row_spacing_mm,
             max_stitch_mm=args.max_stitch_mm,
@@ -148,6 +154,10 @@ def main() -> int:
             dt_satin_min_area_px=args.dt_satin_min_area_px,
             dt_satin_max_pair_px=args.dt_satin_max_pair_px,
             dt_satin_max_pairs_per_component=args.dt_satin_max_pairs_per_component,
+            use_style_aware_components=args.use_style_aware_components,
+            style_running_skeleton_ratio=args.style_running_skeleton_ratio,
+            style_running_max_distance_px=args.style_running_max_distance_px,
+            style_running_min_skeleton_pixels=args.style_running_min_skeleton_pixels,
         )
         (sample_out / "generator_report.json").write_text(json.dumps(generator_report, ensure_ascii=False, indent=2), encoding="utf-8")
         pred = analyze_file(
@@ -171,7 +181,7 @@ def main() -> int:
                 "sample_id": sample_id,
                 "source_name": row.get("source_name", ""),
                 "category": row.get("category", ""),
-                "mode": ("mask_fill_edgewalk_dt_satin" if args.add_dt_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin_rail" if args.add_satin_rail_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin" if args.add_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
+                "mode": ("mask_fill_style_aware" if args.use_style_aware_components and args.use_mask_path_connectors else "mask_fill_edgewalk_dt_satin" if args.add_dt_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin_rail" if args.add_satin_rail_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin" if args.add_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
                 "unified_loss": score["unified_loss"],
                 "exec_score": score["exec_score"],
                 "visual_risk": score["visual_risk"],
@@ -197,6 +207,11 @@ def main() -> int:
                 "dt_satin_pairs": generator_report["dt_satin_pairs"],
                 "dt_satin_segments": generator_report["dt_satin_segments"],
                 "dt_satin_rejected": generator_report["dt_satin_rejected"],
+                "style_running_components": generator_report["style_running_components"],
+                "style_fill_components": generator_report["style_fill_components"],
+                "style_running_paths": generator_report["style_running_paths"],
+                "style_running_points": generator_report["style_running_points"],
+                "style_fallback_fill_components": generator_report["style_fallback_fill_components"],
             }
         )
         coverage_rows.append(

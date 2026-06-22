@@ -12,6 +12,19 @@ import numpy as np
 from PIL import Image
 from pyembroidery import END, JUMP, STITCH, EmbPattern, EmbThread, write_dst
 
+Pixel = tuple[int, int]
+
+NEIGHBORS_8 = [
+    (-1, -1),
+    (0, -1),
+    (1, -1),
+    (-1, 0),
+    (1, 0),
+    (-1, 1),
+    (0, 1),
+    (1, 1),
+]
+
 
 def load_mask(path: Path) -> np.ndarray:
     image = Image.open(path).convert("L")
@@ -269,6 +282,97 @@ def component_dt_satin_pairs(
             if len(pairs) >= max_pairs:
                 return pairs
     return pairs
+
+
+def component_skeleton_paths(skeleton: np.ndarray, component_mask: np.ndarray, min_pixels: int) -> list[list[tuple[int, int]]]:
+    component_skeleton = ((skeleton > 0) & (component_mask > 0)).astype(np.uint8)
+    count, labels, stats, _centroids = cv2.connectedComponentsWithStats(component_skeleton, connectivity=8)
+    paths: list[list[tuple[int, int]]] = []
+    for label in range(1, count):
+        if int(stats[label, cv2.CC_STAT_AREA]) < min_pixels:
+            continue
+        ys, xs = np.where(labels == label)
+        pixels = list(zip(xs.tolist(), ys.tolist()))
+        graph = build_skeleton_graph(pixels)
+        if not graph:
+            continue
+        start = choose_skeleton_start(graph)
+        walk = dfs_skeleton_edge_walk(graph, start)
+        if len(walk) >= 2:
+            paths.append(walk)
+    return sorted(paths, key=len, reverse=True)
+
+
+def build_skeleton_graph(pixels: list[Pixel]) -> dict[Pixel, list[Pixel]]:
+    pixel_set = set(pixels)
+    graph: dict[Pixel, list[Pixel]] = {}
+    for x, y in pixels:
+        neighbors: list[Pixel] = []
+        for dx, dy in NEIGHBORS_8:
+            candidate = (x + dx, y + dy)
+            if candidate in pixel_set:
+                neighbors.append(candidate)
+        graph[(x, y)] = sorted(neighbors)
+    return graph
+
+
+def choose_skeleton_start(graph: dict[Pixel, list[Pixel]]) -> Pixel:
+    endpoints = [pixel for pixel, neighbors in graph.items() if len(neighbors) <= 1]
+    return min(endpoints or list(graph.keys()))
+
+
+def dfs_skeleton_edge_walk(graph: dict[Pixel, list[Pixel]], start: Pixel) -> list[Pixel]:
+    path: list[Pixel] = [start]
+    seen_edges: set[tuple[Pixel, Pixel]] = set()
+
+    def edge_key(a: Pixel, b: Pixel) -> tuple[Pixel, Pixel]:
+        return (a, b) if a <= b else (b, a)
+
+    def visit(node: Pixel) -> None:
+        for neighbor in graph[node]:
+            key = edge_key(node, neighbor)
+            if key in seen_edges:
+                continue
+            seen_edges.add(key)
+            path.append(neighbor)
+            visit(neighbor)
+            path.append(node)
+
+    visit(start)
+    return path
+
+
+def classify_component_style(
+    component_mask: np.ndarray,
+    component_skeleton: np.ndarray | None,
+    running_skeleton_ratio: float,
+    running_max_distance_px: float,
+    running_min_skeleton_pixels: int,
+) -> dict[str, Any]:
+    area = int(component_mask.sum())
+    skeleton_pixels = int(component_skeleton.sum()) if component_skeleton is not None else 0
+    skeleton_ratio = skeleton_pixels / max(1, area)
+    distance = cv2.distanceTransform((component_mask > 0).astype(np.uint8), cv2.DIST_L2, 5)
+    max_distance = float(distance.max()) if distance.size else 0.0
+    mean_distance = float(distance[component_mask > 0].mean()) if area > 0 else 0.0
+    style = "fill"
+    reasons: list[str] = []
+    if component_skeleton is not None and skeleton_pixels >= running_min_skeleton_pixels:
+        if skeleton_ratio >= running_skeleton_ratio:
+            style = "running"
+            reasons.append("high_skeleton_ratio")
+        if max_distance <= running_max_distance_px:
+            style = "running"
+            reasons.append("thin_distance_transform")
+    return {
+        "style": style,
+        "area": area,
+        "skeleton_pixels": skeleton_pixels,
+        "skeleton_ratio": round(skeleton_ratio, 6),
+        "max_distance_px": round(max_distance, 6),
+        "mean_distance_px": round(mean_distance, 6),
+        "reasons": reasons,
+    }
 
 
 def stitch_point_sequence(
@@ -586,6 +690,7 @@ def generate_mask_fill_dst(
     mask_path: Path,
     output_dst: Path,
     connector_mask_path: Path | None = None,
+    skeleton_path: Path | None = None,
     target_width_mm: float = 90.0,
     row_spacing_mm: float = 1.2,
     max_stitch_mm: float = 3.2,
@@ -620,10 +725,15 @@ def generate_mask_fill_dst(
     dt_satin_min_area_px: int = 64,
     dt_satin_max_pair_px: int = 18,
     dt_satin_max_pairs_per_component: int = 180,
+    use_style_aware_components: bool = False,
+    style_running_skeleton_ratio: float = 0.08,
+    style_running_max_distance_px: float = 4.5,
+    style_running_min_skeleton_pixels: int = 4,
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
     connector_mask = load_mask(connector_mask_path) if connector_mask_path is not None and connector_mask_path.exists() else mask
+    skeleton = load_mask(skeleton_path) if skeleton_path is not None and skeleton_path.exists() else None
     height, width = mask.shape
     scale = target_width_mm / max(1, width)
     row_spacing_px = max(1, int(round(row_spacing_mm / max(scale, 1e-6))))
@@ -652,15 +762,76 @@ def generate_mask_fill_dst(
     dt_satin_pairs = 0
     dt_satin_segments = 0
     dt_satin_rejected = 0
+    style_running_components = 0
+    style_fill_components = 0
+    style_running_paths = 0
+    style_running_points = 0
+    style_fallback_fill_components = 0
+    style_component_reports: list[dict[str, Any]] = []
     components_used = 0
     current_px: tuple[int, int] | None = None
 
     for component_index, label in enumerate(component_order(labels, stats, min_component_pixels)):
         component_mask = (labels == label).astype(np.uint8)
-        rows = component_fill_rows(component_mask, row_spacing_px, min_run_px, reverse_first=component_index % 2 == 1)
-        if not rows:
+        component_skeleton = ((skeleton > 0) & (component_mask > 0)).astype(np.uint8) if skeleton is not None else None
+        style_report = classify_component_style(
+            component_mask,
+            component_skeleton,
+            style_running_skeleton_ratio,
+            style_running_max_distance_px,
+            style_running_min_skeleton_pixels,
+        ) if use_style_aware_components else {"style": "fill"}
+        style = str(style_report["style"])
+        skeleton_paths: list[list[tuple[int, int]]] = []
+        rows: list[tuple[tuple[int, int], tuple[int, int]]] = []
+        if use_style_aware_components and style == "running" and component_skeleton is not None:
+            skeleton_paths = component_skeleton_paths(component_skeleton, component_mask, style_running_min_skeleton_pixels)
+            if skeleton_paths:
+                style_running_components += 1
+                style_component_reports.append({"label": int(label), **style_report, "paths": len(skeleton_paths)})
+            else:
+                rows = component_fill_rows(component_mask, row_spacing_px, min_run_px, reverse_first=component_index % 2 == 1)
+                style = "fill"
+                style_fallback_fill_components += 1
+        else:
+            rows = component_fill_rows(component_mask, row_spacing_px, min_run_px, reverse_first=component_index % 2 == 1)
+
+        if style != "running" and not rows:
+            continue
+        if style == "running" and not skeleton_paths:
             continue
         components_used += 1
+        if style == "running":
+            for path in skeleton_paths:
+                current_mm, current_px, path_stats = stitch_point_sequence(
+                    pattern,
+                    path,
+                    current_mm,
+                    current_px,
+                    connector_mask,
+                    mask.shape,
+                    target_width_mm,
+                    max_stitch_mm,
+                    max_connect_mm,
+                    min_connect_inside_fraction,
+                    use_mask_path_connectors,
+                    max_mask_path_px,
+                    max_mask_path_expansions,
+                )
+                jumps += path_stats["jumps"]
+                safe_connects += path_stats["safe_connects"]
+                mask_path_connects += path_stats["mask_path_connects"]
+                rejected_connects += path_stats["rejected_connects"]
+                rejected_mask_paths += path_stats["rejected_mask_paths"]
+                stitch_segments += path_stats["stitch_segments"]
+                style_running_paths += 1
+                style_running_points += len(path)
+            continue
+
+        if use_style_aware_components:
+            style_fill_components += 1
+            style_component_reports.append({"label": int(label), **style_report, "rows": len(rows)})
+
         for start_px, end_px in rows:
             start_mm = pixel_to_mm_xy(start_px[0], start_px[1], mask.shape, target_width_mm)
             end_mm = pixel_to_mm_xy(end_px[0], end_px[1], mask.shape, target_width_mm)
@@ -860,6 +1031,7 @@ def generate_mask_fill_dst(
     return {
         "mask_path": str(mask_path),
         "connector_mask_path": str(connector_mask_path) if connector_mask_path else "",
+        "skeleton_path": str(skeleton_path) if skeleton_path else "",
         "output_dst": str(output_dst),
         "components_total": int(count - 1),
         "components_used": components_used,
@@ -917,6 +1089,16 @@ def generate_mask_fill_dst(
         "dt_satin_min_area_px": dt_satin_min_area_px,
         "dt_satin_max_pair_px": dt_satin_max_pair_px,
         "dt_satin_max_pairs_per_component": dt_satin_max_pairs_per_component,
+        "use_style_aware_components": use_style_aware_components,
+        "style_running_components": style_running_components,
+        "style_fill_components": style_fill_components,
+        "style_running_paths": style_running_paths,
+        "style_running_points": style_running_points,
+        "style_fallback_fill_components": style_fallback_fill_components,
+        "style_running_skeleton_ratio": style_running_skeleton_ratio,
+        "style_running_max_distance_px": style_running_max_distance_px,
+        "style_running_min_skeleton_pixels": style_running_min_skeleton_pixels,
+        "style_component_reports": style_component_reports[:80],
     }
 
 
@@ -924,6 +1106,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a simple segment-level fill DST from a binary mask.")
     parser.add_argument("--mask", required=True)
     parser.add_argument("--connector-mask", default="")
+    parser.add_argument("--skeleton", default="")
     parser.add_argument("--output-dst", required=True)
     parser.add_argument("--report", required=True)
     parser.add_argument("--target-width-mm", type=float, default=90.0)
@@ -960,12 +1143,17 @@ def main() -> int:
     parser.add_argument("--dt-satin-min-area-px", type=int, default=64)
     parser.add_argument("--dt-satin-max-pair-px", type=int, default=18)
     parser.add_argument("--dt-satin-max-pairs-per-component", type=int, default=180)
+    parser.add_argument("--use-style-aware-components", action="store_true")
+    parser.add_argument("--style-running-skeleton-ratio", type=float, default=0.08)
+    parser.add_argument("--style-running-max-distance-px", type=float, default=4.5)
+    parser.add_argument("--style-running-min-skeleton-pixels", type=int, default=4)
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
         Path(args.mask),
         Path(args.output_dst),
         connector_mask_path=Path(args.connector_mask) if args.connector_mask else None,
+        skeleton_path=Path(args.skeleton) if args.skeleton else None,
         target_width_mm=args.target_width_mm,
         row_spacing_mm=args.row_spacing_mm,
         max_stitch_mm=args.max_stitch_mm,
@@ -1000,6 +1188,10 @@ def main() -> int:
         dt_satin_min_area_px=args.dt_satin_min_area_px,
         dt_satin_max_pair_px=args.dt_satin_max_pair_px,
         dt_satin_max_pairs_per_component=args.dt_satin_max_pairs_per_component,
+        use_style_aware_components=args.use_style_aware_components,
+        style_running_skeleton_ratio=args.style_running_skeleton_ratio,
+        style_running_max_distance_px=args.style_running_max_distance_px,
+        style_running_min_skeleton_pixels=args.style_running_min_skeleton_pixels,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)

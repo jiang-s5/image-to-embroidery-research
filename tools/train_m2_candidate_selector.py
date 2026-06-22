@@ -87,12 +87,23 @@ def build_candidate_rows(
                 hard_fail_penalty,
             )
             per_sample.append((candidate_name, oracle_score))
-            is_skeleton = 1.0 if "skeleton" in candidate_name else 0.0
-            is_auto = 1.0 if "auto" in candidate_name else 0.0
+            candidate_lower = candidate_name.lower()
+            is_skeleton = 1.0 if "skeleton" in candidate_lower else 0.0
+            is_auto = 1.0 if "auto" in candidate_lower else 0.0
+            is_mask_fill = 1.0 if "mask_fill" in candidate_lower else 0.0
+            is_style_aware = 1.0 if "styleaware" in candidate_lower or "style_aware" in candidate_lower else 0.0
+            is_outline = 1.0 if "outline" in candidate_lower else 0.0
+            is_satin = 1.0 if "satin" in candidate_lower else 0.0
+            is_dt_satin = 1.0 if "dtsatin" in candidate_lower or "dt_satin" in candidate_lower else 0.0
             feature_payload = {
                 "bias": 1.0,
                 "candidate_is_skeleton": is_skeleton,
                 "candidate_is_auto": is_auto,
+                "candidate_is_mask_fill": is_mask_fill,
+                "candidate_is_style_aware": is_style_aware,
+                "candidate_is_outline": is_outline,
+                "candidate_is_satin": is_satin,
+                "candidate_is_dt_satin": is_dt_satin,
                 "branch_confidence": safe_float(branch["confidence"]),
                 "branch_line_score": safe_float(branch["line_score"]),
                 "mask_area_ratio": safe_float(branch["features"]["mask_area_ratio"]),
@@ -109,6 +120,10 @@ def build_candidate_rows(
                 "interaction_skeleton_x_line_score": is_skeleton * safe_float(branch["line_score"]),
                 "interaction_skeleton_x_coverage": is_skeleton * safe_float(coverage.get("coverage_ratio")),
                 "interaction_auto_x_coverage": is_auto * safe_float(coverage.get("coverage_ratio")),
+                "interaction_mask_fill_x_coverage": is_mask_fill * safe_float(coverage.get("coverage_ratio")),
+                "interaction_mask_fill_x_line_score": is_mask_fill * safe_float(branch["line_score"]),
+                "interaction_style_aware_x_coverage": is_style_aware * safe_float(coverage.get("coverage_ratio")),
+                "interaction_style_aware_x_line_score": is_style_aware * safe_float(branch["line_score"]),
             }
             pending.append(
                 {
