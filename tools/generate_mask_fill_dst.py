@@ -129,6 +129,80 @@ def component_outline_paths(
     return sorted(paths, key=lambda path: len(path), reverse=True)
 
 
+def erode_mask(mask: np.ndarray, inset_px: int) -> np.ndarray:
+    if inset_px <= 0:
+        return mask.astype(np.uint8)
+    kernel_size = max(1, inset_px * 2 + 1)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+    return cv2.erode(mask.astype(np.uint8), kernel, iterations=1)
+
+
+def point_inside(mask: np.ndarray, point: tuple[int, int]) -> bool:
+    x, y = point
+    return 0 <= y < mask.shape[0] and 0 <= x < mask.shape[1] and mask[y, x] > 0
+
+
+def inward_point(
+    mask: np.ndarray,
+    point: tuple[int, int],
+    unit: tuple[float, float],
+    preferred_distance_px: int,
+    min_distance_px: int = 2,
+) -> tuple[int, int] | None:
+    for distance in range(max(preferred_distance_px, min_distance_px), min_distance_px - 1, -1):
+        candidate = (
+            int(round(point[0] + unit[0] * distance)),
+            int(round(point[1] + unit[1] * distance)),
+        )
+        if point_inside(mask, candidate):
+            return candidate
+    return None
+
+
+def component_satin_columns(
+    component_mask: np.ndarray,
+    min_area_px: int,
+    step_px: int,
+    width_px: int,
+    outer_inset_px: int,
+    max_columns: int,
+) -> list[tuple[tuple[int, int], tuple[int, int]]]:
+    work_mask = erode_mask(component_mask, outer_inset_px)
+    if int(work_mask.sum()) <= 0:
+        return []
+    contours, _hierarchy = cv2.findContours((work_mask > 0).astype(np.uint8) * 255, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    ys, xs = np.where(component_mask > 0)
+    if xs.size == 0:
+        return []
+    centroid = (float(xs.mean()), float(ys.mean()))
+    columns: list[tuple[tuple[int, int], tuple[int, int]]] = []
+    for contour in sorted(contours, key=cv2.contourArea, reverse=True):
+        area = abs(float(cv2.contourArea(contour)))
+        if area < min_area_px:
+            continue
+        raw = contour.reshape(-1, 2)
+        for raw_point in raw[:: max(1, step_px)]:
+            outer = (int(raw_point[0]), int(raw_point[1]))
+            if not point_inside(component_mask, outer):
+                outer_near = nearest_foreground(component_mask, outer, radius=max(3, outer_inset_px + 2))
+                if outer_near is None:
+                    continue
+                outer = outer_near
+            dx = centroid[0] - outer[0]
+            dy = centroid[1] - outer[1]
+            norm = math.hypot(dx, dy)
+            if norm <= 1e-6:
+                continue
+            unit = (dx / norm, dy / norm)
+            inner = inward_point(component_mask, outer, unit, width_px)
+            if inner is None or math.dist(outer, inner) < 2.0:
+                continue
+            columns.append((outer, inner))
+            if len(columns) >= max_columns:
+                return columns
+    return columns
+
+
 def connect_to_point(
     pattern: EmbPattern,
     current_mm: tuple[float, float] | None,
@@ -382,6 +456,12 @@ def generate_mask_fill_dst(
     outline_min_area_px: int = 64,
     outline_include_holes: bool = True,
     outline_inset_px: int = 0,
+    add_satin_border: bool = False,
+    satin_width_px: int = 6,
+    satin_step_px: int = 5,
+    satin_outer_inset_px: int = 2,
+    satin_min_area_px: int = 64,
+    satin_max_columns_per_component: int = 180,
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
@@ -406,6 +486,8 @@ def generate_mask_fill_dst(
     fill_rows = 0
     outline_paths = 0
     outline_points = 0
+    satin_columns = 0
+    satin_skipped = 0
     components_used = 0
     current_px: tuple[int, int] | None = None
 
@@ -474,6 +556,51 @@ def generate_mask_fill_dst(
                 outline_paths += 1
                 outline_points += len(path)
 
+        if add_satin_border:
+            columns = component_satin_columns(
+                component_mask,
+                satin_min_area_px,
+                satin_step_px,
+                satin_width_px,
+                satin_outer_inset_px,
+                satin_max_columns_per_component,
+            )
+            prefer_outer = True
+            for outer_px, inner_px in columns:
+                start_px = outer_px if prefer_outer else inner_px
+                end_px = inner_px if prefer_outer else outer_px
+                start_mm = pixel_to_mm_xy(start_px[0], start_px[1], mask.shape, target_width_mm)
+                end_mm = pixel_to_mm_xy(end_px[0], end_px[1], mask.shape, target_width_mm)
+                if segment_inside_fraction(connector_mask, start_mm, end_mm, target_width_mm) < min_connect_inside_fraction:
+                    satin_skipped += 1
+                    continue
+                current_mm, current_px, connect_stats = connect_to_point(
+                    pattern,
+                    current_mm,
+                    current_px,
+                    start_px,
+                    connector_mask,
+                    mask.shape,
+                    target_width_mm,
+                    max_stitch_mm,
+                    max_connect_mm,
+                    min_connect_inside_fraction,
+                    use_mask_path_connectors,
+                    max_mask_path_px,
+                    max_mask_path_expansions,
+                )
+                jumps += connect_stats["jumps"]
+                safe_connects += connect_stats["safe_connects"]
+                mask_path_connects += connect_stats["mask_path_connects"]
+                rejected_connects += connect_stats["rejected_connects"]
+                rejected_mask_paths += connect_stats["rejected_mask_paths"]
+                stitch_segments += connect_stats["stitch_segments"]
+                stitch_segments += add_segment(pattern, start_mm, end_mm, max_stitch_mm)
+                current_px = end_px
+                current_mm = end_mm
+                satin_columns += 1
+                prefer_outer = not prefer_outer
+
     if current_mm is None:
         current_mm = (0.0, 0.0)
         add_abs(pattern, JUMP, current_mm)
@@ -514,6 +641,14 @@ def generate_mask_fill_dst(
         "outline_min_area_px": outline_min_area_px,
         "outline_include_holes": outline_include_holes,
         "outline_inset_px": outline_inset_px,
+        "add_satin_border": add_satin_border,
+        "satin_columns": satin_columns,
+        "satin_skipped": satin_skipped,
+        "satin_width_px": satin_width_px,
+        "satin_step_px": satin_step_px,
+        "satin_outer_inset_px": satin_outer_inset_px,
+        "satin_min_area_px": satin_min_area_px,
+        "satin_max_columns_per_component": satin_max_columns_per_component,
     }
 
 
@@ -538,6 +673,12 @@ def main() -> int:
     parser.add_argument("--outline-min-area-px", type=int, default=64)
     parser.add_argument("--outline-external-only", action="store_true")
     parser.add_argument("--outline-inset-px", type=int, default=0)
+    parser.add_argument("--add-satin-border", action="store_true")
+    parser.add_argument("--satin-width-px", type=int, default=6)
+    parser.add_argument("--satin-step-px", type=int, default=5)
+    parser.add_argument("--satin-outer-inset-px", type=int, default=2)
+    parser.add_argument("--satin-min-area-px", type=int, default=64)
+    parser.add_argument("--satin-max-columns-per-component", type=int, default=180)
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
@@ -559,6 +700,12 @@ def main() -> int:
         outline_min_area_px=args.outline_min_area_px,
         outline_include_holes=not args.outline_external_only,
         outline_inset_px=args.outline_inset_px,
+        add_satin_border=args.add_satin_border,
+        satin_width_px=args.satin_width_px,
+        satin_step_px=args.satin_step_px,
+        satin_outer_inset_px=args.satin_outer_inset_px,
+        satin_min_area_px=args.satin_min_area_px,
+        satin_max_columns_per_component=args.satin_max_columns_per_component,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)

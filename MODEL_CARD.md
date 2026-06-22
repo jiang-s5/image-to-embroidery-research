@@ -66,6 +66,12 @@ Summary results:
 
 The edge-walk fill branch remains the main fill improvement. The inset-outline branch is a gated candidate: direct outlines were unsafe, while inset outlines can help selected public/holdout samples without regressing incoming review.
 
+## Later Experiment: M2.15 Satin-Column Probe
+
+M2.15 tested a first satin-column candidate, but it was not promoted. It improved public leave-one-out metrics slightly, but core-to-full and incoming-review evaluations were materially unchanged.
+
+The result suggests that true satin behavior needs paired inner/outer rails and stitch-style classification rather than simple centroid-normal columns.
+
 ## Later Experiment: model14B
 
 ```text

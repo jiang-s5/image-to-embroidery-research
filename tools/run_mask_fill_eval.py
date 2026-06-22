@@ -71,6 +71,12 @@ def main() -> int:
     parser.add_argument("--outline-min-area-px", type=int, default=64)
     parser.add_argument("--outline-external-only", action="store_true")
     parser.add_argument("--outline-inset-px", type=int, default=0)
+    parser.add_argument("--add-satin-border", action="store_true")
+    parser.add_argument("--satin-width-px", type=int, default=6)
+    parser.add_argument("--satin-step-px", type=int, default=5)
+    parser.add_argument("--satin-outer-inset-px", type=int, default=2)
+    parser.add_argument("--satin-min-area-px", type=int, default=64)
+    parser.add_argument("--satin-max-columns-per-component", type=int, default=180)
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -110,6 +116,12 @@ def main() -> int:
             outline_min_area_px=args.outline_min_area_px,
             outline_include_holes=not args.outline_external_only,
             outline_inset_px=args.outline_inset_px,
+            add_satin_border=args.add_satin_border,
+            satin_width_px=args.satin_width_px,
+            satin_step_px=args.satin_step_px,
+            satin_outer_inset_px=args.satin_outer_inset_px,
+            satin_min_area_px=args.satin_min_area_px,
+            satin_max_columns_per_component=args.satin_max_columns_per_component,
         )
         (sample_out / "generator_report.json").write_text(json.dumps(generator_report, ensure_ascii=False, indent=2), encoding="utf-8")
         pred = analyze_file(
@@ -133,7 +145,7 @@ def main() -> int:
                 "sample_id": sample_id,
                 "source_name": row.get("source_name", ""),
                 "category": row.get("category", ""),
-                "mode": ("mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
+                "mode": ("mask_fill_edgewalk_satin" if args.add_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
                 "unified_loss": score["unified_loss"],
                 "exec_score": score["exec_score"],
                 "visual_risk": score["visual_risk"],
@@ -151,6 +163,8 @@ def main() -> int:
                 "rejected_mask_paths": generator_report["rejected_mask_paths"],
                 "outline_paths": generator_report["outline_paths"],
                 "outline_points": generator_report["outline_points"],
+                "satin_columns": generator_report["satin_columns"],
+                "satin_skipped": generator_report["satin_skipped"],
             }
         )
         coverage_rows.append(
