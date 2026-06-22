@@ -56,6 +56,7 @@ def main() -> int:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--manifest", default="manifest.csv")
     parser.add_argument("--use-eval-mask-dir", required=True)
+    parser.add_argument("--use-eval-mask-as-fill", action="store_true")
     parser.add_argument("--target-width-mm", type=float, default=90.0)
     parser.add_argument("--row-spacing-mm", type=float, default=1.2)
     parser.add_argument("--max-stitch-mm", type=float, default=3.2)
@@ -113,12 +114,13 @@ def main() -> int:
         eval_mask = eval_mask_lookup.get(sample_id)
         if eval_mask is None:
             eval_mask = dataset_dir / row["mask_path"]
+        fill_mask = eval_mask if args.use_eval_mask_as_fill else dataset_dir / row["mask_path"]
         sample_out = output_dir / sample_id
         sample_out.mkdir(parents=True, exist_ok=True)
         output_dst = sample_out / "prediction.dst"
         skeleton_path = dataset_dir / row["skeleton_path"] if args.use_style_aware_components and row.get("skeleton_path") else None
         generator_report = generate_mask_fill_dst(
-            dataset_dir / row["mask_path"],
+            fill_mask,
             output_dst,
             connector_mask_path=eval_mask,
             skeleton_path=skeleton_path,
@@ -186,6 +188,7 @@ def main() -> int:
                 "source_name": row.get("source_name", ""),
                 "category": row.get("category", ""),
                 "mode": ("mask_fill_style_aware" if args.use_style_aware_components and args.use_mask_path_connectors else "mask_fill_edgewalk_dt_satin" if args.add_dt_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin_rail" if args.add_satin_rail_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin" if args.add_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
+                "fill_mask_source": "eval_mask" if args.use_eval_mask_as_fill else "dataset_mask",
                 "unified_loss": score["unified_loss"],
                 "exec_score": score["exec_score"],
                 "visual_risk": score["visual_risk"],
