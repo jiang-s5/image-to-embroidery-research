@@ -15,6 +15,15 @@ This candidate keeps the existing mask-path edge-walk fill, but changes the fill
 
 ## Why This Is Current Best
 
+On the public ext33 leave-one-out validation:
+
+- hard_fail remains `0`;
+- unified loss improves from M2.14 LOO `0.096228` to `0.068519`;
+- jump count improves from `8.848485` to `6.636364`;
+- trim count improves from `3.484848` to `1.848485`;
+- coverage improves from `0.855224` to `0.911108`;
+- the calibrated selector was stable, choosing config `83` in 32 of 33 folds.
+
 Compared with M2.14 on the public core-to-full holdout:
 
 - unified loss improves from `0.111060` to `0.074071`;

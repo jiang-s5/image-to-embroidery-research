@@ -39,6 +39,17 @@ The important change is `--row-order nearest_endpoint`. Instead of visiting fill
 
 This shows the actual breakthrough: the same high-coverage fill family becomes executable once row order is endpoint-aware.
 
+## Public Leave-One-Out
+
+M2.30 was also evaluated with leave-one-out calibrated selection. For each fold, the selector config was chosen on the other 32 public benchmark samples and then applied to the held-out sample.
+
+| Model | Hard Fail | Mean Loss | Mean Jump | Mean Trim | Off-Mask mm | Coverage | Precision |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| M2.14 previous best LOO | 0 | 0.096228 | 8.848485 | 3.484848 | 0.090794 | 0.855224 | 0.837897 |
+| M2.30 calibrated LOO | 0 | 0.068519 | 6.636364 | 1.848485 | 0.105806 | 0.911108 | 0.798703 |
+
+This is the strongest public benchmark evidence because every sample is evaluated as a held-out sample. The selected config was stable: config `83` was selected in 32 of 33 folds.
+
 ## Public Core-to-Full Holdout
 
 | Model | Hard Fail | Mean Loss | Mean Jump | Mean Trim | Off-Mask mm | Coverage | Precision |

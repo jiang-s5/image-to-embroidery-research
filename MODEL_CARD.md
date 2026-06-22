@@ -60,11 +60,12 @@ Summary results:
 
 | Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Trim Count | Mean Coverage |
 | --- | ---: | ---: | ---: | ---: | ---: |
+| Public ext33 LOO | 0 | 0.068519 | 6.636364 | 1.848485 | 0.911108 |
 | Public core-to-full holdout | 0 | 0.074071 | 6.9375 | 2.0625 | 0.927512 |
 | Public ext33 all apply | 0 | 0.065631 | 6.333333 | 1.787879 | 0.888958 |
 | Incoming review holdout | 0 | 0.084419 | 6.7500 | 4.7500 | 0.856344 |
 
-Compared with M2.14, M2.30 improves public core-to-full unified loss from `0.111060` to `0.074071`, improves coverage from `0.826159` to `0.927512`, and improves incoming review unified loss from `0.090709` to `0.084419`.
+Compared with M2.14, M2.30 improves public LOO unified loss from `0.096228` to `0.068519`, public core-to-full unified loss from `0.111060` to `0.074071`, core-to-full coverage from `0.826159` to `0.927512`, and incoming review unified loss from `0.090709` to `0.084419`.
 
 The main lesson is that the high-coverage fill family was not intrinsically bad; the fixed scanline row order caused excessive jumps and trims. Nearest-endpoint row ordering makes the same family executable enough for the selector to use.
 

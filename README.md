@@ -46,7 +46,7 @@ models/model_m2_30_current_best
 configs/best_current_model_m2_30_nearestrow_selector.json
 ```
 
-M2.30 adds a nearest-endpoint row-order fill candidate. It improves the public core-to-full holdout unified loss from M2.14's `0.111060` to `0.074071`, while increasing coverage from `0.826159` to `0.927512` and keeping `0` hard_fail. Incoming review also improves from `0.090709` to `0.084419`.
+M2.30 adds a nearest-endpoint row-order fill candidate. It improves public LOO unified loss from M2.14's `0.096228` to `0.068519`, and public core-to-full holdout loss from `0.111060` to `0.074071`, while keeping `0` hard_fail. Incoming review also improves from `0.090709` to `0.084419`.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
