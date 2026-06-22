@@ -78,6 +78,12 @@ M2.16 tested continuous outer/inner rail zigzag stitching, but it was not promot
 
 The result suggests that paired rails should be derived from distance-transform level sets instead of centroid-normal projections.
 
+## Later Experiment: M2.17 Distance-Transform Satin-Rail Probe
+
+M2.17 implemented distance-transform rail pairing, deriving outer and inner satin-like rails from mask-internal distance-to-boundary level sets. It was not promoted. Public leave-one-out improved only marginally, core-to-full was unchanged, and the selector did not directly choose the DT-satin candidate.
+
+This result narrows the next direction: distance-transform rails are useful geometry primitives, but satin cannot be an additive after-pass on top of fill rows. The next upgrade should classify stitch style first, then generate fill/running/satin routes separately.
+
 ## Later Experiment: model14B
 
 ```text

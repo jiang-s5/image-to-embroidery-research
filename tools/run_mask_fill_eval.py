@@ -83,6 +83,13 @@ def main() -> int:
     parser.add_argument("--satin-rail-outer-inset-px", type=int, default=4)
     parser.add_argument("--satin-rail-min-area-px", type=int, default=64)
     parser.add_argument("--satin-rail-max-pairs-per-component", type=int, default=180)
+    parser.add_argument("--add-dt-satin-border", action="store_true")
+    parser.add_argument("--dt-satin-outer-distance-px", type=int, default=3)
+    parser.add_argument("--dt-satin-inner-distance-px", type=int, default=9)
+    parser.add_argument("--dt-satin-step-px", type=int, default=7)
+    parser.add_argument("--dt-satin-min-area-px", type=int, default=64)
+    parser.add_argument("--dt-satin-max-pair-px", type=int, default=18)
+    parser.add_argument("--dt-satin-max-pairs-per-component", type=int, default=180)
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -134,6 +141,13 @@ def main() -> int:
             satin_rail_outer_inset_px=args.satin_rail_outer_inset_px,
             satin_rail_min_area_px=args.satin_rail_min_area_px,
             satin_rail_max_pairs_per_component=args.satin_rail_max_pairs_per_component,
+            add_dt_satin_border=args.add_dt_satin_border,
+            dt_satin_outer_distance_px=args.dt_satin_outer_distance_px,
+            dt_satin_inner_distance_px=args.dt_satin_inner_distance_px,
+            dt_satin_step_px=args.dt_satin_step_px,
+            dt_satin_min_area_px=args.dt_satin_min_area_px,
+            dt_satin_max_pair_px=args.dt_satin_max_pair_px,
+            dt_satin_max_pairs_per_component=args.dt_satin_max_pairs_per_component,
         )
         (sample_out / "generator_report.json").write_text(json.dumps(generator_report, ensure_ascii=False, indent=2), encoding="utf-8")
         pred = analyze_file(
@@ -157,7 +171,7 @@ def main() -> int:
                 "sample_id": sample_id,
                 "source_name": row.get("source_name", ""),
                 "category": row.get("category", ""),
-                "mode": ("mask_fill_edgewalk_satin_rail" if args.add_satin_rail_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin" if args.add_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
+                "mode": ("mask_fill_edgewalk_dt_satin" if args.add_dt_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin_rail" if args.add_satin_rail_border and args.use_mask_path_connectors else "mask_fill_edgewalk_satin" if args.add_satin_border and args.use_mask_path_connectors else "mask_fill_edgewalk_outline" if args.add_outline and args.use_mask_path_connectors else "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine"),
                 "unified_loss": score["unified_loss"],
                 "exec_score": score["exec_score"],
                 "visual_risk": score["visual_risk"],
@@ -180,6 +194,9 @@ def main() -> int:
                 "satin_rail_pairs": generator_report["satin_rail_pairs"],
                 "satin_rail_segments": generator_report["satin_rail_segments"],
                 "satin_rail_rejected": generator_report["satin_rail_rejected"],
+                "dt_satin_pairs": generator_report["dt_satin_pairs"],
+                "dt_satin_segments": generator_report["dt_satin_segments"],
+                "dt_satin_rejected": generator_report["dt_satin_rejected"],
             }
         )
         coverage_rows.append(

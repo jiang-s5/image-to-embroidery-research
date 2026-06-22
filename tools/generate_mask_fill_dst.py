@@ -203,6 +203,74 @@ def component_satin_columns(
     return columns
 
 
+def _contour_points_from_distance_band(region: np.ndarray, min_area_px: int, step_px: int) -> list[np.ndarray]:
+    contours, _hierarchy = cv2.findContours((region > 0).astype(np.uint8) * 255, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    sampled: list[np.ndarray] = []
+    for contour in sorted(contours, key=cv2.contourArea, reverse=True):
+        area = abs(float(cv2.contourArea(contour)))
+        if area < min_area_px:
+            continue
+        raw = contour.reshape(-1, 2)
+        if raw.shape[0] < 3:
+            continue
+        sampled.append(raw[:: max(1, step_px)])
+    return sampled
+
+
+def component_dt_satin_pairs(
+    component_mask: np.ndarray,
+    min_area_px: int,
+    step_px: int,
+    outer_distance_px: int,
+    inner_distance_px: int,
+    max_pair_px: int,
+    max_pairs: int,
+) -> list[tuple[tuple[int, int], tuple[int, int]]]:
+    """Build satin-like outer/inner rail pairs from distance-transform level sets."""
+    binary = (component_mask > 0).astype(np.uint8)
+    if int(binary.sum()) <= 0:
+        return []
+    outer_distance = max(1.0, float(outer_distance_px))
+    inner_distance = max(outer_distance + 1.0, float(inner_distance_px))
+    max_pair_distance = max(2.0, float(max_pair_px))
+
+    distance = cv2.distanceTransform(binary, cv2.DIST_L2, 5)
+    if float(distance.max()) < inner_distance:
+        return []
+
+    outer_region = ((distance >= outer_distance) & (binary > 0)).astype(np.uint8)
+    inner_region = ((distance >= inner_distance) & (binary > 0)).astype(np.uint8)
+    outer_contours = _contour_points_from_distance_band(outer_region, min_area_px, step_px)
+    inner_contours = _contour_points_from_distance_band(inner_region, max(4, min_area_px // 4), max(1, step_px // 2))
+    if not outer_contours or not inner_contours:
+        return []
+
+    inner_points = np.concatenate(inner_contours, axis=0).astype(np.float32)
+    if inner_points.shape[0] == 0:
+        return []
+
+    pairs: list[tuple[tuple[int, int], tuple[int, int]]] = []
+    for outer_contour in outer_contours:
+        for raw_outer in outer_contour:
+            outer = (int(raw_outer[0]), int(raw_outer[1]))
+            if not point_inside(component_mask, outer):
+                continue
+            deltas = inner_points - np.asarray(outer, dtype=np.float32)
+            distances = np.einsum("ij,ij->i", deltas, deltas)
+            nearest_index = int(np.argmin(distances))
+            pair_distance = math.sqrt(float(distances[nearest_index]))
+            if pair_distance < 2.0 or pair_distance > max_pair_distance:
+                continue
+            raw_inner = inner_points[nearest_index]
+            inner = (int(round(float(raw_inner[0]))), int(round(float(raw_inner[1]))))
+            if not point_inside(component_mask, inner):
+                continue
+            pairs.append((outer, inner))
+            if len(pairs) >= max_pairs:
+                return pairs
+    return pairs
+
+
 def stitch_point_sequence(
     pattern: EmbPattern,
     sequence: list[tuple[int, int]],
@@ -545,6 +613,13 @@ def generate_mask_fill_dst(
     satin_rail_outer_inset_px: int = 4,
     satin_rail_min_area_px: int = 64,
     satin_rail_max_pairs_per_component: int = 180,
+    add_dt_satin_border: bool = False,
+    dt_satin_outer_distance_px: int = 3,
+    dt_satin_inner_distance_px: int = 9,
+    dt_satin_step_px: int = 7,
+    dt_satin_min_area_px: int = 64,
+    dt_satin_max_pair_px: int = 18,
+    dt_satin_max_pairs_per_component: int = 180,
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
@@ -574,6 +649,9 @@ def generate_mask_fill_dst(
     satin_rail_pairs = 0
     satin_rail_segments = 0
     satin_rail_rejected = 0
+    dt_satin_pairs = 0
+    dt_satin_segments = 0
+    dt_satin_rejected = 0
     components_used = 0
     current_px: tuple[int, int] | None = None
 
@@ -729,6 +807,49 @@ def generate_mask_fill_dst(
             satin_rail_segments += rail_stats["sequence_segments"]
             satin_rail_rejected += rail_stats["sequence_rejected"]
 
+        if add_dt_satin_border:
+            dt_columns = component_dt_satin_pairs(
+                component_mask,
+                dt_satin_min_area_px,
+                dt_satin_step_px,
+                dt_satin_outer_distance_px,
+                dt_satin_inner_distance_px,
+                dt_satin_max_pair_px,
+                dt_satin_max_pairs_per_component,
+            )
+            dt_sequence: list[tuple[int, int]] = []
+            for outer_px, inner_px in dt_columns:
+                outer_mm = pixel_to_mm_xy(outer_px[0], outer_px[1], mask.shape, target_width_mm)
+                inner_mm = pixel_to_mm_xy(inner_px[0], inner_px[1], mask.shape, target_width_mm)
+                if segment_inside_fraction(connector_mask, outer_mm, inner_mm, target_width_mm) < min_connect_inside_fraction:
+                    dt_satin_rejected += 1
+                    continue
+                dt_sequence.extend([outer_px, inner_px])
+                dt_satin_pairs += 1
+            current_mm, current_px, dt_stats = stitch_point_sequence(
+                pattern,
+                dt_sequence,
+                current_mm,
+                current_px,
+                connector_mask,
+                mask.shape,
+                target_width_mm,
+                max_stitch_mm,
+                max_connect_mm,
+                min_connect_inside_fraction,
+                use_mask_path_connectors,
+                max_mask_path_px,
+                max_mask_path_expansions,
+            )
+            jumps += dt_stats["jumps"]
+            safe_connects += dt_stats["safe_connects"]
+            mask_path_connects += dt_stats["mask_path_connects"]
+            rejected_connects += dt_stats["rejected_connects"]
+            rejected_mask_paths += dt_stats["rejected_mask_paths"]
+            stitch_segments += dt_stats["stitch_segments"]
+            dt_satin_segments += dt_stats["sequence_segments"]
+            dt_satin_rejected += dt_stats["sequence_rejected"]
+
     if current_mm is None:
         current_mm = (0.0, 0.0)
         add_abs(pattern, JUMP, current_mm)
@@ -786,6 +907,16 @@ def generate_mask_fill_dst(
         "satin_rail_outer_inset_px": satin_rail_outer_inset_px,
         "satin_rail_min_area_px": satin_rail_min_area_px,
         "satin_rail_max_pairs_per_component": satin_rail_max_pairs_per_component,
+        "add_dt_satin_border": add_dt_satin_border,
+        "dt_satin_pairs": dt_satin_pairs,
+        "dt_satin_segments": dt_satin_segments,
+        "dt_satin_rejected": dt_satin_rejected,
+        "dt_satin_outer_distance_px": dt_satin_outer_distance_px,
+        "dt_satin_inner_distance_px": dt_satin_inner_distance_px,
+        "dt_satin_step_px": dt_satin_step_px,
+        "dt_satin_min_area_px": dt_satin_min_area_px,
+        "dt_satin_max_pair_px": dt_satin_max_pair_px,
+        "dt_satin_max_pairs_per_component": dt_satin_max_pairs_per_component,
     }
 
 
@@ -822,6 +953,13 @@ def main() -> int:
     parser.add_argument("--satin-rail-outer-inset-px", type=int, default=4)
     parser.add_argument("--satin-rail-min-area-px", type=int, default=64)
     parser.add_argument("--satin-rail-max-pairs-per-component", type=int, default=180)
+    parser.add_argument("--add-dt-satin-border", action="store_true")
+    parser.add_argument("--dt-satin-outer-distance-px", type=int, default=3)
+    parser.add_argument("--dt-satin-inner-distance-px", type=int, default=9)
+    parser.add_argument("--dt-satin-step-px", type=int, default=7)
+    parser.add_argument("--dt-satin-min-area-px", type=int, default=64)
+    parser.add_argument("--dt-satin-max-pair-px", type=int, default=18)
+    parser.add_argument("--dt-satin-max-pairs-per-component", type=int, default=180)
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
@@ -855,6 +993,13 @@ def main() -> int:
         satin_rail_outer_inset_px=args.satin_rail_outer_inset_px,
         satin_rail_min_area_px=args.satin_rail_min_area_px,
         satin_rail_max_pairs_per_component=args.satin_rail_max_pairs_per_component,
+        add_dt_satin_border=args.add_dt_satin_border,
+        dt_satin_outer_distance_px=args.dt_satin_outer_distance_px,
+        dt_satin_inner_distance_px=args.dt_satin_inner_distance_px,
+        dt_satin_step_px=args.dt_satin_step_px,
+        dt_satin_min_area_px=args.dt_satin_min_area_px,
+        dt_satin_max_pair_px=args.dt_satin_max_pair_px,
+        dt_satin_max_pairs_per_component=args.dt_satin_max_pairs_per_component,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)
