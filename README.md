@@ -314,7 +314,9 @@ Current paired-holdout command-level result:
 | Fixed B2 Graph-TSP conservative | 0.626582 | 44.170873 | 213.500 | 26.250 | 35.250 | 175.534 |
 | Fixed B1 conservative | 0.636772 | 42.691112 | 130.750 | 25.250 | 37.000 | 185.828 |
 
-Interpretation: M2.1 global safe-connect repair20 is the current promoted M2 decoding result. It reduces mean unified loss by 4.53% relative to M2 top4 and cuts mean jumps from 192.75 to 83.00 while keeping visible connector count unchanged on this 4-sample paired holdout. M2.2 retraining on hard-mined traces was tested, but it did not beat the deterministic repair20 decode, so it is kept as an artifact rather than the promoted setting. All samples still remain `hard_fail`, which means the next bottleneck is upstream mask/geometry quality and stricter segment-level constraints, not simply larger M2 training.
+Interpretation: this table records the earlier 4-sample paired-holdout stage, where M2.1 global safe-connect repair20 was the best M2 decoding result. It reduced mean unified loss by 4.53% relative to M2 top4 and cut mean jumps from 192.75 to 83.00 while keeping visible connector count unchanged. M2.2 retraining on hard-mined traces was tested, but it did not beat the deterministic repair20 decode, so it is kept as an artifact rather than the promoted setting.
+
+The current promoted planner selector is now M2.34, not M2.1. On the 33-sample public benchmark, M2.1 is retained as a historical weak baseline, while M2.34 is the balanced current best with `0` hard_fail. See [docs/public_benchmark_ext33_validation.md](docs/public_benchmark_ext33_validation.md) and [docs/m2_34_fill_inset_notes.md](docs/m2_34_fill_inset_notes.md).
 
 Run command-level executability evaluation after export:
 
