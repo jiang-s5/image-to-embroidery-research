@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import math
+import re
 from collections import defaultdict
 from pathlib import Path
 from statistics import mean
@@ -91,23 +92,68 @@ def build_candidate_rows(
             is_skeleton = 1.0 if "skeleton" in candidate_lower else 0.0
             is_auto = 1.0 if "auto" in candidate_lower else 0.0
             is_mask_fill = 1.0 if "mask_fill" in candidate_lower else 0.0
+            is_edgewalk = 1.0 if "edgewalk" in candidate_lower else 0.0
+            is_nearestrow = 1.0 if "nearestrow" in candidate_lower or "nearest_row" in candidate_lower else 0.0
+            is_adaptive_inset = 1.0 if "adapt_" in candidate_lower or "_adapt" in candidate_lower else 0.0
+            inset_match = re.search(r"inset(\d+)", candidate_lower)
+            fixed_inset_px = float(inset_match.group(1)) if inset_match else 0.0
+            is_fixed_inset = 1.0 if fixed_inset_px > 0.0 and is_adaptive_inset == 0.0 else 0.0
+            is_inset1 = 1.0 if fixed_inset_px == 1.0 and is_adaptive_inset == 0.0 else 0.0
+            is_inset2 = 1.0 if fixed_inset_px == 2.0 and is_adaptive_inset == 0.0 else 0.0
+            is_raw_nearestrow = 1.0 if is_nearestrow and not is_fixed_inset and not is_adaptive_inset else 0.0
+            adapt_match = re.search(r"adapt_t(\d+(?:p\d+)?)_m(\d+(?:p\d+)?)", candidate_lower)
+            adaptive_thin_px = float(adapt_match.group(1).replace("p", ".")) if adapt_match else 0.0
+            adaptive_mid_px = float(adapt_match.group(2).replace("p", ".")) if adapt_match else 0.0
+            row_match = re.search(r"rows(\d+)", candidate_lower)
+            path_match = re.search(r"_p(\d+)", candidate_lower)
+            row_spacing_tag = float(row_match.group(1)) if row_match else 0.0
+            mask_path_limit_tag = float(path_match.group(1)) if path_match else 0.0
             is_style_aware = 1.0 if "styleaware" in candidate_lower or "style_aware" in candidate_lower else 0.0
             is_outline = 1.0 if "outline" in candidate_lower else 0.0
             is_satin = 1.0 if "satin" in candidate_lower else 0.0
+            is_satinrail = 1.0 if "satinrail" in candidate_lower else 0.0
             is_dt_satin = 1.0 if "dtsatin" in candidate_lower or "dt_satin" in candidate_lower else 0.0
+            is_quantvalid = 1.0 if "quantvalid" in candidate_lower else 0.0
+            is_segvalid = 1.0 if "segvalid" in candidate_lower else 0.0
+            is_qdirect = 1.0 if "qdirect" in candidate_lower else 0.0
+            is_qpath = 1.0 if "qpath" in candidate_lower else 0.0
+            is_strict = 1.0 if "strict" in candidate_lower else 0.0
+            mask_area_ratio = safe_float(branch["features"]["mask_area_ratio"])
+            skeleton_to_mask_ratio = safe_float(branch["features"]["skeleton_to_mask_ratio"])
+            branch_line_score = safe_float(branch["line_score"])
+            coverage_ratio = safe_float(coverage.get("coverage_ratio"))
+            precision_ratio = safe_float(coverage.get("stitch_precision_ratio"))
             feature_payload = {
                 "bias": 1.0,
                 "candidate_is_skeleton": is_skeleton,
                 "candidate_is_auto": is_auto,
                 "candidate_is_mask_fill": is_mask_fill,
+                "candidate_is_edgewalk": is_edgewalk,
+                "candidate_is_nearestrow": is_nearestrow,
+                "candidate_is_raw_nearestrow": is_raw_nearestrow,
+                "candidate_is_fixed_inset": is_fixed_inset,
+                "candidate_is_inset1": is_inset1,
+                "candidate_is_inset2": is_inset2,
+                "candidate_fixed_inset_px": fixed_inset_px,
+                "candidate_is_adaptive_inset": is_adaptive_inset,
+                "candidate_adaptive_thin_px": adaptive_thin_px,
+                "candidate_adaptive_mid_px": adaptive_mid_px,
+                "candidate_row_spacing_tag": row_spacing_tag,
+                "candidate_mask_path_limit_tag": mask_path_limit_tag,
                 "candidate_is_style_aware": is_style_aware,
                 "candidate_is_outline": is_outline,
                 "candidate_is_satin": is_satin,
+                "candidate_is_satinrail": is_satinrail,
                 "candidate_is_dt_satin": is_dt_satin,
+                "candidate_is_quantvalid": is_quantvalid,
+                "candidate_is_segvalid": is_segvalid,
+                "candidate_is_qdirect": is_qdirect,
+                "candidate_is_qpath": is_qpath,
+                "candidate_is_strict": is_strict,
                 "branch_confidence": safe_float(branch["confidence"]),
-                "branch_line_score": safe_float(branch["line_score"]),
-                "mask_area_ratio": safe_float(branch["features"]["mask_area_ratio"]),
-                "skeleton_to_mask_ratio": safe_float(branch["features"]["skeleton_to_mask_ratio"]),
+                "branch_line_score": branch_line_score,
+                "mask_area_ratio": mask_area_ratio,
+                "skeleton_to_mask_ratio": skeleton_to_mask_ratio,
                 "largest_skeleton_component": safe_float(branch["features"]["largest_skeleton_component"]),
                 "large_skeleton_components": safe_float(branch["features"]["large_skeleton_components"]),
                 "metric_unified_loss": safe_float(metrics.get("unified_loss")),
@@ -115,15 +161,22 @@ def build_candidate_rows(
                 "metric_trim_count": safe_float(metrics.get("trim_count")),
                 "metric_off_mask_mm": safe_float(metrics.get("off_mask_stitch_length_mm")),
                 "metric_visible_count": safe_float(metrics.get("visible_connector_count")),
-                "coverage_ratio": safe_float(coverage.get("coverage_ratio")),
-                "precision_ratio": safe_float(coverage.get("stitch_precision_ratio")),
-                "interaction_skeleton_x_line_score": is_skeleton * safe_float(branch["line_score"]),
-                "interaction_skeleton_x_coverage": is_skeleton * safe_float(coverage.get("coverage_ratio")),
-                "interaction_auto_x_coverage": is_auto * safe_float(coverage.get("coverage_ratio")),
-                "interaction_mask_fill_x_coverage": is_mask_fill * safe_float(coverage.get("coverage_ratio")),
-                "interaction_mask_fill_x_line_score": is_mask_fill * safe_float(branch["line_score"]),
-                "interaction_style_aware_x_coverage": is_style_aware * safe_float(coverage.get("coverage_ratio")),
-                "interaction_style_aware_x_line_score": is_style_aware * safe_float(branch["line_score"]),
+                "coverage_ratio": coverage_ratio,
+                "precision_ratio": precision_ratio,
+                "interaction_skeleton_x_line_score": is_skeleton * branch_line_score,
+                "interaction_skeleton_x_coverage": is_skeleton * coverage_ratio,
+                "interaction_auto_x_coverage": is_auto * coverage_ratio,
+                "interaction_mask_fill_x_coverage": is_mask_fill * coverage_ratio,
+                "interaction_mask_fill_x_line_score": is_mask_fill * branch_line_score,
+                "interaction_edgewalk_x_coverage": is_edgewalk * coverage_ratio,
+                "interaction_nearestrow_x_coverage": is_nearestrow * coverage_ratio,
+                "interaction_nearestrow_x_mask_area": is_nearestrow * mask_area_ratio,
+                "interaction_fixed_inset_x_mask_area": is_fixed_inset * mask_area_ratio,
+                "interaction_inset2_x_mask_area": is_inset2 * mask_area_ratio,
+                "interaction_adaptive_inset_x_mask_area": is_adaptive_inset * mask_area_ratio,
+                "interaction_adaptive_inset_x_skeleton_ratio": is_adaptive_inset * skeleton_to_mask_ratio,
+                "interaction_style_aware_x_coverage": is_style_aware * coverage_ratio,
+                "interaction_style_aware_x_line_score": is_style_aware * branch_line_score,
             }
             pending.append(
                 {
@@ -176,9 +229,19 @@ def matrix(rows: list[dict[str, Any]], names: list[str]) -> np.ndarray:
     return data
 
 
-def fit_ridge(rows: list[dict[str, Any]], names: list[str], alpha: float) -> dict[str, Any]:
+def target_value(row: dict[str, Any], target: str) -> float:
+    if target == "oracle_choice":
+        return safe_float(row.get("is_oracle_choice"))
+    return safe_float(row["oracle_score"])
+
+
+def target_select_direction(target: str) -> str:
+    return "max" if target == "oracle_choice" else "min"
+
+
+def fit_ridge(rows: list[dict[str, Any]], names: list[str], alpha: float, target: str = "oracle_score") -> dict[str, Any]:
     x = matrix(rows, names)
-    y = np.array([safe_float(row["oracle_score"]) for row in rows], dtype=np.float64)
+    y = np.array([target_value(row, target) for row in rows], dtype=np.float64)
     mean_x = x.mean(axis=0)
     std_x = x.std(axis=0)
     std_x[std_x < 1e-8] = 1.0
@@ -192,7 +255,8 @@ def fit_ridge(rows: list[dict[str, Any]], names: list[str], alpha: float) -> dic
         weights = np.linalg.pinv(design.T @ design + reg) @ design.T @ y
     return {
         "type": "ridge_candidate_score_regressor",
-        "target": "oracle_score",
+        "target": target,
+        "select_direction": target_select_direction(target),
         "alpha": alpha,
         "feature_names": names,
         "mean": mean_x.tolist(),
@@ -401,6 +465,7 @@ def leave_one_out(
     rows: list[dict[str, Any]],
     names: list[str],
     alpha: float,
+    target: str = "oracle_score",
     exclude_hard_fail: bool = False,
     enforce_coverage_floor: bool = False,
     flat_min_coverage: float = 0.75,
@@ -426,7 +491,7 @@ def leave_one_out(
     for sample_id in sorted(groups):
         train = [row for row in rows if row["sample_id"] != sample_id]
         held = groups[sample_id]
-        model = fit_ridge(train, names, alpha)
+        model = fit_ridge(train, names, alpha, target)
         selectable = selectable_candidates(
             held,
             exclude_hard_fail,
@@ -450,7 +515,8 @@ def leave_one_out(
             mask_fill_min_coverage,
         )
         preds = predict(model, selectable)
-        ranked = sorted(zip(selectable, preds), key=lambda item: item[1])
+        reverse = target_select_direction(target) == "max"
+        ranked = sorted(zip(selectable, preds), key=lambda item: item[1], reverse=reverse)
         chosen_row = dict(ranked[0][0])
         oracle_pool = selectable_candidates(
             held,
@@ -510,6 +576,7 @@ def main() -> int:
     parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
     parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     parser.add_argument("--alpha", type=float, default=1.0)
+    parser.add_argument("--target", choices=["oracle_score", "oracle_choice"], default="oracle_score")
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -540,6 +607,7 @@ def main() -> int:
         rows,
         names,
         args.alpha,
+        args.target,
         args.exclude_hard_fail,
         args.enforce_coverage_floor,
         args.flat_min_coverage,
@@ -561,13 +629,15 @@ def main() -> int:
         args.mask_fill_min_coverage,
     )
     write_csv([{key: value for key, value in row.items() if key != "features"} for row in loo_rows], output_dir / "loo_selected_rows.csv")
-    model = fit_ridge(rows, names, args.alpha)
+    model = fit_ridge(rows, names, args.alpha, args.target)
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
         "samples": len(groups_by_sample(rows)),
         "candidates_per_sample": len(candidates),
         "candidate_rows": len(rows),
         "alpha": args.alpha,
+        "target": args.target,
+        "select_direction": target_select_direction(args.target),
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,

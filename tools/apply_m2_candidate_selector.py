@@ -122,7 +122,8 @@ def main() -> int:
             args.mask_fill_min_coverage,
         )
         predictions = predict(model, selectable)
-        ranked = sorted(zip(selectable, predictions), key=lambda item: item[1])
+        reverse = str(model.get("select_direction", "min")) == "max"
+        ranked = sorted(zip(selectable, predictions), key=lambda item: item[1], reverse=reverse)
         chosen, predicted_score = ranked[0]
         sample_out = output_dir / sample_id
         sample_out.mkdir(parents=True, exist_ok=True)

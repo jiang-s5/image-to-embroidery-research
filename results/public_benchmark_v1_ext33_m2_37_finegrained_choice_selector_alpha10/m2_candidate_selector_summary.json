@@ -1,0 +1,42 @@
+{
+  "samples": 33,
+  "candidates_per_sample": 20,
+  "candidate_rows": 660,
+  "alpha": 10.0,
+  "target": "oracle_choice",
+  "select_direction": "max",
+  "exclude_hard_fail": true,
+  "enforce_coverage_floor": false,
+  "coverage_floor_tolerance": 0.0,
+  "coverage_floor_mode": "branch",
+  "coverage_floor_line_sources": [
+    "QuickDraw",
+    "Rendered text"
+  ],
+  "style_aware_hard_gate": false,
+  "style_aware_max_off_mask_mm": 0.05,
+  "style_aware_max_jump_count": 15.0,
+  "style_aware_max_trim_count": 3.0,
+  "style_aware_min_precision": 0.75,
+  "style_aware_min_coverage": 0.8,
+  "mask_fill_hard_gate": false,
+  "mask_fill_max_off_mask_mm": 0.05,
+  "mask_fill_max_jump_count": 20.0,
+  "mask_fill_max_trim_count": 3.0,
+  "mask_fill_min_precision": 0.7,
+  "mask_fill_min_coverage": 0.8,
+  "feature_count": 53,
+  "leave_one_out": {
+    "samples": 33,
+    "oracle_match": 11,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.072461,
+    "mean_unified_loss": 0.071836,
+    "mean_jump_count": 7.69697,
+    "mean_trim_count": 1.0,
+    "mean_off_mask_stitch_length_mm": 0.081876,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.983408,
+    "mean_stitch_precision_ratio": 0.85319
+  }
+}
