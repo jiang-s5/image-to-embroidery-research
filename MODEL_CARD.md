@@ -45,6 +45,27 @@ near_connect_f1: 0.4392108341
 continuity_mae: 0.1324329144
 ```
 
+## Current Planner Selector
+
+The current best planning package is M2.12:
+
+```text
+models/model_m2_12_current_best/
+configs/best_current_model_m2_12_maskfill_selector.json
+```
+
+M2.12 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds an experimental mask-fill candidate to the M2.10 hard-safe selector.
+
+Summary results:
+
+| Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Coverage |
+| --- | ---: | ---: | ---: | ---: |
+| Public ext33 LOO | 0 | 0.098180 | 8.727273 | 0.780257 |
+| Core-to-full holdout | 0 | 0.111759 | 10.2500 | 0.746555 |
+| Incoming review holdout | 0 | 0.123580 | 11.5000 | 0.720063 |
+
+The mask-fill branch is diagnostic rather than a full professional digitizer: it reaches near-complete coverage on many masks, but naive row filling creates too many jumps/trims. It is selected only when the hard-safe filter judges it executable.
+
 ## Later Experiment: model14B
 
 ```text

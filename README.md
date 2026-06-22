@@ -31,13 +31,22 @@ The latest stable research direction is a geometry-to-planner model with vector-
 
 ## Important Models
 
-The current promoted checkpoint is model13:
+The current promoted geometry checkpoint is model13:
 
 ```text
 model13_multiformat_all_vector_continuity_20260514
 ```
 
 Model14B is kept as a later geometry-continuity experiment, but it was not promoted as the main checkpoint.
+
+The current best planner selector package is:
+
+```text
+models/model_m2_12_current_best
+configs/best_current_model_m2_12_maskfill_selector.json
+```
+
+M2.12 extends the M2.10 hard-safe selector with an experimental mask-fill candidate. It improves public leave-one-out executable quality without regressing core-to-full or incoming review holdouts. The fill branch is mostly diagnostic: it shows that dense fill coverage is possible, but professional satin/fill realism still requires segment-level fill planning rather than whole-mask row filling.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 

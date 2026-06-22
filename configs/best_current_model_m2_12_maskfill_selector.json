@@ -1,0 +1,168 @@
+{
+  "name": "best_current_model_m2_12_maskfill_selector",
+  "status": "recommended_current_best_safe_candidate_augmented_pipeline",
+  "selection_date": "2026-06-22",
+  "base_checkpoint": "checkpoints/best_model13_multiformat_all_vector_continuity.pt",
+  "base_edge_policy": "checkpoints/m2_edge_policy_m2_1_globalrepair20.json",
+  "upgrade_from_m2_10": "Adds an experimental mask-fill serpentine candidate to test dense fill-style stitch coverage. The hard-safe selector excludes hard_fail outputs, so the new fill branch is selected only when it is executable and beneficial.",
+  "candidate_generation_upgrade": {
+    "new_candidate": "mask_fill_rows16_c6",
+    "generator": "tools/generate_mask_fill_dst.py",
+    "batch_eval": "tools/run_mask_fill_eval.py",
+    "generator_flags": {
+      "row_spacing_mm": 1.6,
+      "max_connect_mm": 6.0,
+      "min_connect_inside_fraction": 0.95,
+      "min_component_pixels": 64,
+      "min_run_mm": 1.0
+    },
+    "important_result": "The mask-fill candidate achieves near-complete stitch coverage but usually fails executability thresholds because naive row filling creates too many jumps/trims. It is therefore useful as a diagnostic candidate, not yet as a general production digitizer."
+  },
+  "candidate_pool": [
+    {
+      "name": "auto_evalrepair_r10_c20",
+      "result_dir": "results/public_benchmark_v1_ext33_auto_hybrid_evalrepair_r10_c20_trimcap20"
+    },
+    {
+      "name": "auto_r10_c16",
+      "result_dir": "results/public_benchmark_v1_ext33_auto_hybrid_r10_c16_trimcap20"
+    },
+    {
+      "name": "auto_r10_c20",
+      "result_dir": "results/public_benchmark_v1_ext33_auto_hybrid_r10_c20_trimcap20"
+    },
+    {
+      "name": "auto_r125_c16",
+      "result_dir": "results/public_benchmark_v1_ext33_auto_hybrid_r125_c16_trimcap20"
+    },
+    {
+      "name": "auto_r125_c20",
+      "result_dir": "results/public_benchmark_v1_ext33_auto_hybrid_r125_c20_trimcap20"
+    },
+    {
+      "name": "auto_skel_c12",
+      "result_dir": "results/public_benchmark_v1_ext33_auto_hybrid_skeleton_connect12_trimcap20"
+    },
+    {
+      "name": "skeleton_c20_m4",
+      "result_dir": "results/public_benchmark_v1_ext33_all_skeleton_connect20_trimcap20"
+    },
+    {
+      "name": "skeleton_c30_m4",
+      "result_dir": "results/public_benchmark_v1_ext33_all_skeleton_connect30_trimcap20"
+    },
+    {
+      "name": "skeleton_c30_m8",
+      "result_dir": "results/public_benchmark_v1_ext33_all_skeleton_connect30_min8_trimcap20"
+    },
+    {
+      "name": "skeleton_c30_m12",
+      "result_dir": "results/public_benchmark_v1_ext33_all_skeleton_connect30_min12_trimcap20"
+    },
+    {
+      "name": "skeleton_c30_m20",
+      "result_dir": "results/public_benchmark_v1_ext33_all_skeleton_connect30_min20_trimcap20"
+    },
+    {
+      "name": "mask_fill_rows16_c6",
+      "result_dir": "results/public_benchmark_v1_ext33_mask_fill_rows16_c6"
+    }
+  ],
+  "selector": {
+    "type": "ridge_candidate_score_regressor_with_hard_safe_filter",
+    "alpha": 10.0,
+    "flat_min_coverage": 0.75,
+    "line_min_coverage": 0.45,
+    "coverage_weight": 0.40,
+    "precision_weight": 0.15,
+    "hard_fail_penalty": 0.04,
+    "exclude_hard_fail": true,
+    "enforce_coverage_floor": false,
+    "feature_count": 19,
+    "train_script": "tools/train_m2_candidate_selector.py",
+    "split_eval_script": "tools/eval_m2_candidate_selector_split.py",
+    "apply_script": "tools/apply_m2_candidate_selector.py",
+    "model_file": "results/public_benchmark_v1_ext33_m2_12_maskfill_selector/m2_candidate_selector_model.json"
+  },
+  "leave_one_out": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_12_maskfill_selector",
+    "samples": 33,
+    "candidate_rows": 396,
+    "oracle_match": 24,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.130308,
+    "mean_unified_loss": 0.09818,
+    "mean_jump_count": 8.727273,
+    "mean_trim_count": 4.333333,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.780257,
+    "mean_stitch_precision_ratio": 0.864984
+  },
+  "core_to_full_holdout": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_12_maskfill_core_to_full",
+    "train_samples": 17,
+    "test_samples": 16,
+    "candidate_rows_train": 204,
+    "candidate_rows_test": 192,
+    "oracle_match": 13,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.143908,
+    "mean_unified_loss": 0.111759,
+    "mean_jump_count": 10.25,
+    "mean_trim_count": 4.5,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.746555,
+    "mean_stitch_precision_ratio": 0.873835
+  },
+  "incoming_review_eval_only": {
+    "dataset": "datasets/incoming_review_eval_v1",
+    "status": "evaluation_only_not_training",
+    "result_dir": "results/incoming_review_eval_v1_m2_12_maskfill_applied",
+    "samples": 4,
+    "hard_fail": 0,
+    "mean_oracle_score": 0.132537,
+    "mean_unified_loss": 0.12358,
+    "mean_jump_count": 11.5,
+    "mean_trim_count": 4.75,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.720063,
+    "mean_stitch_precision_ratio": 0.816424,
+    "chosen_counts": {
+      "auto_evalrepair_r10_c20": 3,
+      "skeleton_c30_m8": 1
+    }
+  },
+  "comparison_to_m2_10": {
+    "public_leave_one_out": {
+      "m2_10_mean_unified_loss": 0.104648,
+      "m2_12_mean_unified_loss": 0.09818,
+      "m2_10_mean_jump_count": 9.121212,
+      "m2_12_mean_jump_count": 8.727273,
+      "m2_10_hard_fail": 0,
+      "m2_12_hard_fail": 0,
+      "m2_10_mean_coverage_ratio": 0.795279,
+      "m2_12_mean_coverage_ratio": 0.780257
+    },
+    "core_to_full_holdout": {
+      "m2_10_mean_unified_loss": 0.111759,
+      "m2_12_mean_unified_loss": 0.111759,
+      "m2_10_mean_jump_count": 10.25,
+      "m2_12_mean_jump_count": 10.25,
+      "m2_10_mean_coverage_ratio": 0.746555,
+      "m2_12_mean_coverage_ratio": 0.746555
+    },
+    "incoming_review_eval_only": {
+      "m2_10_mean_unified_loss": 0.12358,
+      "m2_12_mean_unified_loss": 0.12358,
+      "m2_10_mean_jump_count": 11.5,
+      "m2_12_mean_jump_count": 11.5,
+      "m2_10_hard_fail": 0,
+      "m2_12_hard_fail": 0
+    }
+  },
+  "selection_rationale": "M2.12 is the safest current best package: it improves public leave-one-out unified loss and jump count, does not regress core-to-full or incoming review holdout, and records a clear negative/diagnostic result for naive mask-fill generation.",
+  "boundary": "M2.12 still does not solve professional commercial digitizing. The next real breakthrough needs segment-level fill/satin planning with border underlay, color-layer ordering, and local path continuity rather than whole-mask serpentine fill."
+}
