@@ -1,0 +1,39 @@
+{
+  "name": "best_current_model_m2_34_fill_inset_selector",
+  "status": "recommended_current_best_fill_inset_pipeline",
+  "selection_date": "2026-06-22",
+  "config_path": "configs/best_current_model_m2_34_fill_inset_selector.json",
+  "calibrated_config_path": "models/model_m2_34_current_best/calibrated_config.json",
+  "notes_path": "docs/m2_34_fill_inset_notes.md",
+  "result_dirs": {
+    "public_core_to_full_holdout": "results/public_benchmark_v1_ext33_m2_34_inset_selector",
+    "public_leave_one_out": "results/public_benchmark_v1_ext33_m2_34_inset_loo",
+    "incoming_review_eval_only": "results/incoming_review_eval_v1_m2_34_inset_loo"
+  },
+  "summary": {
+    "public_leave_one_out": {
+      "hard_fail": 0,
+      "mean_unified_loss": 0.051174,
+      "mean_jump_count": 5.636364,
+      "mean_trim_count": 0.424242,
+      "mean_off_mask_stitch_length_mm": 0.082527,
+      "mean_coverage_ratio": 0.968881
+    },
+    "public_core_to_full_holdout": {
+      "hard_fail": 0,
+      "mean_unified_loss": 0.051748,
+      "mean_jump_count": 5.75,
+      "mean_trim_count": 0.4375,
+      "mean_off_mask_stitch_length_mm": 0.061937,
+      "mean_coverage_ratio": 0.95165
+    },
+    "incoming_review_eval_only": {
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07829,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.995549
+    }
+  }
+}

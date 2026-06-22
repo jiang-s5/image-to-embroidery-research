@@ -64,6 +64,7 @@ def main() -> int:
     parser.add_argument("--min-connect-inside-fraction", type=float, default=0.95)
     parser.add_argument("--min-component-pixels", type=int, default=64)
     parser.add_argument("--min-run-mm", type=float, default=1.0)
+    parser.add_argument("--fill-inset-px", type=int, default=0)
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
@@ -134,6 +135,7 @@ def main() -> int:
             min_connect_inside_fraction=args.min_connect_inside_fraction,
             min_component_pixels=args.min_component_pixels,
             min_run_mm=args.min_run_mm,
+            fill_inset_px=args.fill_inset_px,
             use_mask_path_connectors=args.use_mask_path_connectors,
             max_mask_path_mm=args.max_mask_path_mm,
             max_mask_path_expansions=args.max_mask_path_expansions,

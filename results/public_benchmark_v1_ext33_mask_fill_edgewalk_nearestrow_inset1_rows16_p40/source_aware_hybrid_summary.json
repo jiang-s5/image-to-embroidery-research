@@ -1,0 +1,12 @@
+{
+  "samples": 33,
+  "hard_fail": 0,
+  "mean_unified_loss": 0.075848,
+  "mean_exec_score": 0.069058,
+  "mean_visual_risk": 0.00679,
+  "mean_jump_count": 7.606061,
+  "mean_trim_count": 0.969697,
+  "mean_off_mask_stitch_length_mm": 0.301779,
+  "mean_visible_connector_count": 0.0,
+  "mean_visible_connector_length_mm": 0.0
+}

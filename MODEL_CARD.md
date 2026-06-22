@@ -47,27 +47,43 @@ continuity_mae: 0.1324329144
 
 ## Current Planner Selector
 
-The current best planning package is M2.30:
+The current best planning package is M2.34:
 
 ```text
-models/model_m2_30_current_best/
-configs/best_current_model_m2_30_nearestrow_selector.json
+models/model_m2_34_current_best/
+configs/best_current_model_m2_34_fill_inset_selector.json
 ```
 
-M2.30 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds a nearest-endpoint row-order mask-fill candidate, `mask_fill_edgewalk_nearestrow_rows16_p40`, and uses a calibrated candidate selector.
+M2.34 keeps model13 as the geometry checkpoint and improves the post-processing planner selection layer. It adds 1px and 2px fill-inset variants of the nearest-endpoint row-order mask-fill candidate:
+
+```text
+mask_fill_edgewalk_nearestrow_inset1_rows16_p40
+mask_fill_edgewalk_nearestrow_inset2_rows16_p40
+```
+
+The inset is applied only to the fill-row mask. Connector validation still uses the evaluation mask, so the candidate reduces boundary spill without using the hard path gates that increased jumps in M2.32.
 
 Summary results:
+
+| Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Trim Count | Mean Off-Mask mm | Mean Coverage |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Public ext33 LOO | 0 | 0.051174 | 5.636364 | 0.424242 | 0.082527 | 0.968881 |
+| Public core-to-full holdout | 0 | 0.051748 | 5.7500 | 0.4375 | 0.061937 | 0.951650 |
+| Incoming review holdout | 0 | 0.078290 | 8.5000 | 1.2500 | 0.000000 | 0.995549 |
+
+Compared with M2.30, M2.34 improves public LOO unified loss from `0.068519` to `0.051174`, public core-to-full unified loss from `0.074071` to `0.051748`, public core-to-full trim count from `2.0625` to `0.4375`, and incoming review unified loss from `0.084419` to `0.078290`. Incoming review jump count increases from `6.75` to `8.50`, so that set remains a watch item, but coverage and trim behavior improve strongly with zero hard_fail.
+
+The main lesson is that high-coverage fill needs a small boundary safety margin. Nearest-endpoint row ordering fixed path continuity, while fill-inset fixes much of the boundary spill that made raw nearest-row candidates risky.
+
+## Previous Current Best: M2.30
+
+M2.30 added a nearest-endpoint row-order candidate to the M2 selector. It is no longer current best, but remains the direct baseline for M2.34.
 
 | Evaluation | Hard Fail | Mean Unified Loss | Mean Jump Count | Mean Trim Count | Mean Coverage |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Public ext33 LOO | 0 | 0.068519 | 6.636364 | 1.848485 | 0.911108 |
 | Public core-to-full holdout | 0 | 0.074071 | 6.9375 | 2.0625 | 0.927512 |
-| Public ext33 all apply | 0 | 0.065631 | 6.333333 | 1.787879 | 0.888958 |
 | Incoming review holdout | 0 | 0.084419 | 6.7500 | 4.7500 | 0.856344 |
-
-Compared with M2.14, M2.30 improves public LOO unified loss from `0.096228` to `0.068519`, public core-to-full unified loss from `0.111060` to `0.074071`, core-to-full coverage from `0.826159` to `0.927512`, and incoming review unified loss from `0.090709` to `0.084419`.
-
-The main lesson is that the high-coverage fill family was not intrinsically bad; the fixed scanline row order caused excessive jumps and trims. Nearest-endpoint row ordering makes the same family executable enough for the selector to use.
 
 ## Previous Current Best: M2.14
 

@@ -834,6 +834,7 @@ def generate_mask_fill_dst(
     min_connect_inside_fraction: float = 0.95,
     min_component_pixels: int = 64,
     min_run_mm: float = 1.0,
+    fill_inset_px: int = 0,
     use_mask_path_connectors: bool = False,
     max_mask_path_mm: float = 24.0,
     max_mask_path_expansions: int = 8000,
@@ -915,6 +916,7 @@ def generate_mask_fill_dst(
     ordered_labels = component_order(labels, stats, min_component_pixels, component_order_strategy)
     for component_index, label in enumerate(ordered_labels):
         component_mask = (labels == label).astype(np.uint8)
+        fill_component_mask = erode_mask(component_mask, fill_inset_px)
         component_skeleton = ((skeleton > 0) & (component_mask > 0)).astype(np.uint8) if skeleton is not None else None
         style_report = classify_component_style(
             component_mask,
@@ -933,7 +935,7 @@ def generate_mask_fill_dst(
                 style_component_reports.append({"label": int(label), **style_report, "paths": len(skeleton_paths)})
             else:
                 rows = component_fill_rows(
-                    component_mask,
+                    fill_component_mask,
                     row_spacing_px,
                     min_run_px,
                     reverse_first=component_index % 2 == 1,
@@ -944,7 +946,7 @@ def generate_mask_fill_dst(
                 style_fallback_fill_components += 1
         else:
             rows = component_fill_rows(
-                component_mask,
+                fill_component_mask,
                 row_spacing_px,
                 min_run_px,
                 reverse_first=component_index % 2 == 1,
@@ -1245,6 +1247,7 @@ def generate_mask_fill_dst(
         "min_component_pixels": min_component_pixels,
         "min_run_mm": min_run_mm,
         "min_run_px": min_run_px,
+        "fill_inset_px": fill_inset_px,
         "use_mask_path_connectors": use_mask_path_connectors,
         "max_mask_path_mm": max_mask_path_mm,
         "max_mask_path_px": max_mask_path_px,
@@ -1313,6 +1316,7 @@ def main() -> int:
     parser.add_argument("--min-connect-inside-fraction", type=float, default=0.95)
     parser.add_argument("--min-component-pixels", type=int, default=64)
     parser.add_argument("--min-run-mm", type=float, default=1.0)
+    parser.add_argument("--fill-inset-px", type=int, default=0)
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
@@ -1363,6 +1367,7 @@ def main() -> int:
         min_connect_inside_fraction=args.min_connect_inside_fraction,
         min_component_pixels=args.min_component_pixels,
         min_run_mm=args.min_run_mm,
+        fill_inset_px=args.fill_inset_px,
         use_mask_path_connectors=args.use_mask_path_connectors,
         max_mask_path_mm=args.max_mask_path_mm,
         max_mask_path_expansions=args.max_mask_path_expansions,

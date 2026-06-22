@@ -2,6 +2,8 @@
 
 Date: 2026-06-22
 
+Status update: this document records the M2.31/M2.32 negative ablations before M2.34. M2.34 fill-inset candidates later superseded M2.30 as the current best; see `docs/m2_34_fill_inset_notes.md`.
+
 This ablation tested whether M2.30 could be improved by selector retuning or safer fill-mask generation. None of the tested variants is promoted over M2.30.
 
 ## Baseline
@@ -43,6 +45,6 @@ The quantized-validation candidate was selected on only 2 of 33 leave-one-out sa
 
 ## Conclusion
 
-M2.30 remains the current best model. The nearest-endpoint row-order candidate is still the strongest useful addition, but simply tightening coverage floors, using the evaluation mask as the fill source, or hard-validating quantized segments does not produce a better practical planner.
+At the time of this ablation, M2.30 remained the current best model. The nearest-endpoint row-order candidate was still the strongest useful addition, but simply tightening coverage floors, using the evaluation mask as the fill source, or hard-validating quantized segments did not produce a better practical planner.
 
 Next useful direction: create a genuinely better high-coverage candidate that reduces off-mask without sacrificing path continuity. Quantized boundary risk should become a soft selector feature or repair veto, not a hard routing gate, because the hard gate reduces spill but increases jump.

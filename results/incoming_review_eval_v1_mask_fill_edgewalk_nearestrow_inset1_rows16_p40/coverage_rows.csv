@@ -1,0 +1,5 @@
+﻿sample_id,source_name,category,target_pixels,stitch_pixels,overlap_pixels,off_target_pixels,coverage_ratio,stitch_precision_ratio
+pair_006,Incoming paired review,pair_006,16884,18743,16852,1891,0.998105,0.899109
+pair_008,Incoming paired review,pair_008,10950,14438,10756,3682,0.982283,0.744979
+pair_010,Incoming paired review,pair_010,30580,33579,30566,3013,0.999542,0.910271
+pair_011a,Incoming paired review,pair_011a,8242,12527,8092,4435,0.981801,0.645965

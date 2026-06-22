@@ -42,11 +42,11 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-models/model_m2_30_current_best
-configs/best_current_model_m2_30_nearestrow_selector.json
+models/model_m2_34_current_best
+configs/best_current_model_m2_34_fill_inset_selector.json
 ```
 
-M2.30 adds a nearest-endpoint row-order fill candidate. It improves public LOO unified loss from M2.14's `0.096228` to `0.068519`, and public core-to-full holdout loss from `0.111060` to `0.074071`, while keeping `0` hard_fail. Incoming review also improves from `0.090709` to `0.084419`.
+M2.34 adds 1px/2px fill-inset nearest-endpoint row-order candidates. It improves public LOO unified loss from M2.30's `0.068519` to `0.051174`, public core-to-full holdout loss from `0.074071` to `0.051748`, and incoming review loss from `0.084419` to `0.078290`, while keeping `0` hard_fail.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
