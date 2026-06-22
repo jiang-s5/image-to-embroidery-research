@@ -1,0 +1,18 @@
+﻿sample_id,source_name,category,target_branch,oracle_score,oracle_quality_level,unified_loss,jump_count,trim_count,off_mask_stitch_length_mm,visible_connector_count,coverage_ratio,stitch_precision_ratio,coverage_deficit,precision_deficit,hard_penalty,is_oracle_choice,chosen_candidate,quality_level,calibrated_score,jump_norm,trim_norm,off_mask_penalty,visible_penalty
+ocp_001,Openclipart,flower,flat_icon_fill,0.24410396,warning,0.13966756,16,1,0.0,0,0.488909,0.921707,0.311091,0.0,0.0,1,skeleton_c20_m4,warning,0.20188576,0.8,0.125,0.0,0.0
+ocp_002,Openclipart,butterfly,flat_icon_fill,0.09501301,pass,0.09501301,5,9,0.0,0,0.951705,0.951285,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,pass,0.09501301,0.25,1.125,0.0,0.0
+ocp_003,Openclipart,cat,flat_icon_fill,0.15668438,pass,0.15668438,14,7,0.0,0,0.996377,0.935782,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,pass,0.15668438,0.7,0.875,0.0,0.0
+ocp_004,Openclipart,koi_fish,flat_icon_fill,0.16071794,pass,0.16071794,13,9,0.0,0,0.974832,0.947877,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,pass,0.16071794,0.65,1.125,0.0,0.0
+ocp_005,Openclipart,public_domain_logo,flat_icon_fill,0.0331172,excellent,0.0331172,4,0,0.0,0,1.0,0.910081,0.0,0.0,0.0,1,mask_fill_rows16_c6,excellent,0.0331172,0.2,0.0,0.0,0.0
+omj_001,OpenMoji,heart,flat_icon_fill,0.054,pass,0.054,0,9,0.0,0,0.955519,0.917291,0.0,0.0,0.0,0,auto_evalrepair_r10_c20,pass,0.054,0.0,1.125,0.0,0.0
+omj_002,OpenMoji,star,flat_icon_fill,0.0770139,excellent,0.0770139,5,6,0.0,0,0.998848,0.888211,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,excellent,0.0770139,0.25,0.75,0.0,0.0
+omj_003,OpenMoji,butterfly,flat_icon_fill,0.08646574,excellent,0.08646574,9,2,0.0,0,1.0,0.896875,0.0,0.0,0.0,1,mask_fill_edgewalk_rows16_p40,excellent,0.08646574,0.45,0.25,0.0,0.0
+omj_004,OpenMoji,fish,flat_icon_fill,0.20026304,warning,0.20026304,12,17,0.0,0,0.916534,0.890823,0.0,0.0,0.0,1,auto_evalrepair_r10_c20,warning,0.20026304,0.6,2.125,0.0,0.0
+omj_005,OpenMoji,sun,flat_icon_fill,0.11168015,pass,0.11168015,12,2,0.0,0,1.0,0.883462,0.0,0.0,0.0,1,mask_fill_edgewalk_rows16_p40,pass,0.11168015,0.6,0.25,0.0,0.0
+qd_001,QuickDraw,cat,line_text_skeleton,0.14265602,pass,0.13687547,15,2,0.0,0,0.893516,0.661463,0.0,0.058537,0.0,1,skeleton_c30_m12,pass,0.13980232,0.75,0.25,0.0,0.0
+qd_002,QuickDraw,dog,line_text_skeleton,0.08928397,excellent,0.08928397,10,1,0.0,0,0.968333,0.712526,0.0,0.007474,0.0,1,skeleton_c30_m4,excellent,0.08965767,0.5,0.125,0.0,0.0
+qd_003,QuickDraw,fish,line_text_skeleton,0.1120576,pass,0.10351225,11,2,0.0,0,0.993857,0.643031,0.0,0.076969,0.0,1,auto_evalrepair_r10_c20,pass,0.1073607,0.55,0.25,0.0,0.0
+qd_004,QuickDraw,flower,line_text_skeleton,0.07951266,excellent,0.07485846,9,0,0.0,0,0.885724,0.668972,0.0,0.051028,0.0,1,skeleton_c30_m20,excellent,0.07740986,0.45,0.0,0.0,0.0
+qd_005,QuickDraw,bicycle,line_text_skeleton,0.02216811,excellent,0.01639641,2,0,0.0,0,0.989125,0.661522,0.0,0.058478,0.0,1,skeleton_c30_m4,excellent,0.01932031,0.1,0.0,0.0,0.0
+txt_001,Rendered text,AI,line_text_skeleton,0.01606625,excellent,0.008,1,0,0.0,0,1.0,0.646225,0.0,0.073775,0.0,1,mask_fill_edgewalk_rows16_p40,excellent,0.01168875,0.05,0.0,0.0,0.0
+txt_002,Rendered text,DST,line_text_skeleton,0.04887115,excellent,0.0475234,5,1,0.0,0,1.0,0.691015,0.0,0.028985,0.0,0,mask_fill_edgewalk_rows16_p40,excellent,0.04897265,0.25,0.125,0.0,0.0

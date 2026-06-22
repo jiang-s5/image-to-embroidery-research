@@ -96,6 +96,12 @@ M2.19-M2.21 added optional hard gates for style-aware and mask-fill candidate fa
 
 They were not promoted. Strict gates removed off-mask risk but over-pruned high-coverage candidates, while relaxed gates still underperformed M2.14. The selector code keeps these gates as research controls; the next step is a calibrated two-stage selector rather than fixed thresholds alone.
 
+## Later Experiment: M2.22-M2.25 Calibrated Selector
+
+M2.22-M2.25 added an interpretable calibrated selector that ranks candidates by unified loss plus coverage, precision, jump, trim, off-mask, and visible-connector terms. M2.22 slightly improved incoming review loss over M2.14, but public full coverage dropped too far. M2.25 added a hard coverage floor and recovered coverage, but regressed unified loss, jump, trim, and incoming review quality.
+
+These were not promoted. The next selector should use adaptive coverage targets rather than a fixed coverage floor.
+
 ## Later Experiment: model14B
 
 ```text
