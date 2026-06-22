@@ -67,6 +67,9 @@ def main() -> int:
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
+    parser.add_argument("--validate-mask-path-segments", action="store_true")
+    parser.add_argument("--mask-path-min-segment-inside-fraction", type=float, default=1.0)
+    parser.add_argument("--validate-quantized-segments", action="store_true")
     parser.add_argument("--add-outline", action="store_true")
     parser.add_argument("--outline-stride-px", type=int, default=2)
     parser.add_argument("--outline-min-area-px", type=int, default=64)
@@ -134,6 +137,9 @@ def main() -> int:
             use_mask_path_connectors=args.use_mask_path_connectors,
             max_mask_path_mm=args.max_mask_path_mm,
             max_mask_path_expansions=args.max_mask_path_expansions,
+            validate_mask_path_segments=args.validate_mask_path_segments,
+            mask_path_min_segment_inside_fraction=args.mask_path_min_segment_inside_fraction,
+            validate_quantized_segments=args.validate_quantized_segments,
             add_outline=args.add_outline,
             outline_stride_px=args.outline_stride_px,
             outline_min_area_px=args.outline_min_area_px,

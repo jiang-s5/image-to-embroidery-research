@@ -47,6 +47,23 @@ def add_abs(pattern: EmbPattern, command: int, point_mm: tuple[float, float]) ->
     pattern.add_stitch_absolute(command, int(round(point_mm[0] * 10)), int(round(point_mm[1] * 10)))
 
 
+def dst_quantized_mm(point_mm: tuple[float, float]) -> tuple[float, float]:
+    return (round(point_mm[0] * 10) / 10.0, round(point_mm[1] * 10) / 10.0)
+
+
+def output_segment_inside_fraction(
+    mask: np.ndarray,
+    start_mm: tuple[float, float],
+    end_mm: tuple[float, float],
+    target_width_mm: float,
+    validate_quantized_segments: bool,
+) -> float:
+    if validate_quantized_segments:
+        start_mm = dst_quantized_mm(start_mm)
+        end_mm = dst_quantized_mm(end_mm)
+    return segment_inside_fraction(mask, start_mm, end_mm, target_width_mm)
+
+
 def add_segment(pattern: EmbPattern, start_mm: tuple[float, float], end_mm: tuple[float, float], max_stitch_mm: float) -> int:
     distance = math.dist(start_mm, end_mm)
     if distance <= 1e-6:
@@ -103,6 +120,28 @@ def add_polyline_px(
         stitch_segments += add_segment(pattern, current_mm, next_mm, max_stitch_mm)
         current_mm = next_mm
     return stitch_segments
+
+
+def polyline_min_inside_fraction(
+    mask: np.ndarray,
+    path: list[tuple[int, int]],
+    shape: tuple[int, int],
+    target_width_mm: float,
+    validate_quantized_segments: bool,
+) -> float:
+    if len(path) < 2:
+        return 1.0
+    points = compress_grid_path(path)
+    min_inside = 1.0
+    current_mm = pixel_to_mm_xy(points[0][0], points[0][1], shape, target_width_mm)
+    for point in points[1:]:
+        next_mm = pixel_to_mm_xy(point[0], point[1], shape, target_width_mm)
+        min_inside = min(
+            min_inside,
+            output_segment_inside_fraction(mask, current_mm, next_mm, target_width_mm, validate_quantized_segments),
+        )
+        current_mm = next_mm
+    return min_inside
 
 
 def contour_to_path(contour: np.ndarray, stride_px: int) -> list[tuple[int, int]]:
@@ -389,6 +428,9 @@ def stitch_point_sequence(
     use_mask_path_connectors: bool,
     max_mask_path_px: float,
     max_mask_path_expansions: int,
+    validate_mask_path_segments: bool,
+    mask_path_min_segment_inside_fraction: float,
+    validate_quantized_segments: bool,
 ) -> tuple[tuple[float, float] | None, tuple[int, int] | None, dict[str, int]]:
     stats = {
         "jumps": 0,
@@ -417,6 +459,9 @@ def stitch_point_sequence(
         use_mask_path_connectors,
         max_mask_path_px,
         max_mask_path_expansions,
+        validate_mask_path_segments,
+        mask_path_min_segment_inside_fraction,
+        validate_quantized_segments,
     )
     merge_connect_stats(stats, connect_stats)
 
@@ -425,7 +470,13 @@ def stitch_point_sequence(
             break
         next_mm = pixel_to_mm_xy(next_px[0], next_px[1], shape, target_width_mm)
         distance = math.dist(current_mm, next_mm)
-        inside = segment_inside_fraction(connector_mask, current_mm, next_mm, target_width_mm)
+        inside = output_segment_inside_fraction(
+            connector_mask,
+            current_mm,
+            next_mm,
+            target_width_mm,
+            validate_quantized_segments,
+        )
         if distance <= max_connect_mm and inside >= min_connect_inside_fraction:
             stats["stitch_segments"] += add_segment(pattern, current_mm, next_mm, max_stitch_mm)
             stats["sequence_segments"] += 1
@@ -446,6 +497,9 @@ def stitch_point_sequence(
             use_mask_path_connectors,
             max_mask_path_px,
             max_mask_path_expansions,
+            validate_mask_path_segments,
+            mask_path_min_segment_inside_fraction,
+            validate_quantized_segments,
         )
         merge_connect_stats(stats, connect_stats)
         stats["sequence_rejected"] += 1
@@ -466,6 +520,9 @@ def connect_to_point(
     use_mask_path_connectors: bool,
     max_mask_path_px: float,
     max_mask_path_expansions: int,
+    validate_mask_path_segments: bool,
+    mask_path_min_segment_inside_fraction: float,
+    validate_quantized_segments: bool,
 ) -> tuple[tuple[float, float], tuple[int, int], dict[str, int]]:
     target_mm = pixel_to_mm_xy(target_px[0], target_px[1], shape, target_width_mm)
     stats = {
@@ -482,7 +539,13 @@ def connect_to_point(
         return target_mm, target_px, stats
 
     distance = math.dist(current_mm, target_mm)
-    inside = segment_inside_fraction(connector_mask, current_mm, target_mm, target_width_mm)
+    inside = output_segment_inside_fraction(
+        connector_mask,
+        current_mm,
+        target_mm,
+        target_width_mm,
+        validate_quantized_segments,
+    )
     if distance <= max_connect_mm and inside >= min_connect_inside_fraction:
         stats["stitch_segments"] += add_segment(pattern, current_mm, target_mm, max_stitch_mm)
         stats["safe_connects"] += 1
@@ -497,6 +560,20 @@ def connect_to_point(
             max_mask_path_expansions,
         )
         if path is not None:
+            if validate_mask_path_segments:
+                path_inside = polyline_min_inside_fraction(
+                    connector_mask,
+                    path,
+                    shape,
+                    target_width_mm,
+                    validate_quantized_segments,
+                )
+                if path_inside < mask_path_min_segment_inside_fraction:
+                    stats["rejected_mask_paths"] += 1
+                    add_abs(pattern, JUMP, target_mm)
+                    stats["jumps"] += 1
+                    stats["rejected_connects"] += 1
+                    return target_mm, target_px, stats
             stats["stitch_segments"] += add_polyline_px(pattern, path, shape, target_width_mm, max_stitch_mm)
             stats["mask_path_connects"] += 1
             return target_mm, target_px, stats
@@ -760,6 +837,9 @@ def generate_mask_fill_dst(
     use_mask_path_connectors: bool = False,
     max_mask_path_mm: float = 24.0,
     max_mask_path_expansions: int = 8000,
+    validate_mask_path_segments: bool = False,
+    mask_path_min_segment_inside_fraction: float = 1.0,
+    validate_quantized_segments: bool = False,
     add_outline: bool = False,
     outline_stride_px: int = 2,
     outline_min_area_px: int = 64,
@@ -893,6 +973,9 @@ def generate_mask_fill_dst(
                     use_mask_path_connectors,
                     max_mask_path_px,
                     max_mask_path_expansions,
+                    validate_mask_path_segments,
+                    mask_path_min_segment_inside_fraction,
+                    validate_quantized_segments,
                 )
                 jumps += path_stats["jumps"]
                 safe_connects += path_stats["safe_connects"]
@@ -925,6 +1008,9 @@ def generate_mask_fill_dst(
                 use_mask_path_connectors,
                 max_mask_path_px,
                 max_mask_path_expansions,
+                validate_mask_path_segments,
+                mask_path_min_segment_inside_fraction,
+                validate_quantized_segments,
             )
             jumps += connect_stats["jumps"]
             safe_connects += connect_stats["safe_connects"]
@@ -954,6 +1040,9 @@ def generate_mask_fill_dst(
                     use_mask_path_connectors,
                     max_mask_path_px,
                     max_mask_path_expansions,
+                    validate_mask_path_segments,
+                    mask_path_min_segment_inside_fraction,
+                    validate_quantized_segments,
                 )
                 jumps += connect_stats["jumps"]
                 safe_connects += connect_stats["safe_connects"]
@@ -982,7 +1071,13 @@ def generate_mask_fill_dst(
                 end_px = inner_px if prefer_outer else outer_px
                 start_mm = pixel_to_mm_xy(start_px[0], start_px[1], mask.shape, target_width_mm)
                 end_mm = pixel_to_mm_xy(end_px[0], end_px[1], mask.shape, target_width_mm)
-                if segment_inside_fraction(connector_mask, start_mm, end_mm, target_width_mm) < min_connect_inside_fraction:
+                if output_segment_inside_fraction(
+                    connector_mask,
+                    start_mm,
+                    end_mm,
+                    target_width_mm,
+                    validate_quantized_segments,
+                ) < min_connect_inside_fraction:
                     satin_skipped += 1
                     continue
                 current_mm, current_px, connect_stats = connect_to_point(
@@ -999,6 +1094,9 @@ def generate_mask_fill_dst(
                     use_mask_path_connectors,
                     max_mask_path_px,
                     max_mask_path_expansions,
+                    validate_mask_path_segments,
+                    mask_path_min_segment_inside_fraction,
+                    validate_quantized_segments,
                 )
                 jumps += connect_stats["jumps"]
                 safe_connects += connect_stats["safe_connects"]
@@ -1025,7 +1123,13 @@ def generate_mask_fill_dst(
             for outer_px, inner_px in rail_columns:
                 outer_mm = pixel_to_mm_xy(outer_px[0], outer_px[1], mask.shape, target_width_mm)
                 inner_mm = pixel_to_mm_xy(inner_px[0], inner_px[1], mask.shape, target_width_mm)
-                if segment_inside_fraction(connector_mask, outer_mm, inner_mm, target_width_mm) < min_connect_inside_fraction:
+                if output_segment_inside_fraction(
+                    connector_mask,
+                    outer_mm,
+                    inner_mm,
+                    target_width_mm,
+                    validate_quantized_segments,
+                ) < min_connect_inside_fraction:
                     satin_rail_rejected += 1
                     continue
                 rail_sequence.extend([outer_px, inner_px])
@@ -1044,6 +1148,9 @@ def generate_mask_fill_dst(
                 use_mask_path_connectors,
                 max_mask_path_px,
                 max_mask_path_expansions,
+                validate_mask_path_segments,
+                mask_path_min_segment_inside_fraction,
+                validate_quantized_segments,
             )
             jumps += rail_stats["jumps"]
             safe_connects += rail_stats["safe_connects"]
@@ -1068,7 +1175,13 @@ def generate_mask_fill_dst(
             for outer_px, inner_px in dt_columns:
                 outer_mm = pixel_to_mm_xy(outer_px[0], outer_px[1], mask.shape, target_width_mm)
                 inner_mm = pixel_to_mm_xy(inner_px[0], inner_px[1], mask.shape, target_width_mm)
-                if segment_inside_fraction(connector_mask, outer_mm, inner_mm, target_width_mm) < min_connect_inside_fraction:
+                if output_segment_inside_fraction(
+                    connector_mask,
+                    outer_mm,
+                    inner_mm,
+                    target_width_mm,
+                    validate_quantized_segments,
+                ) < min_connect_inside_fraction:
                     dt_satin_rejected += 1
                     continue
                 dt_sequence.extend([outer_px, inner_px])
@@ -1087,6 +1200,9 @@ def generate_mask_fill_dst(
                 use_mask_path_connectors,
                 max_mask_path_px,
                 max_mask_path_expansions,
+                validate_mask_path_segments,
+                mask_path_min_segment_inside_fraction,
+                validate_quantized_segments,
             )
             jumps += dt_stats["jumps"]
             safe_connects += dt_stats["safe_connects"]
@@ -1133,6 +1249,9 @@ def generate_mask_fill_dst(
         "max_mask_path_mm": max_mask_path_mm,
         "max_mask_path_px": max_mask_path_px,
         "max_mask_path_expansions": max_mask_path_expansions,
+        "validate_mask_path_segments": validate_mask_path_segments,
+        "mask_path_min_segment_inside_fraction": mask_path_min_segment_inside_fraction,
+        "validate_quantized_segments": validate_quantized_segments,
         "add_outline": add_outline,
         "outline_paths": outline_paths,
         "outline_points": outline_points,
@@ -1197,6 +1316,9 @@ def main() -> int:
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
+    parser.add_argument("--validate-mask-path-segments", action="store_true")
+    parser.add_argument("--mask-path-min-segment-inside-fraction", type=float, default=1.0)
+    parser.add_argument("--validate-quantized-segments", action="store_true")
     parser.add_argument("--add-outline", action="store_true")
     parser.add_argument("--outline-stride-px", type=int, default=2)
     parser.add_argument("--outline-min-area-px", type=int, default=64)
@@ -1244,6 +1366,9 @@ def main() -> int:
         use_mask_path_connectors=args.use_mask_path_connectors,
         max_mask_path_mm=args.max_mask_path_mm,
         max_mask_path_expansions=args.max_mask_path_expansions,
+        validate_mask_path_segments=args.validate_mask_path_segments,
+        mask_path_min_segment_inside_fraction=args.mask_path_min_segment_inside_fraction,
+        validate_quantized_segments=args.validate_quantized_segments,
         add_outline=args.add_outline,
         outline_stride_px=args.outline_stride_px,
         outline_min_area_px=args.outline_min_area_px,

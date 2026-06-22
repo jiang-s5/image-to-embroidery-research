@@ -30,9 +30,19 @@ Key finding: a lower mean loss alone is not enough. Some selector configurations
 | strict short nearest-row, no mask path | 5 | 0.158351 | 19.000000 | 1.363636 | 0.128455 | 0.999654 | 0.763392 | Reject: jump and hard_fail explode |
 | strict nearest-row p20 | 0 | 0.101801 | 10.545455 | 1.363636 | 0.263558 | 0.999686 | 0.755671 | Reject: too many jumps |
 | strict nearest-row p40 | 0 | 0.077217 | 7.515152 | 0.909091 | 0.412527 | 0.999689 | 0.749214 | Reject: not better than M2.30 selector |
+| quantized segment validation p40 | 0 | 0.087732 | 9.060606 | 0.969697 | 0.294418 | 0.999686 | 0.751009 | Reject: lowers off-mask vs strict p40, but increases jump and loss |
+
+## Selector Ablation With Quantized Candidate
+
+| Variant | Hard Fail | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Decision |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| M2.30 public LOO | 0 | 0.068519 | 6.636364 | 1.848485 | 0.105806 | 0.911108 | 0.798703 | Keep current best |
+| M2.32 + quantized validation candidate LOO | 0 | 0.069334 | 6.818182 | 1.848485 | 0.075076 | 0.911108 | 0.798854 | Reject: off-mask improves, but loss and jump worsen |
+
+The quantized-validation candidate was selected on only 2 of 33 leave-one-out samples. It is useful as a diagnostic candidate because it reduces boundary spill after DST 0.1mm quantization, but as a hard gate it sacrifices too much local continuity.
 
 ## Conclusion
 
-M2.30 remains the current best model. The nearest-endpoint row-order candidate is still the strongest useful addition, but simply tightening coverage floors or using the evaluation mask as the fill source does not produce a better practical planner.
+M2.30 remains the current best model. The nearest-endpoint row-order candidate is still the strongest useful addition, but simply tightening coverage floors, using the evaluation mask as the fill source, or hard-validating quantized segments does not produce a better practical planner.
 
-Next useful direction: create a genuinely better high-coverage candidate that reduces off-mask without sacrificing path continuity, likely by repairing or clipping problematic connectors rather than replacing the fill mask or forcing strict short connections.
+Next useful direction: create a genuinely better high-coverage candidate that reduces off-mask without sacrificing path continuity. Quantized boundary risk should become a soft selector feature or repair veto, not a hard routing gate, because the hard gate reduces spill but increases jump.

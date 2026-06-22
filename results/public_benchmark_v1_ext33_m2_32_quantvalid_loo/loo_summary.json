@@ -1,0 +1,57 @@
+{
+  "mode": "leave_one_out",
+  "samples": 33,
+  "candidate_rows": 561,
+  "configs_evaluated_per_fold": 216,
+  "exclude_hard_fail": true,
+  "enforce_coverage_floor": false,
+  "enforce_adaptive_coverage_floor": false,
+  "coverage_floor_tolerance": 0.0,
+  "coverage_floor_mode": "branch",
+  "coverage_floor_line_sources": [
+    "QuickDraw",
+    "Rendered text"
+  ],
+  "style_aware_hard_gate": false,
+  "mask_fill_hard_gate": false,
+  "coverage_profiles": "global,public_soft,public_balanced",
+  "coverage_weights": "0.2,0.35,0.5",
+  "precision_weights": "0.05,0.15",
+  "jump_weights": "0,0.01",
+  "trim_weights": "0,0.01",
+  "off_mask_weights": "0.02,0.05,0.1",
+  "leave_one_out": {
+    "samples": 33,
+    "hard_fail": 0,
+    "mean_calibrated_score": 0.090883,
+    "mean_unified_loss": 0.069334,
+    "mean_jump_count": 6.818182,
+    "mean_trim_count": 1.848485,
+    "mean_off_mask_stitch_length_mm": 0.075076,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.911108,
+    "mean_effective_min_coverage": 0.701515,
+    "mean_coverage_margin": 0.209593,
+    "mean_stitch_precision_ratio": 0.798854,
+    "chosen_counts": {
+      "skeleton_c20_m4": 1,
+      "auto_evalrepair_r10_c20": 5,
+      "mask_fill_edgewalk_nearestrow_rows16_p40": 13,
+      "mask_fill_rows16_c6": 1,
+      "mask_fill_edgewalk_rows16_p40": 3,
+      "skeleton_c30_m20": 3,
+      "mask_fill_edgewalk_nearestrow_quantvalid_rows16_p40": 2,
+      "skeleton_c30_m12": 1,
+      "skeleton_c30_m4": 3,
+      "skeleton_c30_m8": 1
+    },
+    "coverage_profile_counts": {
+      "public_soft": 33
+    }
+  },
+  "best_config_counts": {
+    "83": 32,
+    "77": 1
+  },
+  "mean_loo_train_objective": 0.069449
+}
