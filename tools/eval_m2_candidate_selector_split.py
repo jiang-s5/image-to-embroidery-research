@@ -35,6 +35,18 @@ def select_with_model(
     coverage_floor_tolerance: float = 0.0,
     coverage_floor_mode: str = "branch",
     coverage_floor_line_sources: set[str] | None = None,
+    style_aware_hard_gate: bool = False,
+    style_aware_max_off_mask_mm: float = 0.05,
+    style_aware_max_jump_count: float = 15.0,
+    style_aware_max_trim_count: float = 3.0,
+    style_aware_min_precision: float = 0.75,
+    style_aware_min_coverage: float = 0.80,
+    mask_fill_hard_gate: bool = False,
+    mask_fill_max_off_mask_mm: float = 0.05,
+    mask_fill_max_jump_count: float = 20.0,
+    mask_fill_max_trim_count: float = 3.0,
+    mask_fill_min_precision: float = 0.70,
+    mask_fill_min_coverage: float = 0.80,
 ) -> list[dict[str, Any]]:
     selected: list[dict[str, Any]] = []
     for sample_id, group in sorted(groups_by_sample(rows).items()):
@@ -47,6 +59,18 @@ def select_with_model(
             coverage_floor_tolerance,
             coverage_floor_mode,
             coverage_floor_line_sources,
+            style_aware_hard_gate,
+            style_aware_max_off_mask_mm,
+            style_aware_max_jump_count,
+            style_aware_max_trim_count,
+            style_aware_min_precision,
+            style_aware_min_coverage,
+            mask_fill_hard_gate,
+            mask_fill_max_off_mask_mm,
+            mask_fill_max_jump_count,
+            mask_fill_max_trim_count,
+            mask_fill_min_precision,
+            mask_fill_min_coverage,
         )
         predictions = predict(model, selectable)
         ranked = sorted(zip(selectable, predictions), key=lambda item: item[1])
@@ -60,6 +84,18 @@ def select_with_model(
             coverage_floor_tolerance,
             coverage_floor_mode,
             coverage_floor_line_sources,
+            style_aware_hard_gate,
+            style_aware_max_off_mask_mm,
+            style_aware_max_jump_count,
+            style_aware_max_trim_count,
+            style_aware_min_precision,
+            style_aware_min_coverage,
+            mask_fill_hard_gate,
+            mask_fill_max_off_mask_mm,
+            mask_fill_max_jump_count,
+            mask_fill_max_trim_count,
+            mask_fill_min_precision,
+            mask_fill_min_coverage,
         )
         oracle = min(oracle_pool, key=lambda row: safe_float(row["oracle_score"]))
         chosen["predicted_score"] = round(ranked[0][1], 8)
@@ -87,6 +123,18 @@ def oracle_summary(
     coverage_floor_tolerance: float,
     coverage_floor_mode: str,
     coverage_floor_line_sources: set[str],
+    style_aware_hard_gate: bool,
+    style_aware_max_off_mask_mm: float,
+    style_aware_max_jump_count: float,
+    style_aware_max_trim_count: float,
+    style_aware_min_precision: float,
+    style_aware_min_coverage: float,
+    mask_fill_hard_gate: bool,
+    mask_fill_max_off_mask_mm: float,
+    mask_fill_max_jump_count: float,
+    mask_fill_max_trim_count: float,
+    mask_fill_min_precision: float,
+    mask_fill_min_coverage: float,
 ) -> dict[str, Any]:
     selected = []
     for _sample_id, group in groups_by_sample(rows).items():
@@ -99,6 +147,18 @@ def oracle_summary(
             coverage_floor_tolerance,
             coverage_floor_mode,
             coverage_floor_line_sources,
+            style_aware_hard_gate,
+            style_aware_max_off_mask_mm,
+            style_aware_max_jump_count,
+            style_aware_max_trim_count,
+            style_aware_min_precision,
+            style_aware_min_coverage,
+            mask_fill_hard_gate,
+            mask_fill_max_off_mask_mm,
+            mask_fill_max_jump_count,
+            mask_fill_max_trim_count,
+            mask_fill_min_precision,
+            mask_fill_min_coverage,
         )
         best = min(pool, key=lambda row: safe_float(row["oracle_score"]))
         row = dict(best)
@@ -132,6 +192,18 @@ def main() -> int:
     parser.add_argument("--coverage-floor-tolerance", type=float, default=0.0)
     parser.add_argument("--coverage-floor-mode", choices=["branch", "source"], default="branch")
     parser.add_argument("--coverage-floor-line-sources", default="QuickDraw,Rendered text")
+    parser.add_argument("--style-aware-hard-gate", action="store_true")
+    parser.add_argument("--style-aware-max-off-mask-mm", type=float, default=0.05)
+    parser.add_argument("--style-aware-max-jump-count", type=float, default=15.0)
+    parser.add_argument("--style-aware-max-trim-count", type=float, default=3.0)
+    parser.add_argument("--style-aware-min-precision", type=float, default=0.75)
+    parser.add_argument("--style-aware-min-coverage", type=float, default=0.80)
+    parser.add_argument("--mask-fill-hard-gate", action="store_true")
+    parser.add_argument("--mask-fill-max-off-mask-mm", type=float, default=0.05)
+    parser.add_argument("--mask-fill-max-jump-count", type=float, default=20.0)
+    parser.add_argument("--mask-fill-max-trim-count", type=float, default=3.0)
+    parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
+    parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     parser.add_argument("--alpha", type=float, default=1.0)
     args = parser.parse_args()
 
@@ -164,6 +236,18 @@ def main() -> int:
         args.coverage_floor_tolerance,
         args.coverage_floor_mode,
         coverage_floor_line_sources,
+        args.style_aware_hard_gate,
+        args.style_aware_max_off_mask_mm,
+        args.style_aware_max_jump_count,
+        args.style_aware_max_trim_count,
+        args.style_aware_min_precision,
+        args.style_aware_min_coverage,
+        args.mask_fill_hard_gate,
+        args.mask_fill_max_off_mask_mm,
+        args.mask_fill_max_jump_count,
+        args.mask_fill_max_trim_count,
+        args.mask_fill_min_precision,
+        args.mask_fill_min_coverage,
     )
 
     write_csv(flatten_rows(train_rows), output_dir / "train_candidate_rows.csv")
@@ -185,6 +269,18 @@ def main() -> int:
         "coverage_floor_tolerance": args.coverage_floor_tolerance,
         "coverage_floor_mode": args.coverage_floor_mode,
         "coverage_floor_line_sources": sorted(coverage_floor_line_sources),
+        "style_aware_hard_gate": args.style_aware_hard_gate,
+        "style_aware_max_off_mask_mm": args.style_aware_max_off_mask_mm,
+        "style_aware_max_jump_count": args.style_aware_max_jump_count,
+        "style_aware_max_trim_count": args.style_aware_max_trim_count,
+        "style_aware_min_precision": args.style_aware_min_precision,
+        "style_aware_min_coverage": args.style_aware_min_coverage,
+        "mask_fill_hard_gate": args.mask_fill_hard_gate,
+        "mask_fill_max_off_mask_mm": args.mask_fill_max_off_mask_mm,
+        "mask_fill_max_jump_count": args.mask_fill_max_jump_count,
+        "mask_fill_max_trim_count": args.mask_fill_max_trim_count,
+        "mask_fill_min_precision": args.mask_fill_min_precision,
+        "mask_fill_min_coverage": args.mask_fill_min_coverage,
         "feature_count": len(names),
         "learned_selector": summarize_selected(selected),
         "oracle": oracle_summary(
@@ -196,6 +292,18 @@ def main() -> int:
             args.coverage_floor_tolerance,
             args.coverage_floor_mode,
             coverage_floor_line_sources,
+            args.style_aware_hard_gate,
+            args.style_aware_max_off_mask_mm,
+            args.style_aware_max_jump_count,
+            args.style_aware_max_trim_count,
+            args.style_aware_min_precision,
+            args.style_aware_min_coverage,
+            args.mask_fill_hard_gate,
+            args.mask_fill_max_off_mask_mm,
+            args.mask_fill_max_jump_count,
+            args.mask_fill_max_trim_count,
+            args.mask_fill_min_precision,
+            args.mask_fill_min_coverage,
         ),
         "fixed_candidates": fixed,
     }

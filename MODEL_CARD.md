@@ -90,6 +90,12 @@ M2.18 implemented the first component-level style gate: thin or line-like connec
 
 This was not promoted. Standalone style-aware fill substantially reduced jump and trim counts compared with previous fill candidates, but the learned selector over-selected it on incoming review, increasing unified loss and off-mask length. The result supports stitch-style classification as the next research direction, but the style gate must become hard-safe before replacing M2.14.
 
+## Later Experiment: M2.19-M2.21 Hard-Safe Candidate Gates
+
+M2.19-M2.21 added optional hard gates for style-aware and mask-fill candidate families. These gates reject candidates based on off-mask stitch length, jump count, trim count, stitch precision, and coverage.
+
+They were not promoted. Strict gates removed off-mask risk but over-pruned high-coverage candidates, while relaxed gates still underperformed M2.14. The selector code keeps these gates as research controls; the next step is a calibrated two-stage selector rather than fixed thresholds alone.
+
 ## Later Experiment: model14B
 
 ```text

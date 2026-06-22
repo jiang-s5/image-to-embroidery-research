@@ -68,6 +68,18 @@ def main() -> int:
     parser.add_argument("--coverage-floor-tolerance", type=float, default=0.0)
     parser.add_argument("--coverage-floor-mode", choices=["branch", "source"], default="branch")
     parser.add_argument("--coverage-floor-line-sources", default="QuickDraw,Rendered text")
+    parser.add_argument("--style-aware-hard-gate", action="store_true")
+    parser.add_argument("--style-aware-max-off-mask-mm", type=float, default=0.05)
+    parser.add_argument("--style-aware-max-jump-count", type=float, default=15.0)
+    parser.add_argument("--style-aware-max-trim-count", type=float, default=3.0)
+    parser.add_argument("--style-aware-min-precision", type=float, default=0.75)
+    parser.add_argument("--style-aware-min-coverage", type=float, default=0.80)
+    parser.add_argument("--mask-fill-hard-gate", action="store_true")
+    parser.add_argument("--mask-fill-max-off-mask-mm", type=float, default=0.05)
+    parser.add_argument("--mask-fill-max-jump-count", type=float, default=20.0)
+    parser.add_argument("--mask-fill-max-trim-count", type=float, default=3.0)
+    parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
+    parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     args = parser.parse_args()
 
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
@@ -96,6 +108,18 @@ def main() -> int:
             args.coverage_floor_tolerance,
             args.coverage_floor_mode,
             coverage_floor_line_sources,
+            args.style_aware_hard_gate,
+            args.style_aware_max_off_mask_mm,
+            args.style_aware_max_jump_count,
+            args.style_aware_max_trim_count,
+            args.style_aware_min_precision,
+            args.style_aware_min_coverage,
+            args.mask_fill_hard_gate,
+            args.mask_fill_max_off_mask_mm,
+            args.mask_fill_max_jump_count,
+            args.mask_fill_max_trim_count,
+            args.mask_fill_min_precision,
+            args.mask_fill_min_coverage,
         )
         predictions = predict(model, selectable)
         ranked = sorted(zip(selectable, predictions), key=lambda item: item[1])

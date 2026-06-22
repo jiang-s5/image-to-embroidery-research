@@ -253,6 +253,78 @@ def coverage_floor_candidates(
     return covered or rows
 
 
+def is_style_aware_candidate(row: dict[str, Any]) -> bool:
+    candidate = str(row.get("candidate", "")).lower()
+    return "styleaware" in candidate or "style_aware" in candidate
+
+
+def is_mask_fill_candidate(row: dict[str, Any]) -> bool:
+    return "mask_fill" in str(row.get("candidate", "")).lower()
+
+
+def candidate_metric_gate(
+    row: dict[str, Any],
+    max_off_mask_mm: float,
+    max_jump_count: float,
+    max_trim_count: float,
+    min_precision: float,
+    min_coverage: float,
+) -> bool:
+    if safe_float(row.get("off_mask_stitch_length_mm")) > max_off_mask_mm:
+        return False
+    if safe_float(row.get("jump_count")) > max_jump_count:
+        return False
+    if safe_float(row.get("trim_count")) > max_trim_count:
+        return False
+    if safe_float(row.get("stitch_precision_ratio")) < min_precision:
+        return False
+    if safe_float(row.get("coverage_ratio")) < min_coverage:
+        return False
+    return True
+
+
+def style_aware_gate_candidates(
+    rows: list[dict[str, Any]],
+    enabled: bool,
+    max_off_mask_mm: float,
+    max_jump_count: float,
+    max_trim_count: float,
+    min_precision: float,
+    min_coverage: float,
+) -> list[dict[str, Any]]:
+    if not enabled:
+        return rows
+    gated: list[dict[str, Any]] = []
+    for row in rows:
+        if not is_style_aware_candidate(row):
+            gated.append(row)
+            continue
+        if candidate_metric_gate(row, max_off_mask_mm, max_jump_count, max_trim_count, min_precision, min_coverage):
+            gated.append(row)
+    return gated or rows
+
+
+def mask_fill_gate_candidates(
+    rows: list[dict[str, Any]],
+    enabled: bool,
+    max_off_mask_mm: float,
+    max_jump_count: float,
+    max_trim_count: float,
+    min_precision: float,
+    min_coverage: float,
+) -> list[dict[str, Any]]:
+    if not enabled:
+        return rows
+    gated: list[dict[str, Any]] = []
+    for row in rows:
+        if not is_mask_fill_candidate(row):
+            gated.append(row)
+            continue
+        if candidate_metric_gate(row, max_off_mask_mm, max_jump_count, max_trim_count, min_precision, min_coverage):
+            gated.append(row)
+    return gated or rows
+
+
 def selectable_candidates(
     rows: list[dict[str, Any]],
     exclude_hard_fail: bool,
@@ -262,6 +334,18 @@ def selectable_candidates(
     coverage_floor_tolerance: float,
     coverage_floor_mode: str = "branch",
     coverage_floor_line_sources: set[str] | None = None,
+    style_aware_hard_gate: bool = False,
+    style_aware_max_off_mask_mm: float = 0.05,
+    style_aware_max_jump_count: float = 15.0,
+    style_aware_max_trim_count: float = 3.0,
+    style_aware_min_precision: float = 0.75,
+    style_aware_min_coverage: float = 0.80,
+    mask_fill_hard_gate: bool = False,
+    mask_fill_max_off_mask_mm: float = 0.05,
+    mask_fill_max_jump_count: float = 20.0,
+    mask_fill_max_trim_count: float = 3.0,
+    mask_fill_min_precision: float = 0.70,
+    mask_fill_min_coverage: float = 0.80,
 ) -> list[dict[str, Any]]:
     candidates = hard_safe_candidates(rows, exclude_hard_fail)
     candidates = coverage_floor_candidates(
@@ -272,6 +356,24 @@ def selectable_candidates(
         coverage_floor_tolerance,
         coverage_floor_mode,
         coverage_floor_line_sources,
+    )
+    candidates = style_aware_gate_candidates(
+        candidates,
+        style_aware_hard_gate,
+        style_aware_max_off_mask_mm,
+        style_aware_max_jump_count,
+        style_aware_max_trim_count,
+        style_aware_min_precision,
+        style_aware_min_coverage,
+    )
+    candidates = mask_fill_gate_candidates(
+        candidates,
+        mask_fill_hard_gate,
+        mask_fill_max_off_mask_mm,
+        mask_fill_max_jump_count,
+        mask_fill_max_trim_count,
+        mask_fill_min_precision,
+        mask_fill_min_coverage,
     )
     return candidates
 
@@ -306,6 +408,18 @@ def leave_one_out(
     coverage_floor_tolerance: float = 0.0,
     coverage_floor_mode: str = "branch",
     coverage_floor_line_sources: set[str] | None = None,
+    style_aware_hard_gate: bool = False,
+    style_aware_max_off_mask_mm: float = 0.05,
+    style_aware_max_jump_count: float = 15.0,
+    style_aware_max_trim_count: float = 3.0,
+    style_aware_min_precision: float = 0.75,
+    style_aware_min_coverage: float = 0.80,
+    mask_fill_hard_gate: bool = False,
+    mask_fill_max_off_mask_mm: float = 0.05,
+    mask_fill_max_jump_count: float = 20.0,
+    mask_fill_max_trim_count: float = 3.0,
+    mask_fill_min_precision: float = 0.70,
+    mask_fill_min_coverage: float = 0.80,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     groups = groups_by_sample(rows)
     chosen: list[dict[str, Any]] = []
@@ -322,6 +436,18 @@ def leave_one_out(
             coverage_floor_tolerance,
             coverage_floor_mode,
             coverage_floor_line_sources,
+            style_aware_hard_gate,
+            style_aware_max_off_mask_mm,
+            style_aware_max_jump_count,
+            style_aware_max_trim_count,
+            style_aware_min_precision,
+            style_aware_min_coverage,
+            mask_fill_hard_gate,
+            mask_fill_max_off_mask_mm,
+            mask_fill_max_jump_count,
+            mask_fill_max_trim_count,
+            mask_fill_min_precision,
+            mask_fill_min_coverage,
         )
         preds = predict(model, selectable)
         ranked = sorted(zip(selectable, preds), key=lambda item: item[1])
@@ -335,6 +461,18 @@ def leave_one_out(
             coverage_floor_tolerance,
             coverage_floor_mode,
             coverage_floor_line_sources,
+            style_aware_hard_gate,
+            style_aware_max_off_mask_mm,
+            style_aware_max_jump_count,
+            style_aware_max_trim_count,
+            style_aware_min_precision,
+            style_aware_min_coverage,
+            mask_fill_hard_gate,
+            mask_fill_max_off_mask_mm,
+            mask_fill_max_jump_count,
+            mask_fill_max_trim_count,
+            mask_fill_min_precision,
+            mask_fill_min_coverage,
         )
         oracle_row = min(oracle_pool, key=lambda row: safe_float(row["oracle_score"]))
         chosen_row["predicted_score"] = round(ranked[0][1], 8)
@@ -359,6 +497,18 @@ def main() -> int:
     parser.add_argument("--coverage-floor-tolerance", type=float, default=0.0)
     parser.add_argument("--coverage-floor-mode", choices=["branch", "source"], default="branch")
     parser.add_argument("--coverage-floor-line-sources", default="QuickDraw,Rendered text")
+    parser.add_argument("--style-aware-hard-gate", action="store_true")
+    parser.add_argument("--style-aware-max-off-mask-mm", type=float, default=0.05)
+    parser.add_argument("--style-aware-max-jump-count", type=float, default=15.0)
+    parser.add_argument("--style-aware-max-trim-count", type=float, default=3.0)
+    parser.add_argument("--style-aware-min-precision", type=float, default=0.75)
+    parser.add_argument("--style-aware-min-coverage", type=float, default=0.80)
+    parser.add_argument("--mask-fill-hard-gate", action="store_true")
+    parser.add_argument("--mask-fill-max-off-mask-mm", type=float, default=0.05)
+    parser.add_argument("--mask-fill-max-jump-count", type=float, default=20.0)
+    parser.add_argument("--mask-fill-max-trim-count", type=float, default=3.0)
+    parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
+    parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     parser.add_argument("--alpha", type=float, default=1.0)
     args = parser.parse_args()
 
@@ -397,6 +547,18 @@ def main() -> int:
         args.coverage_floor_tolerance,
         args.coverage_floor_mode,
         coverage_floor_line_sources,
+        args.style_aware_hard_gate,
+        args.style_aware_max_off_mask_mm,
+        args.style_aware_max_jump_count,
+        args.style_aware_max_trim_count,
+        args.style_aware_min_precision,
+        args.style_aware_min_coverage,
+        args.mask_fill_hard_gate,
+        args.mask_fill_max_off_mask_mm,
+        args.mask_fill_max_jump_count,
+        args.mask_fill_max_trim_count,
+        args.mask_fill_min_precision,
+        args.mask_fill_min_coverage,
     )
     write_csv([{key: value for key, value in row.items() if key != "features"} for row in loo_rows], output_dir / "loo_selected_rows.csv")
     model = fit_ridge(rows, names, args.alpha)
@@ -411,6 +573,18 @@ def main() -> int:
         "coverage_floor_tolerance": args.coverage_floor_tolerance,
         "coverage_floor_mode": args.coverage_floor_mode,
         "coverage_floor_line_sources": sorted(coverage_floor_line_sources),
+        "style_aware_hard_gate": args.style_aware_hard_gate,
+        "style_aware_max_off_mask_mm": args.style_aware_max_off_mask_mm,
+        "style_aware_max_jump_count": args.style_aware_max_jump_count,
+        "style_aware_max_trim_count": args.style_aware_max_trim_count,
+        "style_aware_min_precision": args.style_aware_min_precision,
+        "style_aware_min_coverage": args.style_aware_min_coverage,
+        "mask_fill_hard_gate": args.mask_fill_hard_gate,
+        "mask_fill_max_off_mask_mm": args.mask_fill_max_off_mask_mm,
+        "mask_fill_max_jump_count": args.mask_fill_max_jump_count,
+        "mask_fill_max_trim_count": args.mask_fill_max_trim_count,
+        "mask_fill_min_precision": args.mask_fill_min_precision,
+        "mask_fill_min_coverage": args.mask_fill_min_coverage,
         "feature_count": len(names),
         "leave_one_out": loo_summary,
     }
