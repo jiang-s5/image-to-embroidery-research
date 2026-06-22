@@ -294,6 +294,69 @@ def fit_pairwise_ranker(
     }
 
 
+def softmax(values: np.ndarray) -> np.ndarray:
+    if values.size == 0:
+        return values
+    centered = values - np.max(values)
+    exp_values = np.exp(centered)
+    denom = float(exp_values.sum())
+    if denom <= 0.0:
+        return np.full_like(values, 1.0 / max(1, values.size), dtype=np.float64)
+    return exp_values / denom
+
+
+def fit_listwise_softmax_ranker(
+    rows: list[dict[str, Any]],
+    names: list[str],
+    alpha: float,
+    temperature: float = 0.02,
+    epochs: int = 1200,
+    learning_rate: float = 0.05,
+) -> dict[str, Any]:
+    x = matrix(rows, names)
+    mean_x = x.mean(axis=0)
+    std_x = x.std(axis=0)
+    std_x[std_x < 1e-8] = 1.0
+    xz = (x - mean_x) / std_x
+
+    row_groups: dict[str, list[int]] = defaultdict(list)
+    for index, row in enumerate(rows):
+        row_groups[str(row["sample_id"])].append(index)
+    groups = [indices for indices in row_groups.values() if indices]
+    weights = np.zeros(xz.shape[1], dtype=np.float64)
+    temp = max(1e-6, temperature)
+    lr = max(1e-8, learning_rate)
+
+    for _epoch in range(max(1, epochs)):
+        grad = np.zeros_like(weights)
+        for indices in groups:
+            group_x = xz[indices]
+            oracle_scores = np.asarray([safe_float(rows[index].get("oracle_score")) for index in indices], dtype=np.float64)
+            teacher = softmax(-oracle_scores / temp)
+            scores = group_x @ weights
+            predicted = softmax(-scores / temp)
+            # d CE(teacher, softmax(-score/temp)) / d score = (teacher - predicted) / temp
+            grad += group_x.T @ ((teacher - predicted) / temp)
+        grad = grad / max(1, len(groups)) + alpha * weights
+        weights -= lr * grad
+        lr *= 0.995
+
+    return {
+        "type": "listwise_softmax_candidate_ranker",
+        "target": "listwise_softmax",
+        "select_direction": "min",
+        "alpha": alpha,
+        "listwise_temperature": temperature,
+        "listwise_epochs": epochs,
+        "listwise_learning_rate": learning_rate,
+        "feature_names": names,
+        "mean": mean_x.tolist(),
+        "std": std_x.tolist(),
+        "weights": weights.tolist(),
+        "listwise_groups": len(groups),
+    }
+
+
 def fit_ridge(rows: list[dict[str, Any]], names: list[str], alpha: float, target: str = "oracle_score") -> dict[str, Any]:
     x = matrix(rows, names)
     y = np.array([target_value(row, target) for row in rows], dtype=np.float64)
@@ -328,7 +391,7 @@ def predict(model: dict[str, Any], rows: list[dict[str, Any]]) -> list[float]:
     std_x[std_x < 1e-8] = 1.0
     xz = (x - mean_x) / std_x
     weights = np.array(model["weights"], dtype=np.float64)
-    if model.get("type") == "ridge_pairwise_candidate_ranker":
+    if model.get("type") in {"ridge_pairwise_candidate_ranker", "listwise_softmax_candidate_ranker"}:
         return (xz @ weights).tolist()
     design = np.concatenate([np.ones((xz.shape[0], 1), dtype=np.float64), xz], axis=1)
     return (design @ weights).tolist()
@@ -340,9 +403,14 @@ def fit_selector_model(
     alpha: float,
     target: str,
     pairwise_min_score_gap: float = 0.0,
+    listwise_temperature: float = 0.02,
+    listwise_epochs: int = 1200,
+    listwise_learning_rate: float = 0.05,
 ) -> dict[str, Any]:
     if target == "pairwise_score_delta":
         return fit_pairwise_ranker(rows, names, alpha, pairwise_min_score_gap)
+    if target == "listwise_softmax":
+        return fit_listwise_softmax_ranker(rows, names, alpha, listwise_temperature, listwise_epochs, listwise_learning_rate)
     return fit_ridge(rows, names, alpha, target)
 
 
@@ -536,6 +604,9 @@ def leave_one_out(
     alpha: float,
     target: str = "oracle_score",
     pairwise_min_score_gap: float = 0.0,
+    listwise_temperature: float = 0.02,
+    listwise_epochs: int = 1200,
+    listwise_learning_rate: float = 0.05,
     exclude_hard_fail: bool = False,
     enforce_coverage_floor: bool = False,
     flat_min_coverage: float = 0.75,
@@ -561,7 +632,16 @@ def leave_one_out(
     for sample_id in sorted(groups):
         train = [row for row in rows if row["sample_id"] != sample_id]
         held = groups[sample_id]
-        model = fit_selector_model(train, names, alpha, target, pairwise_min_score_gap)
+        model = fit_selector_model(
+            train,
+            names,
+            alpha,
+            target,
+            pairwise_min_score_gap,
+            listwise_temperature,
+            listwise_epochs,
+            listwise_learning_rate,
+        )
         selectable = selectable_candidates(
             held,
             exclude_hard_fail,
@@ -646,8 +726,11 @@ def main() -> int:
     parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
     parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     parser.add_argument("--alpha", type=float, default=1.0)
-    parser.add_argument("--target", choices=["oracle_score", "oracle_choice", "pairwise_score_delta"], default="oracle_score")
+    parser.add_argument("--target", choices=["oracle_score", "oracle_choice", "pairwise_score_delta", "listwise_softmax"], default="oracle_score")
     parser.add_argument("--pairwise-min-score-gap", type=float, default=0.0)
+    parser.add_argument("--listwise-temperature", type=float, default=0.02)
+    parser.add_argument("--listwise-epochs", type=int, default=1200)
+    parser.add_argument("--listwise-learning-rate", type=float, default=0.05)
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -680,6 +763,9 @@ def main() -> int:
         args.alpha,
         args.target,
         args.pairwise_min_score_gap,
+        args.listwise_temperature,
+        args.listwise_epochs,
+        args.listwise_learning_rate,
         args.exclude_hard_fail,
         args.enforce_coverage_floor,
         args.flat_min_coverage,
@@ -701,7 +787,16 @@ def main() -> int:
         args.mask_fill_min_coverage,
     )
     write_csv([{key: value for key, value in row.items() if key != "features"} for row in loo_rows], output_dir / "loo_selected_rows.csv")
-    model = fit_selector_model(rows, names, args.alpha, args.target, args.pairwise_min_score_gap)
+    model = fit_selector_model(
+        rows,
+        names,
+        args.alpha,
+        args.target,
+        args.pairwise_min_score_gap,
+        args.listwise_temperature,
+        args.listwise_epochs,
+        args.listwise_learning_rate,
+    )
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
         "samples": len(groups_by_sample(rows)),
@@ -711,6 +806,9 @@ def main() -> int:
         "target": args.target,
         "select_direction": target_select_direction(args.target),
         "pairwise_min_score_gap": args.pairwise_min_score_gap,
+        "listwise_temperature": args.listwise_temperature,
+        "listwise_epochs": args.listwise_epochs,
+        "listwise_learning_rate": args.listwise_learning_rate,
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,
