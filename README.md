@@ -42,11 +42,11 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-models/model_m2_12_current_best
-configs/best_current_model_m2_12_maskfill_selector.json
+models/model_m2_13_current_best
+configs/best_current_model_m2_13_edgewalk_selector.json
 ```
 
-M2.12 extends the M2.10 hard-safe selector with an experimental mask-fill candidate. It improves public leave-one-out executable quality without regressing core-to-full or incoming review holdouts. The fill branch is mostly diagnostic: it shows that dense fill coverage is possible, but professional satin/fill realism still requires segment-level fill planning rather than whole-mask row filling.
+M2.13 extends the M2.12 hard-safe selector with a mask-internal edge-walk fill candidate. It improves public leave-one-out executable quality and substantially improves coverage on core-to-full and incoming review evaluations. The fill branch is still candidate-gated: it is used only when the selector judges it executable.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import heapq
 import json
 import math
 from pathlib import Path
@@ -46,6 +47,141 @@ def add_segment(pattern: EmbPattern, start_mm: tuple[float, float], end_mm: tupl
         )
         add_abs(pattern, STITCH, point)
     return steps
+
+
+def path_length_px(path: list[tuple[int, int]]) -> float:
+    if len(path) < 2:
+        return 0.0
+    return sum(math.dist(path[index - 1], path[index]) for index in range(1, len(path)))
+
+
+def compress_grid_path(path: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    if len(path) <= 2:
+        return path
+    compressed = [path[0]]
+    last_direction: tuple[int, int] | None = None
+    for index in range(1, len(path)):
+        prev = path[index - 1]
+        current = path[index]
+        dx = current[0] - prev[0]
+        dy = current[1] - prev[1]
+        direction = (0 if dx == 0 else dx // abs(dx), 0 if dy == 0 else dy // abs(dy))
+        if last_direction is not None and direction != last_direction:
+            compressed.append(prev)
+        last_direction = direction
+    compressed.append(path[-1])
+    return compressed
+
+
+def add_polyline_px(
+    pattern: EmbPattern,
+    path: list[tuple[int, int]],
+    shape: tuple[int, int],
+    target_width_mm: float,
+    max_stitch_mm: float,
+) -> int:
+    if len(path) < 2:
+        return 0
+    points = compress_grid_path(path)
+    stitch_segments = 0
+    current_mm = pixel_to_mm_xy(points[0][0], points[0][1], shape, target_width_mm)
+    for point in points[1:]:
+        next_mm = pixel_to_mm_xy(point[0], point[1], shape, target_width_mm)
+        stitch_segments += add_segment(pattern, current_mm, next_mm, max_stitch_mm)
+        current_mm = next_mm
+    return stitch_segments
+
+
+def nearest_foreground(mask: np.ndarray, point: tuple[int, int], radius: int = 3) -> tuple[int, int] | None:
+    x, y = point
+    height, width = mask.shape
+    if 0 <= x < width and 0 <= y < height and mask[y, x] > 0:
+        return (x, y)
+    best: tuple[int, int] | None = None
+    best_distance = float("inf")
+    for yy in range(max(0, y - radius), min(height, y + radius + 1)):
+        for xx in range(max(0, x - radius), min(width, x + radius + 1)):
+            if mask[yy, xx] <= 0:
+                continue
+            distance = math.dist((x, y), (xx, yy))
+            if distance < best_distance:
+                best = (xx, yy)
+                best_distance = distance
+    return best
+
+
+def astar_mask_path(
+    mask: np.ndarray,
+    start: tuple[int, int],
+    end: tuple[int, int],
+    max_path_px: float,
+    max_expansions: int,
+) -> list[tuple[int, int]] | None:
+    start_fg = nearest_foreground(mask, start)
+    end_fg = nearest_foreground(mask, end)
+    if start_fg is None or end_fg is None:
+        return None
+    start = start_fg
+    end = end_fg
+    if start == end:
+        return [start, end]
+
+    height, width = mask.shape
+    margin = int(math.ceil(max_path_px)) + 4
+    x0 = max(0, min(start[0], end[0]) - margin)
+    x1 = min(width - 1, max(start[0], end[0]) + margin)
+    y0 = max(0, min(start[1], end[1]) - margin)
+    y1 = min(height - 1, max(start[1], end[1]) + margin)
+
+    if start[0] < x0 or start[0] > x1 or end[0] < x0 or end[0] > x1:
+        return None
+    if start[1] < y0 or start[1] > y1 or end[1] < y0 or end[1] > y1:
+        return None
+
+    neighbors = [
+        (-1, 0, 1.0),
+        (1, 0, 1.0),
+        (0, -1, 1.0),
+        (0, 1, 1.0),
+        (-1, -1, math.sqrt(2.0)),
+        (-1, 1, math.sqrt(2.0)),
+        (1, -1, math.sqrt(2.0)),
+        (1, 1, math.sqrt(2.0)),
+    ]
+    queue: list[tuple[float, float, tuple[int, int]]] = []
+    heapq.heappush(queue, (math.dist(start, end), 0.0, start))
+    best_cost: dict[tuple[int, int], float] = {start: 0.0}
+    parent: dict[tuple[int, int], tuple[int, int]] = {}
+    expansions = 0
+
+    while queue and expansions < max_expansions:
+        _priority, cost, current = heapq.heappop(queue)
+        if cost > best_cost.get(current, float("inf")) + 1e-6:
+            continue
+        expansions += 1
+        if current == end:
+            path = [current]
+            while path[-1] != start:
+                path.append(parent[path[-1]])
+            path.reverse()
+            return path if path_length_px(path) <= max_path_px else None
+        for dx, dy, step_cost in neighbors:
+            nx = current[0] + dx
+            ny = current[1] + dy
+            if nx < x0 or nx > x1 or ny < y0 or ny > y1:
+                continue
+            if mask[ny, nx] <= 0:
+                continue
+            next_cost = cost + step_cost
+            if next_cost > max_path_px:
+                continue
+            candidate = (nx, ny)
+            if next_cost + 1e-6 >= best_cost.get(candidate, float("inf")):
+                continue
+            best_cost[candidate] = next_cost
+            parent[candidate] = current
+            heapq.heappush(queue, (next_cost + math.dist(candidate, end), next_cost, candidate))
+    return None
 
 
 def segment_inside_fraction(
@@ -140,6 +276,9 @@ def generate_mask_fill_dst(
     min_connect_inside_fraction: float = 0.95,
     min_component_pixels: int = 64,
     min_run_mm: float = 1.0,
+    use_mask_path_connectors: bool = False,
+    max_mask_path_mm: float = 24.0,
+    max_mask_path_expansions: int = 8000,
     thread_rgb: tuple[int, int, int] = (30, 120, 200),
 ) -> dict[str, Any]:
     mask = load_mask(mask_path)
@@ -148,6 +287,7 @@ def generate_mask_fill_dst(
     scale = target_width_mm / max(1, width)
     row_spacing_px = max(1, int(round(row_spacing_mm / max(scale, 1e-6))))
     min_run_px = max(1, int(round(min_run_mm / max(scale, 1e-6))))
+    max_mask_path_px = max(1.0, max_mask_path_mm / max(scale, 1e-6))
     count, labels, stats, _centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
 
     pattern = EmbPattern()
@@ -157,9 +297,12 @@ def generate_mask_fill_dst(
     jumps = 0
     safe_connects = 0
     rejected_connects = 0
+    mask_path_connects = 0
+    rejected_mask_paths = 0
     stitch_segments = 0
     fill_rows = 0
     components_used = 0
+    current_px: tuple[int, int] | None = None
 
     for component_index, label in enumerate(component_order(labels, stats, min_component_pixels)):
         component_mask = (labels == label).astype(np.uint8)
@@ -179,6 +322,22 @@ def generate_mask_fill_dst(
                 if distance <= max_connect_mm and inside >= min_connect_inside_fraction:
                     stitch_segments += add_segment(pattern, current_mm, start_mm, max_stitch_mm)
                     safe_connects += 1
+                elif use_mask_path_connectors and current_px is not None:
+                    path = astar_mask_path(
+                        connector_mask,
+                        current_px,
+                        start_px,
+                        max_mask_path_px,
+                        max_mask_path_expansions,
+                    )
+                    if path is not None:
+                        stitch_segments += add_polyline_px(pattern, path, mask.shape, target_width_mm, max_stitch_mm)
+                        mask_path_connects += 1
+                    else:
+                        add_abs(pattern, JUMP, start_mm)
+                        jumps += 1
+                        rejected_connects += 1
+                        rejected_mask_paths += 1
                 else:
                     add_abs(pattern, JUMP, start_mm)
                     jumps += 1
@@ -186,6 +345,7 @@ def generate_mask_fill_dst(
             stitch_segments += add_segment(pattern, start_mm, end_mm, max_stitch_mm)
             fill_rows += 1
             current_mm = end_mm
+            current_px = end_px
 
     if current_mm is None:
         current_mm = (0.0, 0.0)
@@ -203,7 +363,9 @@ def generate_mask_fill_dst(
         "fill_rows": fill_rows,
         "jump_commands_added": jumps,
         "safe_connects": safe_connects,
+        "mask_path_connects": mask_path_connects,
         "rejected_connects": rejected_connects,
+        "rejected_mask_paths": rejected_mask_paths,
         "stitch_segments_added": stitch_segments,
         "target_width_mm": target_width_mm,
         "row_spacing_mm": row_spacing_mm,
@@ -214,6 +376,10 @@ def generate_mask_fill_dst(
         "min_component_pixels": min_component_pixels,
         "min_run_mm": min_run_mm,
         "min_run_px": min_run_px,
+        "use_mask_path_connectors": use_mask_path_connectors,
+        "max_mask_path_mm": max_mask_path_mm,
+        "max_mask_path_px": max_mask_path_px,
+        "max_mask_path_expansions": max_mask_path_expansions,
     }
 
 
@@ -230,6 +396,9 @@ def main() -> int:
     parser.add_argument("--min-connect-inside-fraction", type=float, default=0.95)
     parser.add_argument("--min-component-pixels", type=int, default=64)
     parser.add_argument("--min-run-mm", type=float, default=1.0)
+    parser.add_argument("--use-mask-path-connectors", action="store_true")
+    parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
+    parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
     args = parser.parse_args()
 
     report = generate_mask_fill_dst(
@@ -243,6 +412,9 @@ def main() -> int:
         min_connect_inside_fraction=args.min_connect_inside_fraction,
         min_component_pixels=args.min_component_pixels,
         min_run_mm=args.min_run_mm,
+        use_mask_path_connectors=args.use_mask_path_connectors,
+        max_mask_path_mm=args.max_mask_path_mm,
+        max_mask_path_expansions=args.max_mask_path_expansions,
     )
     report_path = Path(args.report)
     report_path.parent.mkdir(parents=True, exist_ok=True)

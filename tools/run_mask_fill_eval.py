@@ -63,6 +63,9 @@ def main() -> int:
     parser.add_argument("--min-connect-inside-fraction", type=float, default=0.95)
     parser.add_argument("--min-component-pixels", type=int, default=64)
     parser.add_argument("--min-run-mm", type=float, default=1.0)
+    parser.add_argument("--use-mask-path-connectors", action="store_true")
+    parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
+    parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -94,6 +97,9 @@ def main() -> int:
             min_connect_inside_fraction=args.min_connect_inside_fraction,
             min_component_pixels=args.min_component_pixels,
             min_run_mm=args.min_run_mm,
+            use_mask_path_connectors=args.use_mask_path_connectors,
+            max_mask_path_mm=args.max_mask_path_mm,
+            max_mask_path_expansions=args.max_mask_path_expansions,
         )
         (sample_out / "generator_report.json").write_text(json.dumps(generator_report, ensure_ascii=False, indent=2), encoding="utf-8")
         pred = analyze_file(
@@ -117,7 +123,7 @@ def main() -> int:
                 "sample_id": sample_id,
                 "source_name": row.get("source_name", ""),
                 "category": row.get("category", ""),
-                "mode": "mask_fill_serpentine",
+                "mode": "mask_fill_edgewalk" if args.use_mask_path_connectors else "mask_fill_serpentine",
                 "unified_loss": score["unified_loss"],
                 "exec_score": score["exec_score"],
                 "visual_risk": score["visual_risk"],
@@ -130,7 +136,9 @@ def main() -> int:
                 "visible_connector_length_mm": pred.get("visible_connector_length_mm", ""),
                 "fill_rows": generator_report["fill_rows"],
                 "safe_connects": generator_report["safe_connects"],
+                "mask_path_connects": generator_report["mask_path_connects"],
                 "rejected_connects": generator_report["rejected_connects"],
+                "rejected_mask_paths": generator_report["rejected_mask_paths"],
             }
         )
         coverage_rows.append(
