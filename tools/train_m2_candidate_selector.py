@@ -305,6 +305,29 @@ def softmax(values: np.ndarray) -> np.ndarray:
     return exp_values / denom
 
 
+def listwise_teacher_score(
+    row: dict[str, Any],
+    coverage_weight: float,
+    precision_weight: float,
+    flat_min_coverage: float,
+    line_min_coverage: float,
+    min_precision: float,
+) -> float:
+    source_name = str(row.get("source_name", ""))
+    target_branch = str(row.get("target_branch", ""))
+    is_line_like = target_branch == "line_text_skeleton" or source_name in {"QuickDraw", "Rendered text"}
+    target_coverage = line_min_coverage if is_line_like else flat_min_coverage
+    coverage = safe_float(row.get("coverage_ratio"))
+    precision = safe_float(row.get("stitch_precision_ratio"))
+    coverage_deficit = max(0.0, target_coverage - coverage)
+    precision_deficit = max(0.0, min_precision - precision)
+    return (
+        safe_float(row.get("oracle_score"))
+        + coverage_weight * coverage_deficit
+        + precision_weight * precision_deficit
+    )
+
+
 def fit_listwise_softmax_ranker(
     rows: list[dict[str, Any]],
     names: list[str],
@@ -312,6 +335,11 @@ def fit_listwise_softmax_ranker(
     temperature: float = 0.02,
     epochs: int = 1200,
     learning_rate: float = 0.05,
+    teacher_coverage_weight: float = 0.0,
+    teacher_precision_weight: float = 0.0,
+    teacher_flat_min_coverage: float = 0.84,
+    teacher_line_min_coverage: float = 0.58,
+    teacher_min_precision: float = 0.72,
 ) -> dict[str, Any]:
     x = matrix(rows, names)
     mean_x = x.mean(axis=0)
@@ -331,8 +359,21 @@ def fit_listwise_softmax_ranker(
         grad = np.zeros_like(weights)
         for indices in groups:
             group_x = xz[indices]
-            oracle_scores = np.asarray([safe_float(rows[index].get("oracle_score")) for index in indices], dtype=np.float64)
-            teacher = softmax(-oracle_scores / temp)
+            teacher_scores = np.asarray(
+                [
+                    listwise_teacher_score(
+                        rows[index],
+                        teacher_coverage_weight,
+                        teacher_precision_weight,
+                        teacher_flat_min_coverage,
+                        teacher_line_min_coverage,
+                        teacher_min_precision,
+                    )
+                    for index in indices
+                ],
+                dtype=np.float64,
+            )
+            teacher = softmax(-teacher_scores / temp)
             scores = group_x @ weights
             predicted = softmax(-scores / temp)
             # d CE(teacher, softmax(-score/temp)) / d score = (teacher - predicted) / temp
@@ -349,6 +390,11 @@ def fit_listwise_softmax_ranker(
         "listwise_temperature": temperature,
         "listwise_epochs": epochs,
         "listwise_learning_rate": learning_rate,
+        "listwise_teacher_coverage_weight": teacher_coverage_weight,
+        "listwise_teacher_precision_weight": teacher_precision_weight,
+        "listwise_teacher_flat_min_coverage": teacher_flat_min_coverage,
+        "listwise_teacher_line_min_coverage": teacher_line_min_coverage,
+        "listwise_teacher_min_precision": teacher_min_precision,
         "feature_names": names,
         "mean": mean_x.tolist(),
         "std": std_x.tolist(),
@@ -406,11 +452,28 @@ def fit_selector_model(
     listwise_temperature: float = 0.02,
     listwise_epochs: int = 1200,
     listwise_learning_rate: float = 0.05,
+    listwise_teacher_coverage_weight: float = 0.0,
+    listwise_teacher_precision_weight: float = 0.0,
+    listwise_teacher_flat_min_coverage: float = 0.84,
+    listwise_teacher_line_min_coverage: float = 0.58,
+    listwise_teacher_min_precision: float = 0.72,
 ) -> dict[str, Any]:
     if target == "pairwise_score_delta":
         return fit_pairwise_ranker(rows, names, alpha, pairwise_min_score_gap)
     if target == "listwise_softmax":
-        return fit_listwise_softmax_ranker(rows, names, alpha, listwise_temperature, listwise_epochs, listwise_learning_rate)
+        return fit_listwise_softmax_ranker(
+            rows,
+            names,
+            alpha,
+            listwise_temperature,
+            listwise_epochs,
+            listwise_learning_rate,
+            listwise_teacher_coverage_weight,
+            listwise_teacher_precision_weight,
+            listwise_teacher_flat_min_coverage,
+            listwise_teacher_line_min_coverage,
+            listwise_teacher_min_precision,
+        )
     return fit_ridge(rows, names, alpha, target)
 
 
@@ -607,6 +670,11 @@ def leave_one_out(
     listwise_temperature: float = 0.02,
     listwise_epochs: int = 1200,
     listwise_learning_rate: float = 0.05,
+    listwise_teacher_coverage_weight: float = 0.0,
+    listwise_teacher_precision_weight: float = 0.0,
+    listwise_teacher_flat_min_coverage: float = 0.84,
+    listwise_teacher_line_min_coverage: float = 0.58,
+    listwise_teacher_min_precision: float = 0.72,
     exclude_hard_fail: bool = False,
     enforce_coverage_floor: bool = False,
     flat_min_coverage: float = 0.75,
@@ -641,6 +709,11 @@ def leave_one_out(
             listwise_temperature,
             listwise_epochs,
             listwise_learning_rate,
+            listwise_teacher_coverage_weight,
+            listwise_teacher_precision_weight,
+            listwise_teacher_flat_min_coverage,
+            listwise_teacher_line_min_coverage,
+            listwise_teacher_min_precision,
         )
         selectable = selectable_candidates(
             held,
@@ -731,6 +804,11 @@ def main() -> int:
     parser.add_argument("--listwise-temperature", type=float, default=0.02)
     parser.add_argument("--listwise-epochs", type=int, default=1200)
     parser.add_argument("--listwise-learning-rate", type=float, default=0.05)
+    parser.add_argument("--listwise-teacher-coverage-weight", type=float, default=0.0)
+    parser.add_argument("--listwise-teacher-precision-weight", type=float, default=0.0)
+    parser.add_argument("--listwise-teacher-flat-min-coverage", type=float, default=0.84)
+    parser.add_argument("--listwise-teacher-line-min-coverage", type=float, default=0.58)
+    parser.add_argument("--listwise-teacher-min-precision", type=float, default=0.72)
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -766,6 +844,11 @@ def main() -> int:
         args.listwise_temperature,
         args.listwise_epochs,
         args.listwise_learning_rate,
+        args.listwise_teacher_coverage_weight,
+        args.listwise_teacher_precision_weight,
+        args.listwise_teacher_flat_min_coverage,
+        args.listwise_teacher_line_min_coverage,
+        args.listwise_teacher_min_precision,
         args.exclude_hard_fail,
         args.enforce_coverage_floor,
         args.flat_min_coverage,
@@ -796,6 +879,11 @@ def main() -> int:
         args.listwise_temperature,
         args.listwise_epochs,
         args.listwise_learning_rate,
+        args.listwise_teacher_coverage_weight,
+        args.listwise_teacher_precision_weight,
+        args.listwise_teacher_flat_min_coverage,
+        args.listwise_teacher_line_min_coverage,
+        args.listwise_teacher_min_precision,
     )
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
@@ -809,6 +897,11 @@ def main() -> int:
         "listwise_temperature": args.listwise_temperature,
         "listwise_epochs": args.listwise_epochs,
         "listwise_learning_rate": args.listwise_learning_rate,
+        "listwise_teacher_coverage_weight": args.listwise_teacher_coverage_weight,
+        "listwise_teacher_precision_weight": args.listwise_teacher_precision_weight,
+        "listwise_teacher_flat_min_coverage": args.listwise_teacher_flat_min_coverage,
+        "listwise_teacher_line_min_coverage": args.listwise_teacher_line_min_coverage,
+        "listwise_teacher_min_precision": args.listwise_teacher_min_precision,
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,
