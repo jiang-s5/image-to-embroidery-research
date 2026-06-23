@@ -2,6 +2,8 @@
 
 M2 is the local routing decision layer.
 
+Status note: this document records the early paired-holdout M2/M2.1/M2.2 edge-policy stage. In the current public-benchmark validation, M2.1 is now a historical baseline rather than the promoted system. The current balanced best system is M2.34; see [public_benchmark_ext33_validation.md](public_benchmark_ext33_validation.md) and [m2_34_fill_inset_notes.md](m2_34_fill_inset_notes.md).
+
 The current implementation is a learned edge-utility prototype trained from `graph_tsp_trace.json`:
 
 ```text

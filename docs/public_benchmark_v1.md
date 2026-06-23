@@ -83,6 +83,31 @@ datasets/public_benchmark_v1/
 sample_id, source, category, license, image_path, mask_path, source_url, split, notes
 ```
 
+## Reproducible ext33 Validation
+
+The `datasets/public_benchmark_v1_ext33` image files are not stored in normal Git history. To reproduce the current external-validation tables, rebuild or restore the ext33 benchmark under `datasets/public_benchmark_v1_ext33`, then run the documented evaluation commands below.
+
+Run the 20-sample B0-B4 geometry-prior follow-up:
+
+```powershell
+python tools\run_geometry_priors_ablation.py `
+  --input-dir datasets\public_benchmark_v1_ext33 `
+  --checkpoint checkpoints\best_model13_multiformat_all_vector_continuity.pt `
+  --m2-edge-policy checkpoints\m2_edge_policy_m2_1_globalrepair20.json `
+  --output-dir results\public_benchmark_v1_ext33_repair_veto_core20 `
+  --limit 20 `
+  --max-components 40 `
+  --safe-connect-repair-max-mm 20.0 `
+  --m2-edge-policy-top-k 4 `
+  --m2-jump-aware-weight 0.20 `
+  --m2-visible-weight 0.30 `
+  --m2-offmask-weight 0.25
+```
+
+This produces aggregate, per-domain, and per-sample CSV/JSON files under `results/public_benchmark_v1_ext33_repair_veto_core20/`. The current conclusion is negative for hard EDT/Canny repair vetoes and still negative for promoting B4 soft geometry rerank as the main planner.
+
+The current balanced best system remains M2.34, not M2.1. M2.1 is retained for historical comparison because it was the strongest early paired-holdout decode-loop result, but it fails on most ext33 public samples.
+
 ## Evaluation
 
 Run the geometry-prior ablation on the generated benchmark:
@@ -122,4 +147,3 @@ Use this benchmark carefully:
 
 Do not claim these images prove the generated DST matches professional digitizer
 output. They support claims about executable quality and failure-risk reduction.
-
