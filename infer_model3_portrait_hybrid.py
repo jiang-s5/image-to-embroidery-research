@@ -34,6 +34,13 @@ from planner.graph_tsp import (
     load_m2_edge_policy,
     order_polylines_graph_tsp_with_trace,
 )
+from planner.geometry_priors import (
+    GeometryPriors,
+    build_geometry_priors,
+    connector_geometry_stats,
+    geometry_stats_are_safe,
+    save_geometry_prior_artifacts,
+)
 from planner.relation_cost import (
     RelationPlannerConfig,
     config_to_dict,
@@ -472,6 +479,11 @@ def add_polyline_nearest(
     safe_connect_repair_max_mm: float = 0.0,
     safe_connect_repair_min_inside_fraction: float = 0.96,
     safe_connect_repair_mask: np.ndarray | None = None,
+    safe_connect_geometry_priors: GeometryPriors | None = None,
+    safe_connect_repair_dt_min_px: float = 1.0,
+    safe_connect_repair_dt_q05_px: float = 1.5,
+    safe_connect_repair_canny_frac_max: float = 0.12,
+    safe_connect_repair_sobel_mean_max: float = 0.18,
     max_stitch_mm: float = 4.0,
     max_jump_mm: float = 7.5,
     trim_jump_threshold_mm: float = 10.0,
@@ -508,6 +520,15 @@ def add_polyline_nearest(
                 current_px,
                 coords[0],
                 min_inside_fraction=safe_connect_repair_min_inside_fraction,
+            )
+        if repair_connect and safe_connect_geometry_priors is not None:
+            gp_stats = connector_geometry_stats(safe_connect_geometry_priors, current_px, coords[0])
+            repair_connect = geometry_stats_are_safe(
+                gp_stats,
+                dt_min_px=safe_connect_repair_dt_min_px,
+                dt_q05_px=safe_connect_repair_dt_q05_px,
+                canny_frac_max=safe_connect_repair_canny_frac_max,
+                sobel_mean_max=safe_connect_repair_sobel_mean_max,
             )
     stitch_count = 0
     jump_count = 0
@@ -688,6 +709,18 @@ def export_color_planner_geometry_as_dst(
     safe_connect_repair_max_mm: float = 0.0,
     safe_connect_repair_min_inside_fraction: float = 0.96,
     safe_connect_repair_global_mask: bool = False,
+    geometry_priors: GeometryPriors | None = None,
+    geometry_dt_weight: float = 0.0,
+    geometry_sobel_weight: float = 0.0,
+    geometry_canny_weight: float = 0.0,
+    geometry_dt_min_px: float = 1.0,
+    geometry_dt_q05_px: float = 1.5,
+    geometry_sobel_mean_max: float = 0.18,
+    geometry_canny_frac_max: float = 0.12,
+    geometry_sample_step_px: float = 1.0,
+    geometry_repair_veto_dt: bool = False,
+    geometry_repair_veto_sobel: bool = False,
+    geometry_repair_veto_canny: bool = False,
     mask_safe_connectors: bool = False,
 ) -> dict[str, int | float | str | dict[str, int]]:
     active = mask >= threshold
@@ -730,6 +763,14 @@ def export_color_planner_geometry_as_dst(
         "m2_policy_utility_sum": 0.0,
         "m2_hard_safe_filtered": 0.0,
         "m2_decode_penalty_sum": 0.0,
+        "geometry_edges_sampled": 0.0,
+        "geometry_visible_risk_edges": 0.0,
+        "geometry_dt_penalty_sum": 0.0,
+        "geometry_sobel_penalty_sum": 0.0,
+        "geometry_canny_penalty_sum": 0.0,
+        "geometry_dt_q05_sum": 0.0,
+        "geometry_sobel_cross_sum": 0.0,
+        "geometry_canny_cross_sum": 0.0,
     }
     graph_tsp_trace: dict[str, object] = {
         "version": "graph_tsp_trace_v1",
@@ -756,6 +797,21 @@ def export_color_planner_geometry_as_dst(
             "min_inside_fraction": float(safe_connect_repair_min_inside_fraction),
             "global_mask": bool(safe_connect_repair_global_mask),
         },
+        "geometry_priors": {
+            "enabled": bool(geometry_priors is not None),
+            "meta": geometry_priors.meta if geometry_priors is not None else {},
+            "dt_weight": float(geometry_dt_weight),
+            "sobel_weight": float(geometry_sobel_weight),
+            "canny_weight": float(geometry_canny_weight),
+            "dt_min_px": float(geometry_dt_min_px),
+            "dt_q05_px": float(geometry_dt_q05_px),
+            "sobel_mean_max": float(geometry_sobel_mean_max),
+            "canny_frac_max": float(geometry_canny_frac_max),
+            "sample_step_px": float(geometry_sample_step_px),
+            "repair_veto_dt": bool(geometry_repair_veto_dt),
+            "repair_veto_sobel": bool(geometry_repair_veto_sobel),
+            "repair_veto_canny": bool(geometry_repair_veto_canny),
+        },
     }
     graph_trace_nodes = 0
     graph_tsp_config = GraphTSPConfig(
@@ -768,6 +824,14 @@ def export_color_planner_geometry_as_dst(
         min_inside_fraction=graph_min_inside_fraction,
         two_opt_passes=two_opt_passes,
         max_two_opt_nodes=graph_max_two_opt_nodes,
+        geometry_dt_weight=geometry_dt_weight,
+        geometry_sobel_weight=geometry_sobel_weight,
+        geometry_canny_weight=geometry_canny_weight,
+        geometry_dt_min_px=geometry_dt_min_px,
+        geometry_dt_q05_px=geometry_dt_q05_px,
+        geometry_sobel_mean_max=geometry_sobel_mean_max,
+        geometry_canny_frac_max=geometry_canny_frac_max,
+        geometry_sample_step_px=geometry_sample_step_px,
     )
 
     for color_index, (layer_mask, _color, _area) in enumerate(layers):
@@ -895,6 +959,7 @@ def export_color_planner_geometry_as_dst(
                     scale_mm,
                     component_mask,
                     graph_tsp_config,
+                    geometry_priors=geometry_priors,
                     edge_policy=m2_edge_policy,
                     edge_policy_top_k=m2_edge_policy_top_k,
                     edge_policy_hard_safe_filter=m2_hard_safe_filter,
@@ -921,6 +986,17 @@ def export_color_planner_geometry_as_dst(
                 graph_tsp_stats["m2_policy_utility_sum"] += float(stats.get("m2_policy_utility_sum", 0.0))
                 graph_tsp_stats["m2_hard_safe_filtered"] += float(stats.get("m2_hard_safe_filtered", 0.0))
                 graph_tsp_stats["m2_decode_penalty_sum"] += float(stats.get("m2_decode_penalty_sum", 0.0))
+                for key in (
+                    "geometry_edges_sampled",
+                    "geometry_visible_risk_edges",
+                    "geometry_dt_penalty_sum",
+                    "geometry_sobel_penalty_sum",
+                    "geometry_canny_penalty_sum",
+                    "geometry_dt_q05_sum",
+                    "geometry_sobel_cross_sum",
+                    "geometry_canny_cross_sum",
+                ):
+                    graph_tsp_stats[key] += float(stats.get(key, 0.0))
                 graph_trace_nodes += int(stats.get("nodes", 0.0))
                 trace_tasks = graph_tsp_trace["tasks"]
                 if (
@@ -988,7 +1064,16 @@ def export_color_planner_geometry_as_dst(
                     safe_connect_repair=safe_connect_repair,
                     safe_connect_repair_max_mm=safe_connect_repair_max_mm,
                     safe_connect_repair_min_inside_fraction=safe_connect_repair_min_inside_fraction,
-                    safe_connect_repair_mask=active if safe_connect_repair_global_mask else (component_mask if mask_safe_connectors else None),
+                    safe_connect_repair_mask=(
+                        geometry_priors.clean_mask
+                        if safe_connect_repair_global_mask and geometry_priors is not None
+                        else (active if safe_connect_repair_global_mask else (component_mask if mask_safe_connectors else None))
+                    ),
+                    safe_connect_geometry_priors=geometry_priors,
+                    safe_connect_repair_dt_min_px=geometry_dt_min_px if geometry_repair_veto_dt else 0.0,
+                    safe_connect_repair_dt_q05_px=geometry_dt_q05_px if geometry_repair_veto_dt else 0.0,
+                    safe_connect_repair_canny_frac_max=geometry_canny_frac_max if geometry_repair_veto_canny else 1.0,
+                    safe_connect_repair_sobel_mean_max=geometry_sobel_mean_max if geometry_repair_veto_sobel else 1.0,
                     max_stitch_mm=max_stitch_mm,
                     max_jump_mm=max_jump_mm,
                     trim_jump_threshold_mm=trim_jump_threshold_mm,
@@ -1053,6 +1138,21 @@ def export_color_planner_geometry_as_dst(
             "min_inside_fraction": safe_connect_repair_min_inside_fraction,
             "global_mask": safe_connect_repair_global_mask,
         },
+        "geometry_priors": {
+            "enabled": geometry_priors is not None,
+            "meta": geometry_priors.meta if geometry_priors is not None else {},
+            "dt_weight": geometry_dt_weight,
+            "sobel_weight": geometry_sobel_weight,
+            "canny_weight": geometry_canny_weight,
+            "dt_min_px": geometry_dt_min_px,
+            "dt_q05_px": geometry_dt_q05_px,
+            "sobel_mean_max": geometry_sobel_mean_max,
+            "canny_frac_max": geometry_canny_frac_max,
+            "sample_step_px": geometry_sample_step_px,
+            "repair_veto_dt": geometry_repair_veto_dt,
+            "repair_veto_sobel": geometry_repair_veto_sobel,
+            "repair_veto_canny": geometry_repair_veto_canny,
+        },
         "m2_decode": {
             "hard_safe_filter": m2_hard_safe_filter,
             "safe_min_inside_fraction": m2_safe_min_inside_fraction,
@@ -1070,6 +1170,21 @@ def export_color_planner_geometry_as_dst(
             **graph_tsp_stats,
             "mean_offmask_fraction": (
                 round(graph_tsp_stats["mean_offmask_fraction_sum"] / max(1, graph_tsp_stats["tasks"]), 6)
+                if graph_tsp_planner
+                else 0.0
+            ),
+            "geometry_mean_dt_q05_px": (
+                round(graph_tsp_stats["geometry_dt_q05_sum"] / max(1.0, graph_tsp_stats["geometry_edges_sampled"]), 6)
+                if graph_tsp_planner
+                else 0.0
+            ),
+            "geometry_mean_sobel_cross": (
+                round(graph_tsp_stats["geometry_sobel_cross_sum"] / max(1.0, graph_tsp_stats["geometry_edges_sampled"]), 6)
+                if graph_tsp_planner
+                else 0.0
+            ),
+            "geometry_mean_canny_cross": (
+                round(graph_tsp_stats["geometry_canny_cross_sum"] / max(1.0, graph_tsp_stats["geometry_edges_sampled"]), 6)
                 if graph_tsp_planner
                 else 0.0
             ),
@@ -1136,6 +1251,24 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     stitch_type_hybrid = stitch_type.copy()
     stitch_type_hybrid[~active] = 0
     stitch_type_hybrid[active & (stitch_type_hybrid == 0)] = 3
+    geometry_priors = None
+    geometry_prior_files: dict[str, str] = {}
+    if args.geometry_priors:
+        geometry_priors = build_geometry_priors(
+            np.asarray(input_image),
+            active.astype(np.uint8) * 255,
+            dt_method=args.gp_dt_method,
+            gaussian_sigma=args.gp_gaussian_sigma,
+            sobel_ksize=args.gp_sobel_ksize,
+            canny_low_ratio=args.gp_canny_low_ratio,
+            canny_high_quantile=args.gp_canny_high_quantile,
+            morph_open=args.gp_morph_open,
+            morph_close=args.gp_morph_close,
+            remove_small_objects=args.gp_remove_small_objects,
+            remove_small_holes=args.gp_remove_small_holes,
+            build_centerline=args.gp_build_centerline,
+        )
+        geometry_prior_files = save_geometry_prior_artifacts(geometry_priors, output_dir / "geometry_priors")
 
     input_image.save(output_dir / "input_256.png")
     grayscale_image(mask).save(output_dir / "pred_mask.png")
@@ -1293,6 +1426,18 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 "safe_connect_repair_max_mm": args.safe_connect_repair_max_mm,
                 "safe_connect_repair_min_inside_fraction": args.safe_connect_repair_min_inside_fraction,
                 "safe_connect_repair_global_mask": args.safe_connect_repair_global_mask,
+                "geometry_priors": geometry_priors,
+                "geometry_dt_weight": args.m2_dt_weight if args.geometry_priors else 0.0,
+                "geometry_sobel_weight": args.m2_sobel_weight if args.geometry_priors else 0.0,
+                "geometry_canny_weight": args.m2_canny_weight if args.geometry_priors else 0.0,
+                "geometry_dt_min_px": args.safe_connect_repair_dt_min_px,
+                "geometry_dt_q05_px": args.safe_connect_repair_dt_q05_px,
+                "geometry_sobel_mean_max": args.safe_connect_repair_sobel_mean_max,
+                "geometry_canny_frac_max": args.safe_connect_repair_canny_frac_max,
+                "geometry_sample_step_px": args.gp_sample_step_px,
+                "geometry_repair_veto_dt": args.gp_repair_veto_dt,
+                "geometry_repair_veto_sobel": args.gp_repair_veto_sobel,
+                "geometry_repair_veto_canny": args.gp_repair_veto_canny,
                 "mask_safe_connectors": args.mask_safe_connectors,
             }
         )
@@ -1311,6 +1456,21 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "planner_values": planner_values,
         "relation_planner": config_to_dict(relation_config),
         "retrieval_planner": retrieval_info,
+        "geometry_priors": {
+            "enabled": bool(args.geometry_priors),
+            "files": geometry_prior_files,
+            "meta": geometry_priors.meta if geometry_priors is not None else {},
+            "weights": {
+                "dt": float(args.m2_dt_weight) if args.geometry_priors else 0.0,
+                "sobel": float(args.m2_sobel_weight) if args.geometry_priors else 0.0,
+                "canny": float(args.m2_canny_weight) if args.geometry_priors else 0.0,
+            },
+            "repair_veto": {
+                "dt": bool(args.gp_repair_veto_dt),
+                "sobel": bool(args.gp_repair_veto_sobel),
+                "canny": bool(args.gp_repair_veto_canny),
+            },
+        },
         "m2_edge_policy": {
             "enabled": bool(m2_edge_policy),
             "path": str(m2_edge_policy.get("path", "")) if isinstance(m2_edge_policy, dict) else "",
@@ -1404,6 +1564,28 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--m2-offmask-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for off-mask fraction.")
     parser.add_argument("--m2-visible-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for visible connector risk.")
     parser.add_argument("--m2-trim-weight", type=float, default=0.0, help="Penalty applied during M2 rerank for trim-risk transitions.")
+    parser.add_argument("--geometry-priors", action="store_true", help="Build EDT/Sobel/Canny/morph geometry priors and feed them to Graph-TSP and safe-connect repair.")
+    parser.add_argument("--gp-dt-method", choices=["opencv_precise_l2", "scipy_edt"], default="opencv_precise_l2")
+    parser.add_argument("--gp-sample-step-px", type=float, default=1.0)
+    parser.add_argument("--gp-morph-open", type=int, default=3)
+    parser.add_argument("--gp-morph-close", type=int, default=5)
+    parser.add_argument("--gp-remove-small-objects", type=int, default=64)
+    parser.add_argument("--gp-remove-small-holes", type=int, default=128)
+    parser.add_argument("--gp-gaussian-sigma", type=float, default=1.0)
+    parser.add_argument("--gp-sobel-ksize", type=int, default=3)
+    parser.add_argument("--gp-canny-low-ratio", type=float, default=0.4)
+    parser.add_argument("--gp-canny-high-quantile", type=float, default=0.90)
+    parser.add_argument("--gp-build-centerline", action="store_true")
+    parser.add_argument("--m2-dt-weight", type=float, default=0.40, help="Geometry prior penalty weight for low EDT safety margin when --geometry-priors is enabled.")
+    parser.add_argument("--m2-sobel-weight", type=float, default=0.35, help="Geometry prior penalty weight for strong Sobel crossings when --geometry-priors is enabled.")
+    parser.add_argument("--m2-canny-weight", type=float, default=0.50, help="Geometry prior penalty weight for Canny edge crossings when --geometry-priors is enabled.")
+    parser.add_argument("--gp-repair-veto-dt", action="store_true", help="Use EDT only as a safe-connect repair veto, independent of Graph-TSP routing weights.")
+    parser.add_argument("--gp-repair-veto-sobel", action="store_true", help="Use Sobel crossing only as a safe-connect repair veto, independent of Graph-TSP routing weights.")
+    parser.add_argument("--gp-repair-veto-canny", action="store_true", help="Use Canny crossing only as a safe-connect repair veto, independent of Graph-TSP routing weights.")
+    parser.add_argument("--safe-connect-repair-dt-min-px", type=float, default=1.0)
+    parser.add_argument("--safe-connect-repair-dt-q05-px", type=float, default=1.5)
+    parser.add_argument("--safe-connect-repair-canny-frac-max", type=float, default=0.12)
+    parser.add_argument("--safe-connect-repair-sobel-mean-max", type=float, default=0.18)
     parser.add_argument("--safe-connect-repair", action="store_true", help="Replace jump transitions with STITCH connectors when the connector path is mask-safe.")
     parser.add_argument("--safe-connect-repair-max-mm", type=float, default=0.0)
     parser.add_argument("--safe-connect-repair-min-inside-fraction", type=float, default=0.96)

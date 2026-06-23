@@ -51,6 +51,19 @@
       "mean_visible_connector_length_mm": 118.926535,
       "mean_geometry_visible_risk_edges": 0.0,
       "hard_fail": 20
+    },
+    "B4_soft_geometry_rerank": {
+      "samples": 20,
+      "mean_unified_loss": 0.360913,
+      "mean_exec_score": 0.258506,
+      "mean_visual_risk": 0.102407,
+      "mean_jump_count": 50.15,
+      "mean_trim_count": 10.25,
+      "mean_off_mask_stitch_length_mm": 166.07068,
+      "mean_visible_connector_count": 32.75,
+      "mean_visible_connector_length_mm": 118.798275,
+      "mean_geometry_visible_risk_edges": 271.1,
+      "hard_fail": 19
     }
   }
 }

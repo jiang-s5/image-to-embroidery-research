@@ -99,6 +99,7 @@ Aggregate result:
 | B1 EDT repair veto | 20 | 0.356347 | 121.500 | 11.000 | 165.4469 | 32.800 | 19 |
 | B2 Canny repair veto | 20 | 0.361037 | 147.400 | 11.250 | 165.8244 | 32.800 | 20 |
 | B3 EDT + Canny repair veto | 20 | 0.359774 | 166.300 | 11.550 | 164.8603 | 32.800 | 20 |
+| B4 soft geometry rerank | 20 | 0.360913 | 50.150 | 10.250 | 166.0707 | 32.750 | 19 |
 
 Per-domain result:
 
@@ -108,17 +109,24 @@ Per-domain result:
 | B1 EDT | Openclipart | 10 | 0.342749 | 42.100 | 8.600 | 306.3096 | 64.800 | 10 |
 | B2 Canny | Openclipart | 10 | 0.345570 | 44.600 | 8.600 | 305.4684 | 64.800 | 10 |
 | B3 EDT+Canny | Openclipart | 10 | 0.343865 | 45.300 | 8.800 | 305.2641 | 64.800 | 10 |
+| B4 soft | Openclipart | 10 | 0.353421 | 39.700 | 8.400 | 307.3256 | 64.800 | 10 |
 | B0 | OpenMoji | 10 | 0.353966 | 70.500 | 13.700 | 17.1814 | 0.500 | 9 |
 | B1 EDT | OpenMoji | 10 | 0.369945 | 200.900 | 13.400 | 24.5842 | 0.800 | 9 |
 | B2 Canny | OpenMoji | 10 | 0.376505 | 250.200 | 13.900 | 26.1804 | 0.800 | 10 |
 | B3 EDT+Canny | OpenMoji | 10 | 0.375682 | 287.300 | 14.300 | 24.4565 | 0.800 | 10 |
+| B4 soft | OpenMoji | 10 | 0.368406 | 60.600 | 12.100 | 24.8158 | 0.700 | 9 |
 
 This larger follow-up confirms the 7-sample pilot conclusion. Hard geometry repair
 vetoes do not reduce hard-fail rate and substantially increase jump count,
 especially on OpenMoji. B1 is marginally lower than B0 on Openclipart loss, but it
-keeps all 10 Openclipart samples as hard-fail and worsens OpenMoji strongly. The
-recommended conclusion is therefore to keep EDT/Canny as diagnostics or weak
-features, not hard repair vetoes.
+keeps all 10 Openclipart samples as hard-fail and worsens OpenMoji strongly.
+
+B4 tests the softer alternative: weak EDT/Sobel/Canny cost terms without repair
+veto. It lowers average jump and trim count compared with B0, but its unified loss
+and off-mask/visual risk are worse. Therefore the recommended conclusion is still
+to keep EDT/Canny as diagnostics or very weak optional features, not as the main
+routing or repair mechanism.
+
 ## Learned Selector Status
 
 M2.39 is the first learned listwise selector that beats M2.34 on public unified

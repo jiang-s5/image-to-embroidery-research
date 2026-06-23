@@ -7,6 +7,8 @@ from typing import Any
 
 import numpy as np
 
+from planner.geometry_priors import GeometryPriors, connector_geometry_stats
+
 
 Point = tuple[float, float]
 Polyline = list[Point]
@@ -23,6 +25,15 @@ class GraphTSPConfig:
     min_inside_fraction: float = 0.88
     two_opt_passes: int = 0
     max_two_opt_nodes: int = 80
+    geometry_dt_weight: float = 0.0
+    geometry_sobel_weight: float = 0.0
+    geometry_canny_weight: float = 0.0
+    geometry_dt_min_px: float = 1.0
+    geometry_dt_q05_px: float = 1.5
+    geometry_sobel_mean_max: float = 0.18
+    geometry_canny_frac_max: float = 0.12
+    geometry_sample_step_px: float = 1.0
+    geometry_hard_filter: bool = False
 
 
 def config_to_dict(config: GraphTSPConfig | None) -> dict[str, Any] | None:
@@ -81,6 +92,7 @@ def transition_cost(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
 ) -> tuple[float, bool, dict[str, float]]:
     start_mm, end_mm = endpoint_options(coords, width, height, scale_mm)
     candidates = [(start_mm, False, coords[0]), (end_mm, True, coords[-1])]
@@ -95,12 +107,34 @@ def transition_cost(
         inside_fraction = line_inside_fraction(mask, current_xy, target_xy)
         offmask_fraction = 1.0 - inside_fraction
         visible_risk = 1.0 if inside_fraction < config.min_inside_fraction else 0.0
+        gp_stats = connector_geometry_stats(
+            geometry_priors,
+            current_xy,
+            target_xy,
+            sample_step_px=config.geometry_sample_step_px,
+        )
+        gp_dt_min = safe_float(gp_stats.get("gp_dt_min_px"), config.geometry_dt_min_px)
+        gp_dt_q05 = safe_float(gp_stats.get("gp_dt_q05_px"), config.geometry_dt_q05_px)
+        gp_sobel = safe_float(gp_stats.get("gp_sobel_cross_mean"))
+        gp_canny = safe_float(gp_stats.get("gp_canny_cross_frac"))
+        gp_dt_penalty = 0.0
+        if gp_stats:
+            gp_dt_penalty = max(0.0, (config.geometry_dt_min_px - gp_dt_min) / max(1e-6, config.geometry_dt_min_px))
+            gp_dt_penalty += max(0.0, (config.geometry_dt_q05_px - gp_dt_q05) / max(1e-6, config.geometry_dt_q05_px))
+        gp_sobel_penalty = max(0.0, (gp_sobel - config.geometry_sobel_mean_max) / max(1e-6, config.geometry_sobel_mean_max))
+        gp_canny_penalty = max(0.0, (gp_canny - config.geometry_canny_frac_max) / max(1e-6, config.geometry_canny_frac_max))
+        gp_visible_risk = 0.0
+        if gp_stats and not weighted_geometry_stats_are_safe(gp_stats, config):
+            gp_visible_risk = 1.0
         cost = (
             distance
             + config.long_jump_weight * long_jump
             + config.trim_penalty * trim_risk
             + config.offmask_weight * offmask_fraction * max(distance, config.long_jump_threshold_mm)
             + config.visible_connector_penalty * visible_risk
+            + config.geometry_dt_weight * gp_dt_penalty * max(distance, config.long_jump_threshold_mm)
+            + config.geometry_sobel_weight * gp_sobel_penalty * max(distance, config.long_jump_threshold_mm)
+            + config.geometry_canny_weight * gp_canny_penalty * max(distance, config.long_jump_threshold_mm)
         )
         if cost < best_cost:
             best_cost = cost
@@ -110,8 +144,14 @@ def transition_cost(
                 "inside_fraction": inside_fraction,
                 "offmask_fraction": offmask_fraction,
                 "visible_risk": visible_risk,
+                "geometry_visible_risk": gp_visible_risk,
+                "combined_visible_risk": max(visible_risk, gp_visible_risk),
                 "trim_risk": trim_risk,
                 "cost": cost,
+                "geometry_dt_penalty": gp_dt_penalty,
+                "geometry_sobel_penalty": gp_sobel_penalty,
+                "geometry_canny_penalty": gp_canny_penalty,
+                **gp_stats,
             }
     return best_cost, best_reverse, best_details
 
@@ -124,11 +164,12 @@ def sequence_cost(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
 ) -> float:
     total = 0.0
     current = start_mm
     for coords in ordered:
-        cost, reverse, _details = transition_cost(current, coords, width, height, scale_mm, mask, config)
+        cost, reverse, _details = transition_cost(current, coords, width, height, scale_mm, mask, config, geometry_priors)
         if reverse:
             coords = list(reversed(coords))
         total += cost
@@ -144,17 +185,18 @@ def two_opt(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
 ) -> list[Polyline]:
     if len(ordered) < 4 or config.two_opt_passes <= 0 or len(ordered) > config.max_two_opt_nodes:
         return ordered
     best = [list(coords) for coords in ordered]
-    best_cost = sequence_cost(best, start_mm, width, height, scale_mm, mask, config)
+    best_cost = sequence_cost(best, start_mm, width, height, scale_mm, mask, config, geometry_priors)
     for _ in range(config.two_opt_passes):
         improved = False
         for i in range(0, len(best) - 2):
             for j in range(i + 1, len(best) - 1):
                 candidate = best[:i] + [list(reversed(coords)) for coords in reversed(best[i : j + 1])] + best[j + 1 :]
-                cost = sequence_cost(candidate, start_mm, width, height, scale_mm, mask, config)
+                cost = sequence_cost(candidate, start_mm, width, height, scale_mm, mask, config, geometry_priors)
                 if cost + 1e-6 < best_cost:
                     best = candidate
                     best_cost = cost
@@ -172,8 +214,9 @@ def sequence_cost_items(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
 ) -> float:
-    return sequence_cost([item["coords"] for item in ordered], start_mm, width, height, scale_mm, mask, config)
+    return sequence_cost([item["coords"] for item in ordered], start_mm, width, height, scale_mm, mask, config, geometry_priors)
 
 
 def two_opt_items(
@@ -184,18 +227,19 @@ def two_opt_items(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
 ) -> list[dict[str, Any]]:
     if len(ordered) < 4 or config.two_opt_passes <= 0 or len(ordered) > config.max_two_opt_nodes:
         return ordered
     best = [{**item, "coords": list(item["coords"])} for item in ordered]
-    best_cost = sequence_cost_items(best, start_mm, width, height, scale_mm, mask, config)
+    best_cost = sequence_cost_items(best, start_mm, width, height, scale_mm, mask, config, geometry_priors)
     for _ in range(config.two_opt_passes):
         improved = False
         for i in range(0, len(best) - 2):
             for j in range(i + 1, len(best) - 1):
                 reversed_slice = [{**item, "coords": list(reversed(item["coords"]))} for item in reversed(best[i : j + 1])]
                 candidate = best[:i] + reversed_slice + best[j + 1 :]
-                cost = sequence_cost_items(candidate, start_mm, width, height, scale_mm, mask, config)
+                cost = sequence_cost_items(candidate, start_mm, width, height, scale_mm, mask, config, geometry_priors)
                 if cost + 1e-6 < best_cost:
                     best = candidate
                     best_cost = cost
@@ -230,6 +274,23 @@ def safe_float(value: Any, default: float = 0.0) -> float:
     if np.isnan(parsed) or np.isinf(parsed):
         return default
     return parsed
+
+
+def weighted_geometry_stats_are_safe(stats: dict[str, float], config: GraphTSPConfig) -> bool:
+    if not stats:
+        return True
+    if config.geometry_dt_weight > 0.0:
+        if safe_float(stats.get("gp_dt_min_px")) < config.geometry_dt_min_px:
+            return False
+        if safe_float(stats.get("gp_dt_q05_px")) < config.geometry_dt_q05_px:
+            return False
+    if config.geometry_sobel_weight > 0.0:
+        if safe_float(stats.get("gp_sobel_cross_mean")) > config.geometry_sobel_mean_max:
+            return False
+    if config.geometry_canny_weight > 0.0:
+        if safe_float(stats.get("gp_canny_cross_frac")) > config.geometry_canny_frac_max:
+            return False
+    return True
 
 
 def load_m2_edge_policy(path: str | Path) -> dict[str, Any]:
@@ -331,6 +392,15 @@ def m2_edge_features(
         "selected_edge_trim_risk": trim_risk,
         "selected_edge_long_jump_margin_mm": max(0.0, edge_distance - safe_float(context.get("long_jump_threshold_mm"), 8.0)),
         "selected_edge_safe_connect_candidate": 1.0 if inside_fraction >= safe_float(context.get("safe_min_inside_fraction"), 0.92) and visible_risk <= 0.0 else 0.0,
+        "selected_edge_geometry_visible_risk": safe_float(details.get("geometry_visible_risk")),
+        "selected_edge_combined_visible_risk": safe_float(details.get("combined_visible_risk"), visible_risk),
+        "selected_edge_gp_clean_inside_fraction": safe_float(details.get("gp_clean_inside_fraction"), 1.0),
+        "selected_edge_gp_dt_min_px": safe_float(details.get("gp_dt_min_px")),
+        "selected_edge_gp_dt_q05_px": safe_float(details.get("gp_dt_q05_px")),
+        "selected_edge_gp_dt_mean_px": safe_float(details.get("gp_dt_mean_px")),
+        "selected_edge_gp_sobel_cross_mean": safe_float(details.get("gp_sobel_cross_mean")),
+        "selected_edge_gp_canny_cross_frac": safe_float(details.get("gp_canny_cross_frac")),
+        "selected_edge_gp_centerline_hit_frac": safe_float(details.get("gp_centerline_hit_frac")),
     }
     features.update(m2_node_bbox_features(node))
     return features
@@ -361,6 +431,7 @@ def order_polylines_graph_tsp_with_trace(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
     edge_policy: dict[str, Any] | None = None,
     edge_policy_top_k: int = 8,
     edge_policy_hard_safe_filter: bool = False,
@@ -391,6 +462,14 @@ def order_polylines_graph_tsp_with_trace(
         "m2_policy_utility_sum": 0.0,
         "m2_hard_safe_filtered": 0.0,
         "m2_decode_penalty_sum": 0.0,
+        "geometry_edges_sampled": 0.0,
+        "geometry_visible_risk_edges": 0.0,
+        "geometry_dt_penalty_sum": 0.0,
+        "geometry_sobel_penalty_sum": 0.0,
+        "geometry_canny_penalty_sum": 0.0,
+        "geometry_dt_q05_sum": 0.0,
+        "geometry_sobel_cross_sum": 0.0,
+        "geometry_canny_cross_sum": 0.0,
     }
     start_mm = current_mm
     current = current_mm
@@ -400,7 +479,16 @@ def order_polylines_graph_tsp_with_trace(
         deterministic_best_cost = float("inf")
         candidate_records: list[dict[str, Any]] = []
         for index, item in enumerate(remaining):
-            cost, reverse, details = transition_cost(current, item["coords"], width, height, scale_mm, mask, config)
+            cost, reverse, details = transition_cost(
+                current,
+                item["coords"],
+                width,
+                height,
+                scale_mm,
+                mask,
+                config,
+                geometry_priors,
+            )
             stats["edges_considered"] += 1.0
             record = {"index": index, "item": item, "cost": cost, "reverse": reverse, "details": details}
             candidate_records.append(record)
@@ -421,6 +509,7 @@ def order_polylines_graph_tsp_with_trace(
                         record
                         for record in policy_pool
                         if safe_float(record["details"].get("inside_fraction"), 1.0) >= edge_policy_safe_min_inside_fraction
+                        and (not config.geometry_hard_filter or weighted_geometry_stats_are_safe(record["details"], config))
                         and (
                             edge_policy_safe_max_distance_mm <= 0.0
                             or safe_float(record["details"].get("distance_mm")) <= edge_policy_safe_max_distance_mm
@@ -451,7 +540,7 @@ def order_polylines_graph_tsp_with_trace(
                     decode_penalty = (
                         edge_policy_jump_aware_weight * max(0.0, distance / max(1e-6, config.long_jump_threshold_mm))
                         + edge_policy_offmask_weight * safe_float(details.get("offmask_fraction"))
-                        + edge_policy_visible_weight * safe_float(details.get("visible_risk"))
+                        + edge_policy_visible_weight * safe_float(details.get("combined_visible_risk"), safe_float(details.get("visible_risk")))
                         + edge_policy_trim_weight * safe_float(details.get("trim_risk"))
                     )
                     record["m2_utility"] = utility
@@ -491,7 +580,14 @@ def order_polylines_graph_tsp_with_trace(
                 "inside_fraction": round(float(best_details.get("inside_fraction", 0.0)), 6),
                 "offmask_fraction": round(float(best_details.get("offmask_fraction", 0.0)), 6),
                 "visible_risk": round(float(best_details.get("visible_risk", 0.0)), 4),
+                "geometry_visible_risk": round(float(best_details.get("geometry_visible_risk", 0.0)), 4),
+                "combined_visible_risk": round(float(best_details.get("combined_visible_risk", best_details.get("visible_risk", 0.0))), 4),
                 "trim_risk": round(float(best_details.get("trim_risk", 0.0)), 4),
+                "gp_dt_min_px": round(float(best_details.get("gp_dt_min_px", 0.0)), 4),
+                "gp_dt_q05_px": round(float(best_details.get("gp_dt_q05_px", 0.0)), 4),
+                "gp_dt_mean_px": round(float(best_details.get("gp_dt_mean_px", 0.0)), 4),
+                "gp_sobel_cross_mean": round(float(best_details.get("gp_sobel_cross_mean", 0.0)), 6),
+                "gp_canny_cross_frac": round(float(best_details.get("gp_canny_cross_frac", 0.0)), 6),
                 "deterministic_best_node": int(candidate_records[deterministic_best_index]["item"]["node_id"]),
                 "m2_policy_used": bool(edge_policy is not None and previous_node >= 0 and len(candidate_records) > 1),
                 "m2_utility": round(float(chosen.get("m2_utility", 0.0)), 6),
@@ -503,11 +599,20 @@ def order_polylines_graph_tsp_with_trace(
         stats["selected_distance_mm"] += float(best_details.get("distance_mm", 0.0))
         stats["selected_offmask_fraction"] += float(best_details.get("offmask_fraction", 0.0))
         stats["visible_risk_edges"] += float(best_details.get("visible_risk", 0.0))
+        if "gp_dt_q05_px" in best_details:
+            stats["geometry_edges_sampled"] += 1.0
+            stats["geometry_visible_risk_edges"] += float(best_details.get("geometry_visible_risk", 0.0))
+            stats["geometry_dt_penalty_sum"] += float(best_details.get("geometry_dt_penalty", 0.0))
+            stats["geometry_sobel_penalty_sum"] += float(best_details.get("geometry_sobel_penalty", 0.0))
+            stats["geometry_canny_penalty_sum"] += float(best_details.get("geometry_canny_penalty", 0.0))
+            stats["geometry_dt_q05_sum"] += float(best_details.get("gp_dt_q05_px", 0.0))
+            stats["geometry_sobel_cross_sum"] += float(best_details.get("gp_sobel_cross_mean", 0.0))
+            stats["geometry_canny_cross_sum"] += float(best_details.get("gp_canny_cross_frac", 0.0))
         stats["max_transition_mm"] = max(stats["max_transition_mm"], float(best_details.get("distance_mm", 0.0)))
         current = coord_to_mm(coords[-1], width, height, scale_mm)
         previous_node = int(item["node_id"])
     two_opt_allowed = len(ordered_items) <= config.max_two_opt_nodes and config.two_opt_passes > 0
-    ordered_items = two_opt_items(ordered_items, start_mm, width, height, scale_mm, mask, config)
+    ordered_items = two_opt_items(ordered_items, start_mm, width, height, scale_mm, mask, config, geometry_priors)
     if stats["nodes"] > 0:
         stats["mean_selected_cost"] = stats["selected_cost"] / stats["nodes"]
         stats["mean_offmask_fraction"] = stats["selected_offmask_fraction"] / stats["nodes"]
@@ -518,6 +623,15 @@ def order_polylines_graph_tsp_with_trace(
         stats["m2_policy_mean_selected_utility"] = stats["m2_policy_utility_sum"] / stats["m2_policy_decisions"]
     else:
         stats["m2_policy_mean_selected_utility"] = 0.0
+    if stats["geometry_edges_sampled"] > 0:
+        denom = stats["geometry_edges_sampled"]
+        stats["geometry_mean_dt_q05_px"] = stats["geometry_dt_q05_sum"] / denom
+        stats["geometry_mean_sobel_cross"] = stats["geometry_sobel_cross_sum"] / denom
+        stats["geometry_mean_canny_cross"] = stats["geometry_canny_cross_sum"] / denom
+    else:
+        stats["geometry_mean_dt_q05_px"] = 0.0
+        stats["geometry_mean_sobel_cross"] = 0.0
+        stats["geometry_mean_canny_cross"] = 0.0
     graph = {
         "nodes": nodes,
         "selected_edges": selected_edges,
@@ -536,6 +650,7 @@ def order_polylines_graph_tsp(
     scale_mm: float,
     mask: np.ndarray | None,
     config: GraphTSPConfig,
+    geometry_priors: GeometryPriors | None = None,
     edge_policy: dict[str, Any] | None = None,
     edge_policy_top_k: int = 8,
     edge_policy_hard_safe_filter: bool = False,
@@ -555,6 +670,7 @@ def order_polylines_graph_tsp(
         scale_mm,
         mask,
         config,
+        geometry_priors=geometry_priors,
         edge_policy=edge_policy,
         edge_policy_top_k=edge_policy_top_k,
         edge_policy_hard_safe_filter=edge_policy_hard_safe_filter,

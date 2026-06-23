@@ -57,6 +57,18 @@ EXCELLENT_THRESHOLDS = {
     "visible_connector_count": 0.5,
 }
 
+DIAGNOSTIC_METRICS = {
+    "safe_connect_repairs",
+    "graph_tsp_stats.geometry_edges_sampled",
+    "graph_tsp_stats.geometry_visible_risk_edges",
+    "graph_tsp_stats.geometry_mean_dt_q05_px",
+    "graph_tsp_stats.geometry_mean_sobel_cross",
+    "graph_tsp_stats.geometry_mean_canny_cross",
+    "graph_tsp_stats.geometry_dt_penalty_sum",
+    "graph_tsp_stats.geometry_sobel_penalty_sum",
+    "graph_tsp_stats.geometry_canny_penalty_sum",
+}
+
 
 def safe_float(value: Any) -> float:
     if isinstance(value, bool):
@@ -135,6 +147,15 @@ def extract_pred(payload: dict[str, Any]) -> dict[str, Any]:
     return pred if isinstance(pred, dict) else {}
 
 
+def nested_get(payload: dict[str, Any], dotted_key: str) -> Any:
+    current: Any = payload
+    for part in dotted_key.split("."):
+        if not isinstance(current, dict):
+            return ""
+        current = current.get(part, "")
+    return current
+
+
 def score_metrics(
     metrics: dict[str, Any],
     thresholds: dict[str, float] | None = None,
@@ -208,6 +229,7 @@ def row_from_eval(path: Path, config: dict[str, Any]) -> dict[str, Any]:
         "sample_id": path.parent.name,
         "method": path.parent.parent.name,
         **{key: pred.get(key, "") for key in sorted(set(DEFAULT_THRESHOLDS) | set(HARD_FAIL_THRESHOLDS) | {"round_trip_parse_success", "stitch_count", "stitch_path_mm", "max_jump_mm"})},
+        **{key: nested_get(pred, key) for key in sorted(DIAGNOSTIC_METRICS)},
         **{key: value for key, value in score.items() if key not in {"score_terms", "score_weights", "score_thresholds"}},
     }
     return row
