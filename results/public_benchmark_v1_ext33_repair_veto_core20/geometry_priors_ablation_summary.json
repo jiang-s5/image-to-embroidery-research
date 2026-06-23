@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "B0_m2_1_globalrepair20": {
+      "samples": 20,
+      "mean_unified_loss": 0.349218,
+      "mean_exec_score": 0.266982,
+      "mean_visual_risk": 0.082236,
+      "mean_jump_count": 55.55,
+      "mean_trim_count": 11.2,
+      "mean_off_mask_stitch_length_mm": 161.14398,
+      "mean_visible_connector_count": 32.65,
+      "mean_visible_connector_length_mm": 118.49888,
+      "mean_geometry_visible_risk_edges": 0.0,
+      "hard_fail": 19
+    },
+    "B1_edt_repair_veto": {
+      "samples": 20,
+      "mean_unified_loss": 0.356347,
+      "mean_exec_score": 0.265727,
+      "mean_visual_risk": 0.09062,
+      "mean_jump_count": 121.5,
+      "mean_trim_count": 11.0,
+      "mean_off_mask_stitch_length_mm": 165.44688,
+      "mean_visible_connector_count": 32.8,
+      "mean_visible_connector_length_mm": 118.926535,
+      "mean_geometry_visible_risk_edges": 0.0,
+      "hard_fail": 19
+    },
+    "B2_canny_repair_veto": {
+      "samples": 20,
+      "mean_unified_loss": 0.361037,
+      "mean_exec_score": 0.267565,
+      "mean_visual_risk": 0.093473,
+      "mean_jump_count": 147.4,
+      "mean_trim_count": 11.25,
+      "mean_off_mask_stitch_length_mm": 165.82441,
+      "mean_visible_connector_count": 32.8,
+      "mean_visible_connector_length_mm": 118.926535,
+      "mean_geometry_visible_risk_edges": 0.0,
+      "hard_fail": 20
+    },
+    "B3_edt_canny_repair_veto": {
+      "samples": 20,
+      "mean_unified_loss": 0.359774,
+      "mean_exec_score": 0.270968,
+      "mean_visual_risk": 0.088806,
+      "mean_jump_count": 166.3,
+      "mean_trim_count": 11.55,
+      "mean_off_mask_stitch_length_mm": 164.860305,
+      "mean_visible_connector_count": 32.8,
+      "mean_visible_connector_length_mm": 118.926535,
+      "mean_geometry_visible_risk_edges": 0.0,
+      "hard_fail": 20
+    }
+  }
+}

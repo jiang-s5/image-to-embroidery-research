@@ -77,6 +77,48 @@ without reducing hard-fail risk. Future geometry priors should be used as soft
 diagnostics, weak reranking features, or component-level design features rather
 than as hard repair vetoes.
 
+## Core20 Geometry-Prior Follow-Up
+
+A 20-sample follow-up was run on the first 20 samples of `public_benchmark_v1_ext33`
+(10 Openclipart + 10 OpenMoji). This directly addresses the original requirement to
+move beyond the 7-sample pilot and produce aggregate, per-domain, and per-sample
+results.
+
+Result files:
+
+- `results/public_benchmark_v1_ext33_repair_veto_core20/geometry_priors_ablation_summary.json`
+- `results/public_benchmark_v1_ext33_repair_veto_core20/geometry_priors_ablation_rows.csv`
+- `results/public_benchmark_v1_ext33_repair_veto_core20/geometry_priors_domain_summary.csv`
+- `results/public_benchmark_v1_ext33_repair_veto_core20/geometry_priors_per_sample_summary.csv`
+
+Aggregate result:
+
+| Variant | Samples | Loss | Jump | Trim | Off-Mask mm | Visible Connectors | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| B0 M2.1 globalrepair20 | 20 | 0.349218 | 55.550 | 11.200 | 161.1440 | 32.650 | 19 |
+| B1 EDT repair veto | 20 | 0.356347 | 121.500 | 11.000 | 165.4469 | 32.800 | 19 |
+| B2 Canny repair veto | 20 | 0.361037 | 147.400 | 11.250 | 165.8244 | 32.800 | 20 |
+| B3 EDT + Canny repair veto | 20 | 0.359774 | 166.300 | 11.550 | 164.8603 | 32.800 | 20 |
+
+Per-domain result:
+
+| Variant | Source | Samples | Loss | Jump | Trim | Off-Mask mm | Visible Connectors | Hard Fail |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| B0 | Openclipart | 10 | 0.344470 | 40.600 | 8.700 | 305.1066 | 64.800 | 10 |
+| B1 EDT | Openclipart | 10 | 0.342749 | 42.100 | 8.600 | 306.3096 | 64.800 | 10 |
+| B2 Canny | Openclipart | 10 | 0.345570 | 44.600 | 8.600 | 305.4684 | 64.800 | 10 |
+| B3 EDT+Canny | Openclipart | 10 | 0.343865 | 45.300 | 8.800 | 305.2641 | 64.800 | 10 |
+| B0 | OpenMoji | 10 | 0.353966 | 70.500 | 13.700 | 17.1814 | 0.500 | 9 |
+| B1 EDT | OpenMoji | 10 | 0.369945 | 200.900 | 13.400 | 24.5842 | 0.800 | 9 |
+| B2 Canny | OpenMoji | 10 | 0.376505 | 250.200 | 13.900 | 26.1804 | 0.800 | 10 |
+| B3 EDT+Canny | OpenMoji | 10 | 0.375682 | 287.300 | 14.300 | 24.4565 | 0.800 | 10 |
+
+This larger follow-up confirms the 7-sample pilot conclusion. Hard geometry repair
+vetoes do not reduce hard-fail rate and substantially increase jump count,
+especially on OpenMoji. B1 is marginally lower than B0 on Openclipart loss, but it
+keeps all 10 Openclipart samples as hard-fail and worsens OpenMoji strongly. The
+recommended conclusion is therefore to keep EDT/Canny as diagnostics or weak
+features, not hard repair vetoes.
 ## Learned Selector Status
 
 M2.39 is the first learned listwise selector that beats M2.34 on public unified
