@@ -195,6 +195,7 @@ def write_sample_artifacts(
     image: Image.Image,
     raw_bytes: bytes | None = None,
     raw_suffix: str = ".png",
+    mask_override: np.ndarray | None = None,
 ) -> dict[str, str]:
     sample_dir = output_dir / subset_dir
     prior_dir = output_dir / "priors" / sample_id
@@ -204,7 +205,8 @@ def write_sample_artifacts(
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     rgba = ensure_rgba_square(image, CANVAS_SIZE)
-    mask = refine_mask(alpha_or_nonwhite_mask(rgba))
+    base_mask = mask_override if mask_override is not None else alpha_or_nonwhite_mask(rgba)
+    mask = refine_mask(base_mask)
 
     rgb = Image.new("RGB", rgba.size, (255, 255, 255))
     rgb.paste(rgba.convert("RGB"), mask=rgba.getchannel("A"))
@@ -554,6 +556,85 @@ def copy_public_images(
     return rows
 
 
+def find_oxford_trimap_path(image_path: Path, source_dir: Path) -> Path | None:
+    stem = image_path.stem
+    candidates = [
+        source_dir / "annotations" / "trimaps" / f"{stem}.png",
+        source_dir / "trimaps" / f"{stem}.png",
+        image_path.parent / f"{stem}.png",
+        image_path.parent.parent / "annotations" / "trimaps" / f"{stem}.png",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def ensure_mask_square(mask_image: Image.Image, size: int = CANVAS_SIZE) -> Image.Image:
+    mask_image = mask_image.convert("L")
+    mask_image.thumbnail((size, size), Image.Resampling.NEAREST)
+    canvas = Image.new("L", (size, size), 0)
+    offset = ((size - mask_image.width) // 2, (size - mask_image.height) // 2)
+    canvas.paste(mask_image, offset)
+    return canvas
+
+
+def oxford_trimap_to_mask(trimap: Image.Image) -> np.ndarray:
+    aligned = ensure_mask_square(trimap, CANVAS_SIZE)
+    arr = np.asarray(aligned, dtype=np.uint8)
+    unique_values = set(int(value) for value in np.unique(arr))
+    if unique_values.issubset({0, 1, 2, 3}):
+        mask = np.where((arr == 1) | (arr == 3), 255, 0).astype(np.uint8)
+    else:
+        mask = np.where(arr > 0, 255, 0).astype(np.uint8)
+    return mask
+
+
+def copy_oxford_pet_images(source_dir: Path, output_dir: Path, limit: int) -> list[ManifestRow]:
+    rows: list[ManifestRow] = []
+    if not source_dir.exists():
+        return rows
+    image_root = source_dir / "images" if (source_dir / "images").exists() else source_dir
+    files = sorted(
+        path
+        for path in image_root.rglob("*")
+        if path.is_file()
+        and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
+        and "trimaps" not in {part.lower() for part in path.parts}
+        and "annotations" not in {part.lower() for part in path.parts}
+    )
+    for path in files:
+        if len(rows) >= limit:
+            break
+        trimap_path = find_oxford_trimap_path(path, source_dir)
+        if trimap_path is None:
+            print(f"warning: skipping Oxford image without trimap: {path}")
+            continue
+        sample_id = f"pet_{len(rows) + 1:03d}"
+        payload = path.read_bytes()
+        image = Image.open(path)
+        trimap = Image.open(trimap_path)
+        mask = oxford_trimap_to_mask(trimap)
+        paths = write_sample_artifacts(output_dir, sample_id, "oxford_pet_10", image, payload, path.suffix.lower(), mask_override=mask)
+        stem_parts = path.stem.rsplit("_", 1)
+        category = stem_parts[0] if len(stem_parts) == 2 else path.stem
+        rows.append(
+            make_row(
+                sample_id=sample_id,
+                phase="full",
+                source_name="Oxford-IIIT Pet",
+                source_url=SOURCE_NOTES["Oxford-IIIT Pet"]["url"],
+                selector_type="local_oxford_trimap",
+                source_identifier=path.name,
+                category=category,
+                subtype="real_photo_with_trimap_mask",
+                paths=paths,
+                notes=f"copied from Oxford image {path}; foreground mask from trimap {trimap_path}; labels 1 foreground and 3 border are included, label 2 background is excluded",
+            )
+        )
+    return rows
+
+
 def write_manifest(rows: Iterable[ManifestRow], output_dir: Path) -> None:
     rows = list(rows)
     manifest_path = output_dir / "manifest.csv"
@@ -645,7 +726,7 @@ def main() -> int:
         rows.extend(copy_public_images(Path(args.quickdraw_dir), output_dir, "QuickDraw", "quickdraw_local", "qd_local", args.quickdraw_limit, "line_drawing"))
 
     if args.oxford_pet_dir:
-        rows.extend(copy_public_images(Path(args.oxford_pet_dir), output_dir, "Oxford-IIIT Pet", "oxford_pet_local", "pet_local", args.oxford_pet_limit, "real_photo"))
+        rows.extend(copy_oxford_pet_images(Path(args.oxford_pet_dir), output_dir, args.oxford_pet_limit))
 
     rows.extend(render_text_samples(output_dir, args.font_path, args.text_limit))
 

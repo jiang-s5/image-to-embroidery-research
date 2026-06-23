@@ -65,6 +65,8 @@ python tools\prepare_public_benchmark_v1.py `
   --text-limit 4
 ```
 
+For Oxford-IIIT Pet, point --oxford-pet-dir at either the dataset root containing images/ and nnotations/trimaps/, or a selected-image directory with matching trimap PNGs discoverable nearby. Images without a trimap are skipped, because this subset is meant to test real-photo input with an external foreground mask rather than a nonwhite heuristic mask.
+
 The script writes:
 
 ```text
