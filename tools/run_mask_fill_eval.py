@@ -69,6 +69,9 @@ def main() -> int:
     parser.add_argument("--adaptive-fill-inset-max-px", type=int, default=2)
     parser.add_argument("--adaptive-fill-inset-thin-max-distance-px", type=float, default=3.0)
     parser.add_argument("--adaptive-fill-inset-mid-max-distance-px", type=float, default=6.0)
+    parser.add_argument("--adaptive-fill-inset-policy", choices=["distance", "safe_dt"], default="distance")
+    parser.add_argument("--adaptive-fill-inset-min-retained-ratio", type=float, default=0.72)
+    parser.add_argument("--adaptive-fill-inset-thin-area-px", type=int, default=128)
     parser.add_argument("--use-mask-path-connectors", action="store_true")
     parser.add_argument("--max-mask-path-mm", type=float, default=24.0)
     parser.add_argument("--max-mask-path-expansions", type=int, default=8000)
@@ -144,6 +147,9 @@ def main() -> int:
             adaptive_fill_inset_max_px=args.adaptive_fill_inset_max_px,
             adaptive_fill_inset_thin_max_distance_px=args.adaptive_fill_inset_thin_max_distance_px,
             adaptive_fill_inset_mid_max_distance_px=args.adaptive_fill_inset_mid_max_distance_px,
+            adaptive_fill_inset_policy=args.adaptive_fill_inset_policy,
+            adaptive_fill_inset_min_retained_ratio=args.adaptive_fill_inset_min_retained_ratio,
+            adaptive_fill_inset_thin_area_px=args.adaptive_fill_inset_thin_area_px,
             use_mask_path_connectors=args.use_mask_path_connectors,
             max_mask_path_mm=args.max_mask_path_mm,
             max_mask_path_expansions=args.max_mask_path_expansions,

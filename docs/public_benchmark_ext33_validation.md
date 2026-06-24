@@ -141,12 +141,26 @@ loss, but it loses too much coverage:
 M2.39/M2.40 are useful research branches, but neither replaces M2.34 as the
 current balanced best.
 
+
+## M2.41 Safe Adaptive Fill-Inset Selector
+
+M2.41 adds a `safe_dt` adaptive fill-inset candidate to the M2.34 calibrated selector. The candidate is not promoted as a standalone planner, but it improves the selector when used as an optional candidate.
+
+| System | Samples | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M2.34 core selector LOO | 33 | 0.051174 | 5.636 | 0.424 | 0.0825 | 0.9680 | 0.8197 | 0 |
+| M2.41 core + safe_dt LOO | 33 | 0.049160 | 5.485 | 0.424 | 0.0500 | 0.9784 | 0.7992 | 0 |
+| M2.34 incoming LOO | 4 | 0.078290 | 8.500 | 1.250 | 0.0000 | 0.9955 | 0.7811 | 0 |
+| M2.41 incoming core + safe_dt LOO | 4 | 0.074710 | 8.250 | 1.000 | 0.0000 | 0.9965 | 0.7535 | 0 |
+
+This is the first post-M2.34 change that improves both public and incoming unified loss while remaining hard-fail free. The tradeoff is lower stitch precision, so M2.41 is best described as the current unified-objective best, while M2.34 remains the precision-safer baseline. See `docs/m2_41_safe_adaptive_inset_selector.md`.
+
 ## Current Decision
 
 For reporting and GitHub documentation:
 
 1. Use M2.1 as the historical baseline, not the final promoted system.
-2. Use M2.34 as the current best balanced system.
+2. Use M2.41 as the current unified-objective best system; keep M2.34 as the precision-safer baseline.
 3. Record M2.39/M2.40 as learned-selector experiments that expose a loss versus
    coverage tradeoff.
 4. Treat the 7-sample geometry-prior experiment as a negative result showing

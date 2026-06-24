@@ -1,5 +1,7 @@
 # M2.34 Fill-Inset Selector Notes
 
+Status note: M2.41 later improves the unified execution objective by adding a `safe_dt` adaptive fill-inset candidate to the calibrated selector. M2.34 remains the precision-safer baseline; see `docs/m2_41_safe_adaptive_inset_selector.md`.
+
 Date: 2026-06-22
 
 M2.34 promotes a new high-coverage mask-fill candidate family: nearest-endpoint fill rows with a small fill inset. The inset is applied only to the fill-row mask, while connector validation still uses the evaluation mask. This keeps the planner from stitching exactly on the noisy mask boundary and reduces boundary spill after DST quantization.
