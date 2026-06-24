@@ -1,0 +1,70 @@
+{
+    "dataset_public":  "datasets/public_benchmark_v1_ext33",
+    "description":  "Precision-aware calibrated selector using the M2.41 safe_dt adaptive fill-inset candidate.",
+    "incoming_review_loo":  {
+                                "mean_jump_count":  8.25,
+                                "mean_unified_loss":  0.07471,
+                                "samples":  4,
+                                "mean_coverage_ratio":  0.996541,
+                                "hard_fail":  0,
+                                "mean_off_mask_stitch_length_mm":  0,
+                                "mean_trim_count":  1,
+                                "mean_stitch_precision_ratio":  0.753519
+                            },
+    "decision":  "Recommended current selector config: same unified loss as M2.41 on public/incoming, with slightly better public precision.",
+    "date":  "2026-06-24",
+    "candidate_pool":  [
+                           "mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+                           "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+                           "mask_fill_edgewalk_nearestrow_rows16_p40",
+                           "mask_fill_edgewalk_rows16_p40",
+                           "auto_evalrepair_r10_c20",
+                           "skeleton_c30_m20",
+                           "skeleton_c30_m4",
+                           "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40"
+                       ],
+    "model_id":  "m2_42_precision_safeadt_selector",
+    "dataset_incoming":  "datasets/incoming_review_eval_v1",
+    "selector_args":  {
+                          "off_mask_weights":  [
+                                                   0.02,
+                                                   0.05,
+                                                   0.1
+                                               ],
+                          "precision_weights":  [
+                                                    0.1,
+                                                    0.2,
+                                                    0.35
+                                                ],
+                          "coverage_profiles":  [
+                                                    "global",
+                                                    "public_soft",
+                                                    "public_balanced"
+                                                ],
+                          "min_precision":  0.78,
+                          "exclude_hard_fail":  true,
+                          "jump_weights":  [
+                                               0,
+                                               0.01
+                                           ],
+                          "coverage_weights":  [
+                                                   0.2,
+                                                   0.35,
+                                                   0.5
+                                               ],
+                          "trim_weights":  [
+                                               0,
+                                               0.01
+                                           ]
+                      },
+    "public_ext33_loo":  {
+                             "mean_jump_count":  5.484848,
+                             "mean_unified_loss":  0.04916,
+                             "samples":  33,
+                             "mean_coverage_ratio":  0.978737,
+                             "hard_fail":  0,
+                             "mean_off_mask_stitch_length_mm":  0.049952,
+                             "mean_trim_count":  0.424242,
+                             "mean_stitch_precision_ratio":  0.801506
+                         }
+}

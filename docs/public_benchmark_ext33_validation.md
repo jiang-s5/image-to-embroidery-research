@@ -155,12 +155,24 @@ M2.41 adds a `safe_dt` adaptive fill-inset candidate to the M2.34 calibrated sel
 
 This is the first post-M2.34 change that improves both public and incoming unified loss while remaining hard-fail free. The tradeoff is lower stitch precision, so M2.41 is best described as the current unified-objective best, while M2.34 remains the precision-safer baseline. See `docs/m2_41_safe_adaptive_inset_selector.md`.
 
+
+## M2.42 Precision-Aware Safe Adaptive Selector
+
+M2.42 retunes the M2.41 selector with a stronger precision term. It keeps the same unified loss as M2.41 while slightly improving public stitch precision.
+
+| System | Samples | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M2.41 core + safe_dt LOO | 33 | 0.049160 | 5.485 | 0.424 | 0.0500 | 0.9784 | 0.7992 | 0 |
+| M2.42 precision-aware safe_dt LOO | 33 | 0.049160 | 5.485 | 0.424 | 0.0500 | 0.9787 | 0.8015 | 0 |
+
+M2.42 is therefore the recommended current selector config, while M2.34 remains the precision-safer baseline. See `docs/m2_42_precision_safeadt_selector.md`.
+
 ## Current Decision
 
 For reporting and GitHub documentation:
 
 1. Use M2.1 as the historical baseline, not the final promoted system.
-2. Use M2.41 as the current unified-objective best system; keep M2.34 as the precision-safer baseline.
+2. Use M2.42 as the current recommended selector config; keep M2.34 as the precision-safer baseline and M2.41 as the first safe_dt candidate proof.
 3. Record M2.39/M2.40 as learned-selector experiments that expose a loss versus
    coverage tradeoff.
 4. Treat the 7-sample geometry-prior experiment as a negative result showing
