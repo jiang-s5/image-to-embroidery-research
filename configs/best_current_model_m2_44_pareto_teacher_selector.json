@@ -1,0 +1,70 @@
+{
+  "model_id": "m2_44_pareto_teacher_selector",
+  "date": "2026-06-25",
+  "status": "learned_precision_safe_research_branch",
+  "description": "Listwise learned selector trained with a Pareto-inspired multi-objective teacher. The teacher extends oracle score with coverage, precision, off-mask, visible-connector, jump, and trim penalties.",
+  "decision": "Do not replace M2.42. M2.44 is useful evidence that a learned selector can internalize Pareto-style precision and execution tradeoffs, but it currently behaves like a precision-safe branch with higher unified loss.",
+  "train_dataset": "datasets/public_benchmark_v1_ext33",
+  "external_dataset": "datasets/incoming_review_eval_v1",
+  "candidate_pool": [
+    "mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_rows16_p40",
+    "mask_fill_edgewalk_rows16_p40",
+    "auto_evalrepair_r10_c20",
+    "skeleton_c30_m20",
+    "skeleton_c30_m4",
+    "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40"
+  ],
+  "training_args": {
+    "target": "listwise_softmax",
+    "alpha": 0.001,
+    "listwise_temperature": 0.02,
+    "listwise_epochs": 1200,
+    "listwise_learning_rate": 0.05,
+    "exclude_hard_fail": true,
+    "listwise_teacher_coverage_weight": 0.1,
+    "listwise_teacher_precision_weight": 0.05,
+    "listwise_teacher_off_mask_weight": 0.02,
+    "listwise_teacher_visible_weight": 0.005,
+    "listwise_teacher_jump_weight": 0.003,
+    "listwise_teacher_trim_weight": 0.003,
+    "listwise_teacher_flat_min_coverage": 0.84,
+    "listwise_teacher_line_min_coverage": 0.58,
+    "listwise_teacher_min_precision": 0.78,
+    "listwise_teacher_jump_scale": 20.0,
+    "listwise_teacher_trim_scale": 8.0
+  },
+  "public_ext33_loo": {
+    "samples": 33,
+    "oracle_match": 25,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.050318,
+    "mean_jump_count": 5.484848,
+    "mean_trim_count": 0.454545,
+    "mean_off_mask_stitch_length_mm": 0.093536,
+    "mean_coverage_ratio": 0.956618,
+    "mean_stitch_precision_ratio": 0.816809
+  },
+  "incoming_review_applied": {
+    "samples": 4,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.07829,
+    "mean_jump_count": 8.5,
+    "mean_trim_count": 1.25,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_coverage_ratio": 0.995549,
+    "mean_stitch_precision_ratio": 0.781068
+  },
+  "comparison": {
+    "m2_42_public_loss": 0.04916,
+    "m2_42_public_precision": 0.801506,
+    "m2_42_incoming_loss": 0.07471,
+    "m2_42_incoming_precision": 0.753519,
+    "summary": "M2.44 improves public/incoming precision relative to M2.42, but loses on unified loss and is therefore not the default selector."
+  },
+  "artifacts": {
+    "public_model": "results/public_benchmark_v1_ext33_m2_44_pareto_teacher_weak_a001_t002",
+    "incoming_applied": "results/incoming_review_eval_v1_m2_44_pareto_teacher_weak_a001_t002_applied"
+  }
+}

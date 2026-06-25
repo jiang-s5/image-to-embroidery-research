@@ -309,9 +309,15 @@ def listwise_teacher_score(
     row: dict[str, Any],
     coverage_weight: float,
     precision_weight: float,
+    off_mask_weight: float,
+    visible_weight: float,
+    jump_weight: float,
+    trim_weight: float,
     flat_min_coverage: float,
     line_min_coverage: float,
     min_precision: float,
+    jump_scale: float,
+    trim_scale: float,
 ) -> float:
     source_name = str(row.get("source_name", ""))
     target_branch = str(row.get("target_branch", ""))
@@ -325,6 +331,10 @@ def listwise_teacher_score(
         safe_float(row.get("oracle_score"))
         + coverage_weight * coverage_deficit
         + precision_weight * precision_deficit
+        + off_mask_weight * safe_float(row.get("off_mask_stitch_length_mm"))
+        + visible_weight * safe_float(row.get("visible_connector_count"))
+        + jump_weight * (safe_float(row.get("jump_count")) / max(1.0, jump_scale))
+        + trim_weight * (safe_float(row.get("trim_count")) / max(1.0, trim_scale))
     )
 
 
@@ -337,9 +347,15 @@ def fit_listwise_softmax_ranker(
     learning_rate: float = 0.05,
     teacher_coverage_weight: float = 0.0,
     teacher_precision_weight: float = 0.0,
+    teacher_off_mask_weight: float = 0.0,
+    teacher_visible_weight: float = 0.0,
+    teacher_jump_weight: float = 0.0,
+    teacher_trim_weight: float = 0.0,
     teacher_flat_min_coverage: float = 0.84,
     teacher_line_min_coverage: float = 0.58,
     teacher_min_precision: float = 0.72,
+    teacher_jump_scale: float = 20.0,
+    teacher_trim_scale: float = 8.0,
 ) -> dict[str, Any]:
     x = matrix(rows, names)
     mean_x = x.mean(axis=0)
@@ -365,9 +381,15 @@ def fit_listwise_softmax_ranker(
                         rows[index],
                         teacher_coverage_weight,
                         teacher_precision_weight,
+                        teacher_off_mask_weight,
+                        teacher_visible_weight,
+                        teacher_jump_weight,
+                        teacher_trim_weight,
                         teacher_flat_min_coverage,
                         teacher_line_min_coverage,
                         teacher_min_precision,
+                        teacher_jump_scale,
+                        teacher_trim_scale,
                     )
                     for index in indices
                 ],
@@ -392,9 +414,15 @@ def fit_listwise_softmax_ranker(
         "listwise_learning_rate": learning_rate,
         "listwise_teacher_coverage_weight": teacher_coverage_weight,
         "listwise_teacher_precision_weight": teacher_precision_weight,
+        "listwise_teacher_off_mask_weight": teacher_off_mask_weight,
+        "listwise_teacher_visible_weight": teacher_visible_weight,
+        "listwise_teacher_jump_weight": teacher_jump_weight,
+        "listwise_teacher_trim_weight": teacher_trim_weight,
         "listwise_teacher_flat_min_coverage": teacher_flat_min_coverage,
         "listwise_teacher_line_min_coverage": teacher_line_min_coverage,
         "listwise_teacher_min_precision": teacher_min_precision,
+        "listwise_teacher_jump_scale": teacher_jump_scale,
+        "listwise_teacher_trim_scale": teacher_trim_scale,
         "feature_names": names,
         "mean": mean_x.tolist(),
         "std": std_x.tolist(),
@@ -454,9 +482,15 @@ def fit_selector_model(
     listwise_learning_rate: float = 0.05,
     listwise_teacher_coverage_weight: float = 0.0,
     listwise_teacher_precision_weight: float = 0.0,
+    listwise_teacher_off_mask_weight: float = 0.0,
+    listwise_teacher_visible_weight: float = 0.0,
+    listwise_teacher_jump_weight: float = 0.0,
+    listwise_teacher_trim_weight: float = 0.0,
     listwise_teacher_flat_min_coverage: float = 0.84,
     listwise_teacher_line_min_coverage: float = 0.58,
     listwise_teacher_min_precision: float = 0.72,
+    listwise_teacher_jump_scale: float = 20.0,
+    listwise_teacher_trim_scale: float = 8.0,
 ) -> dict[str, Any]:
     if target == "pairwise_score_delta":
         return fit_pairwise_ranker(rows, names, alpha, pairwise_min_score_gap)
@@ -470,9 +504,15 @@ def fit_selector_model(
             listwise_learning_rate,
             listwise_teacher_coverage_weight,
             listwise_teacher_precision_weight,
+            listwise_teacher_off_mask_weight,
+            listwise_teacher_visible_weight,
+            listwise_teacher_jump_weight,
+            listwise_teacher_trim_weight,
             listwise_teacher_flat_min_coverage,
             listwise_teacher_line_min_coverage,
             listwise_teacher_min_precision,
+            listwise_teacher_jump_scale,
+            listwise_teacher_trim_scale,
         )
     return fit_ridge(rows, names, alpha, target)
 
@@ -672,9 +712,15 @@ def leave_one_out(
     listwise_learning_rate: float = 0.05,
     listwise_teacher_coverage_weight: float = 0.0,
     listwise_teacher_precision_weight: float = 0.0,
+    listwise_teacher_off_mask_weight: float = 0.0,
+    listwise_teacher_visible_weight: float = 0.0,
+    listwise_teacher_jump_weight: float = 0.0,
+    listwise_teacher_trim_weight: float = 0.0,
     listwise_teacher_flat_min_coverage: float = 0.84,
     listwise_teacher_line_min_coverage: float = 0.58,
     listwise_teacher_min_precision: float = 0.72,
+    listwise_teacher_jump_scale: float = 20.0,
+    listwise_teacher_trim_scale: float = 8.0,
     exclude_hard_fail: bool = False,
     enforce_coverage_floor: bool = False,
     flat_min_coverage: float = 0.75,
@@ -711,9 +757,15 @@ def leave_one_out(
             listwise_learning_rate,
             listwise_teacher_coverage_weight,
             listwise_teacher_precision_weight,
+            listwise_teacher_off_mask_weight,
+            listwise_teacher_visible_weight,
+            listwise_teacher_jump_weight,
+            listwise_teacher_trim_weight,
             listwise_teacher_flat_min_coverage,
             listwise_teacher_line_min_coverage,
             listwise_teacher_min_precision,
+            listwise_teacher_jump_scale,
+            listwise_teacher_trim_scale,
         )
         selectable = selectable_candidates(
             held,
@@ -806,9 +858,15 @@ def main() -> int:
     parser.add_argument("--listwise-learning-rate", type=float, default=0.05)
     parser.add_argument("--listwise-teacher-coverage-weight", type=float, default=0.0)
     parser.add_argument("--listwise-teacher-precision-weight", type=float, default=0.0)
+    parser.add_argument("--listwise-teacher-off-mask-weight", type=float, default=0.0)
+    parser.add_argument("--listwise-teacher-visible-weight", type=float, default=0.0)
+    parser.add_argument("--listwise-teacher-jump-weight", type=float, default=0.0)
+    parser.add_argument("--listwise-teacher-trim-weight", type=float, default=0.0)
     parser.add_argument("--listwise-teacher-flat-min-coverage", type=float, default=0.84)
     parser.add_argument("--listwise-teacher-line-min-coverage", type=float, default=0.58)
     parser.add_argument("--listwise-teacher-min-precision", type=float, default=0.72)
+    parser.add_argument("--listwise-teacher-jump-scale", type=float, default=20.0)
+    parser.add_argument("--listwise-teacher-trim-scale", type=float, default=8.0)
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -846,9 +904,15 @@ def main() -> int:
         args.listwise_learning_rate,
         args.listwise_teacher_coverage_weight,
         args.listwise_teacher_precision_weight,
+        args.listwise_teacher_off_mask_weight,
+        args.listwise_teacher_visible_weight,
+        args.listwise_teacher_jump_weight,
+        args.listwise_teacher_trim_weight,
         args.listwise_teacher_flat_min_coverage,
         args.listwise_teacher_line_min_coverage,
         args.listwise_teacher_min_precision,
+        args.listwise_teacher_jump_scale,
+        args.listwise_teacher_trim_scale,
         args.exclude_hard_fail,
         args.enforce_coverage_floor,
         args.flat_min_coverage,
@@ -881,9 +945,15 @@ def main() -> int:
         args.listwise_learning_rate,
         args.listwise_teacher_coverage_weight,
         args.listwise_teacher_precision_weight,
+        args.listwise_teacher_off_mask_weight,
+        args.listwise_teacher_visible_weight,
+        args.listwise_teacher_jump_weight,
+        args.listwise_teacher_trim_weight,
         args.listwise_teacher_flat_min_coverage,
         args.listwise_teacher_line_min_coverage,
         args.listwise_teacher_min_precision,
+        args.listwise_teacher_jump_scale,
+        args.listwise_teacher_trim_scale,
     )
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
@@ -899,9 +969,15 @@ def main() -> int:
         "listwise_learning_rate": args.listwise_learning_rate,
         "listwise_teacher_coverage_weight": args.listwise_teacher_coverage_weight,
         "listwise_teacher_precision_weight": args.listwise_teacher_precision_weight,
+        "listwise_teacher_off_mask_weight": args.listwise_teacher_off_mask_weight,
+        "listwise_teacher_visible_weight": args.listwise_teacher_visible_weight,
+        "listwise_teacher_jump_weight": args.listwise_teacher_jump_weight,
+        "listwise_teacher_trim_weight": args.listwise_teacher_trim_weight,
         "listwise_teacher_flat_min_coverage": args.listwise_teacher_flat_min_coverage,
         "listwise_teacher_line_min_coverage": args.listwise_teacher_line_min_coverage,
         "listwise_teacher_min_precision": args.listwise_teacher_min_precision,
+        "listwise_teacher_jump_scale": args.listwise_teacher_jump_scale,
+        "listwise_teacher_trim_scale": args.listwise_teacher_trim_scale,
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,

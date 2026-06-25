@@ -194,12 +194,31 @@ Incoming review result:
 
 Decision: M2.42 remains the default current selector. M2.43 is a reporting and optional public-balanced configuration step: it improves public off-mask and precision at the cost of slightly higher loss, lower coverage, and more trims. See `docs/m2_43_pareto_safeadt_selector.md`.
 
+
+## M2.44 Pareto-Teacher Learned Selector
+
+M2.44 feeds the M2.43 Pareto insight back into the learned listwise selector. The listwise teacher now supports coverage, precision, off-mask, visible-connector, jump, and trim penalties.
+
+| Selector | Samples | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M2.42 calibrated default | 33 | 0.049160 | 5.485 | 0.424 | 0.0500 | 0.9787 | 0.8015 | 0 |
+| M2.44 Pareto teacher learned | 33 | 0.050318 | 5.485 | 0.455 | 0.0935 | 0.9566 | 0.8168 | 0 |
+
+Incoming review:
+
+| Selector | Samples | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M2.42 incoming | 4 | 0.074710 | 8.250 | 1.000 | 0.0000 | 0.9965 | 0.7535 | 0 |
+| M2.44 incoming applied | 4 | 0.078290 | 8.500 | 1.250 | 0.0000 | 0.9955 | 0.7811 | 0 |
+
+M2.44 proves that multi-objective listwise supervision can move the learned selector toward higher precision, but it does not replace M2.42 because unified loss, jump/trim, and coverage are worse. See `docs/m2_44_pareto_teacher_selector.md`.
+
 ## Current Decision
 
 For reporting and GitHub documentation:
 
 1. Use M2.1 as the historical baseline, not the final promoted system.
-2. Use M2.42 as the current recommended selector config; keep M2.43 as the Pareto audit / optional public-balanced setting, M2.34 as the precision-safer baseline, and M2.41 as the first safe_dt candidate proof.
+2. Use M2.42 as the current recommended selector config; keep M2.43 as the Pareto audit / optional public-balanced setting, M2.44 as a learned precision-safe research branch, M2.34 as the precision-safer baseline, and M2.41 as the first safe_dt candidate proof.
 3. Record M2.39/M2.40 as learned-selector experiments that expose a loss versus
    coverage tradeoff.
 4. Treat the 7-sample geometry-prior experiment as a negative result showing
