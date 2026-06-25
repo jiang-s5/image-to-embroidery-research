@@ -1,0 +1,115 @@
+{
+  "model_id": "m2_53_cross_eval_robust_policy",
+  "date": "2026-06-25",
+  "status": "cross_eval_robust_policy_selection",
+  "description": "Robust selection layer that aligns identical M2.51 benefit-gate configurations across incoming review and public ext33 sanity sweeps, then ranks configurations by mean score, worst-case score, and cross-eval stability.",
+  "base_model": "m2_51_sweep_tuned_benefit_gate",
+  "previous_analysis": "m2_52_pareto_frontier_analysis",
+  "analysis_tool": "tools/select_m2_robust_policy.py",
+  "decision": "Keep the low_jump M2.51 policy as the current default because it is also the M2.53 cross-eval robust optimum. Use coverage_floor=0.95 only for the balanced conservative profile.",
+  "constraints": {
+    "min_mean_coverage": 0.9,
+    "max_hard_fail": 0
+  },
+  "score_formula": {
+    "dataset_score": "0.40*objective + 0.18*loss + 0.16*jump + 0.06*trim + 0.08*off_mask + 0.08*coverage_reward + 0.04*precision_reward, normalized within each sweep/profile",
+    "robust_score": "0.55*mean_dataset_score + 0.30*worst_dataset_score + 0.15*dataset_score_range"
+  },
+  "current_default_apply_args": {
+    "exclude_hard_fail": true,
+    "profile_semantic_rerank": true,
+    "profile": "low_jump",
+    "profile_rerank_strength": 0.9,
+    "profile_coverage_soft_penalty": true,
+    "profile_coverage_penalty_weight": 0.2,
+    "profile_min_coverage_by_name": {
+      "balanced": 0.85,
+      "low_jump": 0.85,
+      "strict_low_jump": 0.85
+    },
+    "profile_coverage_benefit_gate": true,
+    "profile_benefit_min_coverage": 0.6,
+    "profile_benefit_min_jump_gain": 2.0,
+    "profile_benefit_min_precision": 0.78,
+    "profile_benefit_max_loss_slack": 0.0
+  },
+  "conservative_balanced_apply_args": {
+    "exclude_hard_fail": true,
+    "profile_semantic_rerank": true,
+    "profile": "balanced",
+    "profile_rerank_strength": 0.9,
+    "profile_coverage_soft_penalty": true,
+    "profile_coverage_penalty_weight": 0.2,
+    "profile_min_coverage_by_name": {
+      "balanced": 0.95,
+      "low_jump": 0.85,
+      "strict_low_jump": 0.85
+    },
+    "profile_coverage_benefit_gate": true,
+    "profile_benefit_min_coverage": 0.6,
+    "profile_benefit_min_jump_gain": 2.0,
+    "profile_benefit_min_precision": 0.78,
+    "profile_benefit_max_loss_slack": 0.0
+  },
+  "sweeps": {
+    "incoming": "results/incoming_review_eval_v1_m2_51_benefitgate_sweep/benefit_gate_sweep_rows.csv",
+    "public_ext33": "results/public_benchmark_v1_ext33_m2_51_benefitgate_sweep_sanity/benefit_gate_sweep_rows.csv"
+  },
+  "results": {
+    "balanced_best_robust": {
+      "profile": "balanced",
+      "strength": 0.9,
+      "coverage_floor": 0.95,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "robust_score": 0.11387402,
+      "mean_unified_loss": 0.0629735,
+      "mean_jump_count": 6.4280305,
+      "min_coverage_ratio": 0.9207,
+      "incoming_loss": 0.073831,
+      "incoming_jump": 7.25,
+      "public_ext33_loss": 0.052116,
+      "public_ext33_jump": 5.606061
+    },
+    "low_jump_best_robust": {
+      "profile": "low_jump",
+      "strength": 0.9,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "robust_score": 0.14825314,
+      "mean_unified_loss": 0.06132,
+      "mean_jump_count": 6.0795455,
+      "min_coverage_ratio": 0.9207,
+      "incoming_loss": 0.073831,
+      "incoming_jump": 7.25,
+      "public_ext33_loss": 0.048809,
+      "public_ext33_jump": 4.909091
+    },
+    "low_jump_lowest_jump_alternative": {
+      "profile": "low_jump",
+      "strength": 0.9,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.02,
+      "robust_score": 0.2113245,
+      "mean_unified_loss": 0.061485,
+      "mean_jump_count": 6.034091,
+      "min_coverage_ratio": 0.9207,
+      "note": "Slightly lower average jump, but worse robust score and less stable across evaluation sets."
+    }
+  },
+  "artifacts": {
+    "documentation": "docs/m2_53_cross_eval_robust_policy.md",
+    "results": "results/m2_53_cross_eval_robust_policy/"
+  }
+}
