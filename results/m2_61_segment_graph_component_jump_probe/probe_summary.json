@@ -1,0 +1,32 @@
+{
+  "variants": 7,
+  "best_segment_graph_by_mean_loss": {
+    "variant": "sg_euler_d0_l000_c20_i095_r32_f26_min12",
+    "source_dir": "results\\public_benchmark_v1_ext33_m2_61_segment_graph_sg_euler_d0_l000_c20_i095_r32_f26_min12",
+    "samples": 33,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.059866,
+    "mean_jump_count": 6.121212,
+    "mean_trim_count": 0.818182,
+    "mean_off_mask_stitch_length_mm": 0.184791,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.922186,
+    "mean_stitch_precision_ratio": 0.839258,
+    "qd007_loss": "0.12174937",
+    "qd007_jump": "14",
+    "qd007_coverage": "0.987986",
+    "qd007_precision": "0.66381",
+    "qd004_jump": "8",
+    "qd006_jump": "9"
+  },
+  "promoted_segment_graph_candidate": null,
+  "negative_result": "Segment-graph/euler candidates did not improve M2.60; qd_007 stayed equal or worsened.",
+  "component_aware_audit": {
+    "baseline_m2_60_mean_risk": 0.12462978,
+    "component_aware_m2_60_mean_risk": 0.09893281,
+    "baseline_m2_60_worst_risk": 0.38129687,
+    "component_aware_m2_60_worst_risk": 0.25929687,
+    "high_jump_flags_removed": true,
+    "remaining_qd007_flags": "high_loss|low_precision"
+  }
+}

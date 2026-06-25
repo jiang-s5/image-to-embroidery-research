@@ -1,0 +1,9 @@
+﻿selection,source_name,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+m2_60,OpenMoji,10,2,0.2,0.08737789,0.14,omj_001,high_trim,0.05646639,5.3,1.5,0.15705,0.0,0.9936241,0.8880927
+m2_60,Openclipart,10,2,0.2,0.07830027,0.22188679,ocp_001,off_mask,0.04136302,3.7,0.1,0.45276,0.0,0.9638887,0.8829867
+m2_60,QuickDraw,8,8,1.0,0.16094319,0.25929687,qd_007,high_loss|low_precision,0.06139719,6.875,0.5,0.058925,0.0,0.97516813,0.606887
+m2_60,Rendered text,5,3,0.6,0.06409113,0.12215769,txt_005,low_precision,0.02294878,2.8,0.0,0.0,0.0,0.9986696,0.7246506
+m2_61_probe,OpenMoji,10,2,0.2,0.08737789,0.14,omj_001,high_trim,0.05646639,5.3,1.5,0.15705,0.0,0.9936241,0.8880927
+m2_61_probe,Openclipart,10,2,0.2,0.07830027,0.22188679,ocp_001,off_mask,0.04136302,3.7,0.1,0.45276,0.0,0.9638887,0.8829867
+m2_61_probe,QuickDraw,8,8,1.0,0.16094319,0.25929687,qd_007,high_loss|low_precision,0.06139719,6.875,0.5,0.058925,0.0,0.97516813,0.606887
+m2_61_probe,Rendered text,5,3,0.6,0.06409113,0.12215769,txt_005,low_precision,0.02294878,2.8,0.0,0.0,0.0,0.9986696,0.7246506

@@ -1,0 +1,5 @@
+﻿source_name,samples,changed_samples,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+OpenMoji,10,0,0,0.056466,5.3,1.5,0.15705,0.0,0.993624,0.888093
+Openclipart,10,0,0,0.041363,3.7,0.1,0.45276,0.0,0.963889,0.882987
+QuickDraw,8,1,0,0.061397,6.875,0.5,0.058925,0.0,0.975168,0.606887
+Rendered text,5,0,0,0.022949,2.8,0.0,0.0,0.0,0.99867,0.724651

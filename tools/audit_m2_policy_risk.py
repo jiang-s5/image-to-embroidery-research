@@ -9,6 +9,10 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
+import cv2
+import numpy as np
+from PIL import Image
+
 
 METRICS = [
     "unified_loss",
@@ -59,6 +63,23 @@ def write_json(data: Any, path: Path) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def mask_component_count(mask_path: Path, min_pixels: int) -> int:
+    image = Image.open(mask_path).convert("L")
+    mask = (np.asarray(image, dtype=np.uint8) > 0).astype(np.uint8)
+    count, _labels, stats, _centroids = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    return sum(1 for label in range(1, count) if int(stats[label, cv2.CC_STAT_AREA]) >= min_pixels)
+
+
+def component_counts(dataset_dir: Path, min_pixels: int) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    manifest = read_csv(dataset_dir / "manifest.csv")
+    for row in manifest:
+        sample_id = row["sample_id"]
+        mask_path = dataset_dir / row["mask_path"]
+        counts[sample_id] = mask_component_count(mask_path, min_pixels)
+    return counts
+
+
 def parse_name_path(items: list[list[str]]) -> list[tuple[str, Path]]:
     parsed: list[tuple[str, Path]] = []
     for name, path in items:
@@ -69,6 +90,12 @@ def parse_name_path(items: list[list[str]]) -> list[tuple[str, Path]]:
     return parsed
 
 
+def jump_value_for_risk(row: dict[str, Any], args: argparse.Namespace) -> float:
+    if args.component_aware_jump:
+        return safe_float(row.get("jump_excess_count"))
+    return safe_float(row.get("jump_count"))
+
+
 def risk_flags(row: dict[str, Any], args: argparse.Namespace) -> list[str]:
     flags: list[str] = []
     quality = str(row.get("quality_level", "")).strip().lower()
@@ -76,8 +103,8 @@ def risk_flags(row: dict[str, Any], args: argparse.Namespace) -> list[str]:
         flags.append(f"quality_{quality}")
     if safe_float(row.get("unified_loss")) > args.max_loss:
         flags.append("high_loss")
-    if safe_float(row.get("jump_count")) > args.max_jump:
-        flags.append("high_jump")
+    if jump_value_for_risk(row, args) > args.max_jump:
+        flags.append("high_jump_excess" if args.component_aware_jump else "high_jump")
     if safe_float(row.get("trim_count")) > args.max_trim:
         flags.append("high_trim")
     if safe_float(row.get("off_mask_stitch_length_mm")) > args.max_off_mask:
@@ -93,7 +120,7 @@ def risk_flags(row: dict[str, Any], args: argparse.Namespace) -> list[str]:
 
 def risk_score(row: dict[str, Any], flags: list[str], args: argparse.Namespace) -> float:
     loss = safe_float(row.get("unified_loss"))
-    jump = safe_float(row.get("jump_count"))
+    jump = jump_value_for_risk(row, args)
     trim = safe_float(row.get("trim_count"))
     off_mask = safe_float(row.get("off_mask_stitch_length_mm"))
     visible = safe_float(row.get("visible_connector_count"))
@@ -114,11 +141,23 @@ def risk_score(row: dict[str, Any], flags: list[str], args: argparse.Namespace) 
     )
 
 
-def annotate_rows(selection_name: str, rows: list[dict[str, str]], args: argparse.Namespace) -> list[dict[str, Any]]:
+def annotate_rows(
+    selection_name: str,
+    rows: list[dict[str, str]],
+    args: argparse.Namespace,
+    sample_component_counts: dict[str, int],
+) -> list[dict[str, Any]]:
     annotated: list[dict[str, Any]] = []
     for row in rows:
         enriched: dict[str, Any] = {"selection": selection_name}
         enriched.update(row)
+        if args.component_aware_jump:
+            components = sample_component_counts.get(str(row.get("sample_id", "")), 1)
+            allowance = args.component_jump_bias + args.component_jump_multiplier * max(1, components)
+            jump_count = safe_float(enriched.get("jump_count"))
+            enriched["mask_component_count"] = components
+            enriched["component_jump_allowance"] = round(allowance, 6)
+            enriched["jump_excess_count"] = round(max(0.0, jump_count - allowance), 6)
         flags = risk_flags(enriched, args)
         enriched["risk_flags"] = "|".join(flags)
         enriched["risk_flag_count"] = len(flags)
@@ -179,17 +218,25 @@ def main() -> int:
     parser.add_argument("--max-visible", type=float, default=0.0)
     parser.add_argument("--min-coverage", type=float, default=0.90)
     parser.add_argument("--min-precision", type=float, default=0.75)
+    parser.add_argument("--dataset-dir", default="")
+    parser.add_argument("--component-aware-jump", action="store_true")
+    parser.add_argument("--component-min-pixels", type=int, default=12)
+    parser.add_argument("--component-jump-multiplier", type=float, default=2.0)
+    parser.add_argument("--component-jump-bias", type=float, default=2.0)
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     selections = parse_name_path(args.selection)
+    if args.component_aware_jump and not args.dataset_dir:
+        raise ValueError("--component-aware-jump requires --dataset-dir")
+    sample_component_counts = component_counts(Path(args.dataset_dir), args.component_min_pixels) if args.component_aware_jump else {}
 
     all_rows: list[dict[str, Any]] = []
     source_files: dict[str, str] = {}
     for name, path in selections:
         source_files[name] = str(path)
-        all_rows.extend(annotate_rows(name, read_csv(path), args))
+        all_rows.extend(annotate_rows(name, read_csv(path), args, sample_component_counts))
 
     review_rows = sorted(
         [row for row in all_rows if row["needs_review"]],
@@ -216,6 +263,10 @@ def main() -> int:
                 "max_visible": args.max_visible,
                 "min_coverage": args.min_coverage,
                 "min_precision": args.min_precision,
+                "component_aware_jump": bool(args.component_aware_jump),
+                "component_min_pixels": args.component_min_pixels,
+                "component_jump_multiplier": args.component_jump_multiplier,
+                "component_jump_bias": args.component_jump_bias,
             },
             "samples": len(all_rows),
             "review_samples": len(review_rows),
@@ -231,4 +282,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

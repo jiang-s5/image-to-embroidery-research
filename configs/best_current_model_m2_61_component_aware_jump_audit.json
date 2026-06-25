@@ -1,0 +1,72 @@
+{
+  "model_id": "m2_61_component_aware_jump_audit",
+  "date": "2026-06-25",
+  "status": "evaluation_upgrade_segment_graph_negative_ablation",
+  "description": "M2.61 tested segment-graph and euler routing candidates for line-domain samples. The candidates did not improve M2.60, so they are not promoted. The useful outcome is a component-aware jump audit that discounts structurally necessary jumps between disconnected visual components.",
+  "base_model": "m2_60_maskpath_rescue",
+  "current_research_default": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard + m2_58_coverage_aware_relative_rescue_gate + m2_59_anchored_quality_rescue + m2_60_maskpath_rescue",
+  "optional_evaluation_default": "m2_61_component_aware_jump_audit",
+  "tools": [
+    "tools/run_line_domain_segment_graph_merge_candidate.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "segment_graph_probe": {
+    "promoted": false,
+    "variants": 7,
+    "summary_dir": "results/m2_61_segment_graph_component_jump_probe",
+    "best_standalone_variant": "sg_euler_d0_l000_c20_i095_r32_f26_min12",
+    "best_standalone_metrics": {
+      "mean_unified_loss": 0.059866,
+      "mean_jump_count": 6.121212,
+      "mean_coverage_ratio": 0.922186,
+      "mean_stitch_precision_ratio": 0.839258,
+      "hard_fail": 0
+    },
+    "reason_not_promoted": "Best segment-graph/euler variant is worse than M2.60 on mean loss and mean jump. Higher lookahead worsened qd_007 from 14 to 18 jumps."
+  },
+  "component_aware_audit": {
+    "enabled_by": [
+      "--dataset-dir datasets/public_benchmark_v1_ext33",
+      "--component-aware-jump"
+    ],
+    "component_min_pixels": 12,
+    "component_jump_multiplier": 2.0,
+    "component_jump_bias": 2.0,
+    "formula": "jump_excess_count = max(0, jump_count - (component_jump_bias + component_jump_multiplier * mask_component_count))",
+    "result_dir": "results/public_benchmark_v1_ext33_m2_61_component_aware_jump_audit",
+    "m2_60_original_audit": {
+      "mean_risk_score": 0.12462978,
+      "worst_risk_score": 0.38129687,
+      "worst_sample_id": "qd_007",
+      "worst_flags": "high_loss|high_jump|low_precision"
+    },
+    "m2_60_component_aware_audit": {
+      "mean_risk_score": 0.09893281,
+      "worst_risk_score": 0.25929687,
+      "worst_sample_id": "qd_007",
+      "worst_flags": "high_loss|low_precision"
+    },
+    "qd_007": {
+      "mask_component_count": 5,
+      "raw_jump_count": 14,
+      "component_jump_allowance": 12.0,
+      "jump_excess_count": 2.0,
+      "remaining_issue": "low_precision"
+    }
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_62_stroke_precision_rescue",
+    "reason": "After component-aware jump normalization, the main line-domain bottleneck is precision and repeated/retrace-heavy strokes rather than raw jump count.",
+    "components": [
+      "duplicate/retrace-heavy skeleton walk detection",
+      "euler traversal only for eulerian components",
+      "stitch-pixel precision term in line-domain selector",
+      "per-component coverage and precision diagnostics"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_61_segment_graph_component_jump_audit.md",
+    "probe": "results/m2_61_segment_graph_component_jump_probe/",
+    "component_aware_audit": "results/public_benchmark_v1_ext33_m2_61_component_aware_jump_audit/"
+  }
+}
