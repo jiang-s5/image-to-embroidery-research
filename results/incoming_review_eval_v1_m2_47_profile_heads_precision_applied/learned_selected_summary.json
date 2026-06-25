@@ -1,0 +1,18 @@
+{
+  "samples": 4,
+  "hard_fail": 0,
+  "mean_predicted_score": -10.118954,
+  "mean_oracle_score": 0.094059,
+  "mean_unified_loss": 0.093669,
+  "mean_jump_count": 10.0,
+  "mean_trim_count": 1.75,
+  "mean_off_mask_stitch_length_mm": 0.0,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.950943,
+  "mean_stitch_precision_ratio": 0.840096,
+  "chosen_counts": {
+    "mask_fill_edgewalk_nearestrow_adapt_t3_m6_rows16_p40": 3,
+    "mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40": 1
+  },
+  "task_profile": "precision"
+}

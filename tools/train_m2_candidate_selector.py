@@ -56,6 +56,30 @@ TASK_PROFILE_PRESETS: dict[str, dict[str, float]] = {
         "jump": 0.03,
         "trim": 0.02,
     },
+    "strict_precision": {
+        "coverage": 0.04,
+        "precision": 0.80,
+        "off_mask": 0.04,
+        "visible": 0.010,
+        "jump": 0.006,
+        "trim": 0.004,
+    },
+    "strict_coverage": {
+        "coverage": 1.00,
+        "precision": 0.03,
+        "off_mask": 0.03,
+        "visible": 0.006,
+        "jump": 0.004,
+        "trim": 0.004,
+    },
+    "strict_low_jump": {
+        "coverage": 0.05,
+        "precision": 0.03,
+        "off_mask": 0.03,
+        "visible": 0.006,
+        "jump": 0.25,
+        "trim": 0.08,
+    },
 }
 
 
@@ -92,23 +116,29 @@ def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
         writer.writerows(rows)
 
 
-def parse_task_profiles(text: str) -> list[str]:
+def parse_task_profiles(text: str, presets: dict[str, dict[str, float]] | None = None) -> list[str]:
+    active_presets = presets or TASK_PROFILE_PRESETS
     profiles = [item.strip() for item in text.split(",") if item.strip()]
-    unknown = [item for item in profiles if item not in TASK_PROFILE_PRESETS]
+    unknown = [item for item in profiles if item not in active_presets]
     if unknown:
         raise ValueError(f"Unknown task profile(s): {', '.join(unknown)}")
     return profiles
 
 
-def with_task_profile(row: dict[str, Any], profile_name: str) -> dict[str, Any]:
-    if profile_name not in TASK_PROFILE_PRESETS:
+def with_task_profile(
+    row: dict[str, Any],
+    profile_name: str,
+    presets: dict[str, dict[str, float]] | None = None,
+) -> dict[str, Any]:
+    active_presets = presets or TASK_PROFILE_PRESETS
+    if profile_name not in active_presets:
         raise ValueError(f"Unknown task profile: {profile_name}")
-    profile = TASK_PROFILE_PRESETS[profile_name]
+    profile = active_presets[profile_name]
     out = dict(row)
     features = dict(row.get("features", {})) if isinstance(row.get("features"), dict) else {}
     out["task_profile"] = profile_name
     out["sample_task_id"] = f"{row.get('sample_id', '')}::{profile_name}"
-    for name in TASK_PROFILE_PRESETS:
+    for name in active_presets:
         features[f"task_is_{name}"] = 1.0 if name == profile_name else 0.0
     for key, value in profile.items():
         features[f"task_{key}_weight"] = value
@@ -132,14 +162,22 @@ def with_task_profile(row: dict[str, Any], profile_name: str) -> dict[str, Any]:
     return out
 
 
-def apply_task_profile(rows: list[dict[str, Any]], profile_name: str) -> list[dict[str, Any]]:
-    return [with_task_profile(row, profile_name) for row in rows]
+def apply_task_profile(
+    rows: list[dict[str, Any]],
+    profile_name: str,
+    presets: dict[str, dict[str, float]] | None = None,
+) -> list[dict[str, Any]]:
+    return [with_task_profile(row, profile_name, presets) for row in rows]
 
 
-def expand_task_profiles(rows: list[dict[str, Any]], profiles: list[str]) -> list[dict[str, Any]]:
+def expand_task_profiles(
+    rows: list[dict[str, Any]],
+    profiles: list[str],
+    presets: dict[str, dict[str, float]] | None = None,
+) -> list[dict[str, Any]]:
     if not profiles:
         return rows
-    return [with_task_profile(row, profile) for row in rows for profile in profiles]
+    return [with_task_profile(row, profile, presets) for row in rows for profile in profiles]
 
 
 def listwise_group_key(row: dict[str, Any]) -> str:
@@ -849,6 +887,7 @@ def leave_one_out(
     mask_fill_min_coverage: float = 0.80,
     task_profiles: list[str] | None = None,
     eval_task_profile: str = "",
+    profile_specific_models: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     groups = groups_by_sample(rows)
     chosen: list[dict[str, Any]] = []
@@ -856,7 +895,10 @@ def leave_one_out(
     active_eval_profile = eval_task_profile or (active_profiles[0] if active_profiles else "")
     for sample_id in sorted(groups):
         train_base = [row for row in rows if row["sample_id"] != sample_id]
-        train = expand_task_profiles(train_base, active_profiles)
+        if profile_specific_models and active_eval_profile:
+            train = apply_task_profile(train_base, active_eval_profile)
+        else:
+            train = expand_task_profiles(train_base, active_profiles)
         held = apply_task_profile(groups[sample_id], active_eval_profile) if active_eval_profile else groups[sample_id]
         model = fit_selector_model(
             train,
@@ -981,8 +1023,9 @@ def main() -> int:
     parser.add_argument("--listwise-teacher-min-precision", type=float, default=0.72)
     parser.add_argument("--listwise-teacher-jump-scale", type=float, default=20.0)
     parser.add_argument("--listwise-teacher-trim-scale", type=float, default=8.0)
-    parser.add_argument("--task-profiles", default="", help="Comma-separated task-conditioned profiles: low_loss,balanced,precision,coverage,low_jump.")
+    parser.add_argument("--task-profiles", default="", help="Comma-separated task-conditioned profiles, for example: low_loss,balanced,precision,coverage,low_jump,strict_precision,strict_coverage,strict_low_jump.")
     parser.add_argument("--eval-task-profile", default="", help="Task profile used for leave-one-out selection when --task-profiles is enabled.")
+    parser.add_argument("--profile-specific-models", action="store_true", help="Fit one selector head per task profile and store them under profile_models.")
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -1055,6 +1098,7 @@ def main() -> int:
         args.mask_fill_min_coverage,
         task_profiles,
         eval_task_profile,
+        args.profile_specific_models,
     )
     write_csv([{key: value for key, value in row.items() if key != "features"} for row in loo_rows], output_dir / "loo_selected_rows.csv")
     model = fit_selector_model(
@@ -1082,6 +1126,34 @@ def main() -> int:
         model["task_profiles"] = task_profiles
         model["default_task_profile"] = eval_task_profile or task_profiles[0]
         model["task_profile_presets"] = {name: TASK_PROFILE_PRESETS[name] for name in task_profiles}
+        model["profile_specific_models"] = bool(args.profile_specific_models)
+        if args.profile_specific_models:
+            profile_models: dict[str, Any] = {}
+            for profile in task_profiles:
+                profile_rows = apply_task_profile(rows, profile)
+                profile_model = fit_selector_model(
+                    profile_rows,
+                    names,
+                    args.alpha,
+                    args.target,
+                    args.pairwise_min_score_gap,
+                    args.listwise_temperature,
+                    args.listwise_epochs,
+                    args.listwise_learning_rate,
+                    args.listwise_teacher_coverage_weight,
+                    args.listwise_teacher_precision_weight,
+                    args.listwise_teacher_off_mask_weight,
+                    args.listwise_teacher_visible_weight,
+                    args.listwise_teacher_jump_weight,
+                    args.listwise_teacher_trim_weight,
+                    args.listwise_teacher_flat_min_coverage,
+                    args.listwise_teacher_line_min_coverage,
+                    args.listwise_teacher_min_precision,
+                    args.listwise_teacher_jump_scale,
+                    args.listwise_teacher_trim_scale,
+                )
+                profile_models[profile] = profile_model
+            model["profile_models"] = profile_models
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
         "samples": len(groups_by_sample(rows)),
@@ -1107,6 +1179,7 @@ def main() -> int:
         "listwise_teacher_trim_scale": args.listwise_teacher_trim_scale,
         "task_profiles": task_profiles,
         "eval_task_profile": eval_task_profile or (task_profiles[0] if task_profiles else ""),
+        "profile_specific_models": bool(args.profile_specific_models),
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,

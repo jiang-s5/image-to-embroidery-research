@@ -1,0 +1,17 @@
+{
+  "samples": 4,
+  "hard_fail": 0,
+  "mean_predicted_score": -11.243073,
+  "mean_oracle_score": 0.09453,
+  "mean_unified_loss": 0.093669,
+  "mean_jump_count": 10.0,
+  "mean_trim_count": 1.75,
+  "mean_off_mask_stitch_length_mm": 0.0,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.951701,
+  "mean_stitch_precision_ratio": 0.836955,
+  "chosen_counts": {
+    "mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40": 4
+  },
+  "task_profile": "balanced"
+}

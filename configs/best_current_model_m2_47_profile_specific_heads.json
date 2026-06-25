@@ -1,0 +1,153 @@
+{
+  "model_id": "m2_47_profile_specific_heads",
+  "date": "2026-06-25",
+  "status": "profile_conditioned_research_branch",
+  "description": "Profile-specific learned selector heads for task-conditioned embroidery candidate selection. This extends M2.45/M2.46 by storing separate selector heads under profile_models.",
+  "decision": "Do not replace M2.42 as the default low-loss selector. M2.47 is useful because it prevents profile collapse and enables profile-conditioned ablations, but its profile semantics still need calibration.",
+  "train_dataset": "datasets/public_benchmark_v1_ext33",
+  "external_dataset": "datasets/incoming_review_eval_v1",
+  "candidate_pool": [
+    "mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_rows16_p40",
+    "mask_fill_edgewalk_rows16_p40",
+    "auto_evalrepair_r10_c20",
+    "skeleton_c30_m20",
+    "skeleton_c30_m4",
+    "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_adapt_t3_m6_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40",
+    "skeleton_c30_m12",
+    "skeleton_c30_m8",
+    "auto_hybrid_skeleton_c12"
+  ],
+  "task_profiles": [
+    "low_loss",
+    "balanced",
+    "precision",
+    "coverage",
+    "low_jump",
+    "strict_precision",
+    "strict_coverage",
+    "strict_low_jump"
+  ],
+  "training_args": {
+    "target": "listwise_softmax",
+    "alpha": 0.001,
+    "listwise_temperature": 0.02,
+    "listwise_epochs": 180,
+    "listwise_learning_rate": 0.05,
+    "exclude_hard_fail": true,
+    "task_profiles": "low_loss,balanced,precision,coverage,low_jump,strict_precision,strict_coverage,strict_low_jump",
+    "eval_task_profile": "balanced",
+    "profile_specific_models": true,
+    "listwise_teacher_flat_min_coverage": 0.84,
+    "listwise_teacher_line_min_coverage": 0.58,
+    "listwise_teacher_min_precision": 0.78
+  },
+  "public_ext33_loo_balanced": {
+    "samples": 33,
+    "oracle_match": 12,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.060065,
+    "mean_jump_count": 6.666667,
+    "mean_trim_count": 0.727273,
+    "mean_off_mask_stitch_length_mm": 0.015015,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.981206,
+    "mean_stitch_precision_ratio": 0.830467
+  },
+  "incoming_review_applied": {
+    "low_loss": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.085912,
+      "mean_jump_count": 9.25,
+      "mean_trim_count": 1.5,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.986371,
+      "mean_stitch_precision_ratio": 0.809823
+    },
+    "balanced": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.093669,
+      "mean_jump_count": 10.0,
+      "mean_trim_count": 1.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.951701,
+      "mean_stitch_precision_ratio": 0.836955
+    },
+    "precision": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.093669,
+      "mean_jump_count": 10.0,
+      "mean_trim_count": 1.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.950943,
+      "mean_stitch_precision_ratio": 0.840096
+    },
+    "coverage": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.082284,
+      "mean_jump_count": 9.0,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.994104,
+      "mean_stitch_precision_ratio": 0.789821
+    },
+    "low_jump": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.095803,
+      "mean_jump_count": 10.25,
+      "mean_trim_count": 1.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.924272,
+      "mean_stitch_precision_ratio": 0.861063
+    },
+    "strict_precision": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07471,
+      "mean_jump_count": 8.25,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.996541,
+      "mean_stitch_precision_ratio": 0.753519
+    },
+    "strict_coverage": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07829,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.995549,
+      "mean_stitch_precision_ratio": 0.781068
+    },
+    "strict_low_jump": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.080262,
+      "mean_jump_count": 8.75,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.993585,
+      "mean_stitch_precision_ratio": 0.799709
+    }
+  },
+  "comparison": {
+    "m2_42_incoming_loss": 0.07471,
+    "m2_45_balanced_incoming_loss": 0.07829,
+    "m2_47_best_incoming_loss": 0.07471,
+    "summary": "M2.47 does not beat M2.42 on low-loss incoming review, but it fixes the profile-collapse issue observed in M2.45/M2.46 and provides a stronger basis for profile-conditioned selector research."
+  },
+  "artifacts": {
+    "public_model": "results/public_benchmark_v1_ext33_m2_47_profile_specific_heads_e180",
+    "incoming_profile_outputs": "results/incoming_review_eval_v1_m2_47_profile_heads_*_applied"
+  }
+}

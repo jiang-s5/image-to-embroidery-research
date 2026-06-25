@@ -107,16 +107,21 @@ def main() -> int:
     )
     active_task_profile = ""
     model_task_profiles = model.get("task_profiles") or []
+    model_task_profile_presets = model.get("task_profile_presets") or {}
     if model_task_profiles:
         active_task_profile = args.task_profile or str(model.get("default_task_profile") or model_task_profiles[0])
-        if active_task_profile not in TASK_PROFILE_PRESETS:
+        available_presets = model_task_profile_presets if isinstance(model_task_profile_presets, dict) and model_task_profile_presets else TASK_PROFILE_PRESETS
+        if active_task_profile not in available_presets:
             raise ValueError(f"Unknown task profile: {active_task_profile}")
         if active_task_profile not in model_task_profiles:
             raise ValueError(
                 f"Task profile {active_task_profile!r} was not present during training. "
                 f"Available profiles: {', '.join(str(item) for item in model_task_profiles)}"
             )
-        rows = apply_task_profile(rows, active_task_profile)
+        rows = apply_task_profile(rows, active_task_profile, available_presets)
+        profile_models = model.get("profile_models")
+        if isinstance(profile_models, dict) and active_task_profile in profile_models:
+            model = profile_models[active_task_profile]
     elif args.task_profile:
         raise ValueError("--task-profile can only be used with a task-conditioned selector model.")
     coverage_floor_line_sources = {item.strip() for item in args.coverage_floor_line_sources.split(",") if item.strip()}
