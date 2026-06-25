@@ -1,0 +1,67 @@
+﻿selection,source_name,category,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+m2_59_anchored_quality_rescue,OpenMoji,butterfly,1,0,0.0,0.14846574,0.14846574,omj_003,,0.08646574,9.0,2.0,0.0,0.0,1.0,0.896875
+m2_59_anchored_quality_rescue,OpenMoji,cherry_blossom,1,0,0.0,0.0426882,0.0426882,omj_006,,0.0246882,3.0,0.0,0.0,0.0,0.992683,0.916022
+m2_59_anchored_quality_rescue,OpenMoji,fish,1,1,1.0,0.14901926,0.14901926,omj_004,off_mask,0.04876926,3.0,0.0,1.075,0.0,0.997043,0.950702
+m2_59_anchored_quality_rescue,OpenMoji,heart,1,1,1.0,0.14,0.14,omj_001,high_trim,0.054,0.0,9.0,0.0,0.0,0.955519,0.917291
+m2_59_anchored_quality_rescue,OpenMoji,lady_beetle,1,0,0.0,0.09602895,0.09602895,omj_009,,0.05602895,6.0,1.0,0.0,0.0,0.994021,0.927864
+m2_59_anchored_quality_rescue,OpenMoji,paw_prints,1,0,0.0,0.11175492,0.11175492,omj_008,,0.06088992,6.0,0.0,0.4955,0.0,0.99951,0.814631
+m2_59_anchored_quality_rescue,OpenMoji,ribbon,1,0,0.0,0.13882922,0.13882922,omj_007,,0.08082922,9.0,1.0,0.0,0.0,1.0,0.891565
+m2_59_anchored_quality_rescue,OpenMoji,seedling,1,0,0.0,0.08149282,0.08149282,omj_010,,0.04749282,5.0,1.0,0.0,0.0,0.999349,0.751958
+m2_59_anchored_quality_rescue,OpenMoji,star,1,0,0.0,0.04269779,0.04269779,omj_002,,0.02469779,3.0,0.0,0.0,0.0,0.999481,0.897558
+m2_59_anchored_quality_rescue,OpenMoji,sun,1,0,0.0,0.13880196,0.13880196,omj_005,,0.08080196,9.0,1.0,0.0,0.0,0.998635,0.916461
+m2_59_anchored_quality_rescue,Openclipart,butterfly,1,0,0.0,0.02845384,0.02845384,ocp_002,,0.01645384,2.0,0.0,0.0,0.0,0.971346,0.943255
+m2_59_anchored_quality_rescue,Openclipart,butterfly_2,1,0,0.0,0.0921891,0.0921891,ocp_006,,0.0459051,3.0,0.0,0.9428,0.0,0.988768,0.92991
+m2_59_anchored_quality_rescue,Openclipart,cat,1,0,0.0,0.05713396,0.05713396,ocp_003,,0.03313396,4.0,0.0,0.0,0.0,0.995802,0.933175
+m2_59_anchored_quality_rescue,Openclipart,fish,1,0,0.0,0.08303106,0.08303106,ocp_008,,0.04416606,4.0,0.0,0.4955,0.0,1.0,0.807752
+m2_59_anchored_quality_rescue,Openclipart,flower,1,1,1.0,0.24588679,0.24588679,ocp_001,off_mask,0.09693779,6.0,0.0,2.0983,0.0,0.998209,0.752954
+m2_59_anchored_quality_rescue,Openclipart,flower_2,1,0,0.0,0.04274275,0.04274275,ocp_009,,0.02474275,3.0,0.0,0.0,0.0,0.99727,0.765745
+m2_59_anchored_quality_rescue,Openclipart,koi_fish,1,0,0.0,0.12149368,0.12149368,ocp_004,,0.06662868,6.0,1.0,0.4955,0.0,0.998581,0.870697
+m2_59_anchored_quality_rescue,Openclipart,public_domain_logo,1,0,0.0,0.05711236,0.05711236,ocp_005,,0.03311236,4.0,0.0,0.0,0.0,1.0,0.964093
+m2_59_anchored_quality_rescue,Openclipart,sitting_cat,1,0,0.0,0.0834147,0.0834147,ocp_007,,0.0445497,4.0,0.0,0.4955,0.0,1.0,0.874258
+m2_59_anchored_quality_rescue,Openclipart,thought_bubble,1,1,1.0,0.1695445,0.1695445,ocp_010,low_coverage,0.008,1.0,0.0,0.0,0.0,0.688911,0.988028
+m2_59_anchored_quality_rescue,QuickDraw,bicycle,1,1,1.0,0.10051591,0.10051591,qd_005,low_precision,0.01639641,2.0,0.0,0.0,0.0,0.989125,0.661522
+m2_59_anchored_quality_rescue,QuickDraw,bird,1,1,1.0,0.20259714,0.20259714,qd_006,low_precision,0.08105764,9.0,1.0,0.0,0.0,0.94831,0.695842
+m2_59_anchored_quality_rescue,QuickDraw,cat,1,1,1.0,0.28770565,0.28770565,qd_001,low_precision,0.09974865,10.0,1.0,0.4714,0.0,0.999605,0.51074
+m2_59_anchored_quality_rescue,QuickDraw,dog,1,1,1.0,0.14471679,0.14471679,qd_002,low_precision,0.03336654,4.0,0.0,0.0,0.0,0.997816,0.600599
+m2_59_anchored_quality_rescue,QuickDraw,fish,1,1,1.0,0.24483596,0.24483596,qd_003,low_precision,0.04986571,6.0,0.0,0.0,0.0,1.0,0.314119
+m2_59_anchored_quality_rescue,QuickDraw,flower,1,1,1.0,0.25625346,0.25625346,qd_004,low_coverage|low_precision,0.07485846,9.0,0.0,0.0,0.0,0.885724,0.668972
+m2_59_anchored_quality_rescue,QuickDraw,moon,1,1,1.0,0.38129687,0.38129687,qd_007,high_loss|high_jump|low_precision,0.12174937,14.0,1.0,0.0,0.0,0.987986,0.66381
+m2_59_anchored_quality_rescue,QuickDraw,star,1,1,1.0,0.11118266,0.11118266,qd_008,low_precision,0.03308916,4.0,0.0,0.0,0.0,0.990681,0.733626
+m2_59_anchored_quality_rescue,Rendered text,2026,1,1,1.0,0.1029027,0.1029027,txt_004,low_precision,0.0246597,3.0,0.0,0.0,0.0,1.0,0.709028
+m2_59_anchored_quality_rescue,Rendered text,AI,1,0,0.0,0.014,0.014,txt_001,,0.008,1.0,0.0,0.0,0.0,0.996709,0.836556
+m2_59_anchored_quality_rescue,Rendered text,DST,1,1,1.0,0.08445981,0.08445981,txt_002,low_precision,0.01619731,2.0,0.0,0.0,0.0,1.0,0.72495
+m2_59_anchored_quality_rescue,Rendered text,HELLO,1,1,1.0,0.14615769,0.14615769,txt_005,low_precision,0.03295144,4.0,0.0,0.0,0.0,1.0,0.593175
+m2_59_anchored_quality_rescue,Rendered text,WKU,1,0,0.0,0.05693545,0.05693545,txt_003,,0.03293545,4.0,0.0,0.0,0.0,0.996639,0.759544
+m2_60_maskpath_rescue,OpenMoji,butterfly,1,0,0.0,0.14846574,0.14846574,omj_003,,0.08646574,9.0,2.0,0.0,0.0,1.0,0.896875
+m2_60_maskpath_rescue,OpenMoji,cherry_blossom,1,0,0.0,0.0426882,0.0426882,omj_006,,0.0246882,3.0,0.0,0.0,0.0,0.992683,0.916022
+m2_60_maskpath_rescue,OpenMoji,fish,1,1,1.0,0.14901926,0.14901926,omj_004,off_mask,0.04876926,3.0,0.0,1.075,0.0,0.997043,0.950702
+m2_60_maskpath_rescue,OpenMoji,heart,1,1,1.0,0.14,0.14,omj_001,high_trim,0.054,0.0,9.0,0.0,0.0,0.955519,0.917291
+m2_60_maskpath_rescue,OpenMoji,lady_beetle,1,0,0.0,0.09602895,0.09602895,omj_009,,0.05602895,6.0,1.0,0.0,0.0,0.994021,0.927864
+m2_60_maskpath_rescue,OpenMoji,paw_prints,1,0,0.0,0.11175492,0.11175492,omj_008,,0.06088992,6.0,0.0,0.4955,0.0,0.99951,0.814631
+m2_60_maskpath_rescue,OpenMoji,ribbon,1,0,0.0,0.13882922,0.13882922,omj_007,,0.08082922,9.0,1.0,0.0,0.0,1.0,0.891565
+m2_60_maskpath_rescue,OpenMoji,seedling,1,0,0.0,0.08149282,0.08149282,omj_010,,0.04749282,5.0,1.0,0.0,0.0,0.999349,0.751958
+m2_60_maskpath_rescue,OpenMoji,star,1,0,0.0,0.04269779,0.04269779,omj_002,,0.02469779,3.0,0.0,0.0,0.0,0.999481,0.897558
+m2_60_maskpath_rescue,OpenMoji,sun,1,0,0.0,0.13880196,0.13880196,omj_005,,0.08080196,9.0,1.0,0.0,0.0,0.998635,0.916461
+m2_60_maskpath_rescue,Openclipart,butterfly,1,0,0.0,0.02845384,0.02845384,ocp_002,,0.01645384,2.0,0.0,0.0,0.0,0.971346,0.943255
+m2_60_maskpath_rescue,Openclipart,butterfly_2,1,0,0.0,0.0921891,0.0921891,ocp_006,,0.0459051,3.0,0.0,0.9428,0.0,0.988768,0.92991
+m2_60_maskpath_rescue,Openclipart,cat,1,0,0.0,0.05713396,0.05713396,ocp_003,,0.03313396,4.0,0.0,0.0,0.0,0.995802,0.933175
+m2_60_maskpath_rescue,Openclipart,fish,1,0,0.0,0.08303106,0.08303106,ocp_008,,0.04416606,4.0,0.0,0.4955,0.0,1.0,0.807752
+m2_60_maskpath_rescue,Openclipart,flower,1,1,1.0,0.24588679,0.24588679,ocp_001,off_mask,0.09693779,6.0,0.0,2.0983,0.0,0.998209,0.752954
+m2_60_maskpath_rescue,Openclipart,flower_2,1,0,0.0,0.04274275,0.04274275,ocp_009,,0.02474275,3.0,0.0,0.0,0.0,0.99727,0.765745
+m2_60_maskpath_rescue,Openclipart,koi_fish,1,0,0.0,0.12149368,0.12149368,ocp_004,,0.06662868,6.0,1.0,0.4955,0.0,0.998581,0.870697
+m2_60_maskpath_rescue,Openclipart,public_domain_logo,1,0,0.0,0.05711236,0.05711236,ocp_005,,0.03311236,4.0,0.0,0.0,0.0,1.0,0.964093
+m2_60_maskpath_rescue,Openclipart,sitting_cat,1,0,0.0,0.0834147,0.0834147,ocp_007,,0.0445497,4.0,0.0,0.4955,0.0,1.0,0.874258
+m2_60_maskpath_rescue,Openclipart,thought_bubble,1,1,1.0,0.1695445,0.1695445,ocp_010,low_coverage,0.008,1.0,0.0,0.0,0.0,0.688911,0.988028
+m2_60_maskpath_rescue,QuickDraw,bicycle,1,1,1.0,0.10051591,0.10051591,qd_005,low_precision,0.01639641,2.0,0.0,0.0,0.0,0.989125,0.661522
+m2_60_maskpath_rescue,QuickDraw,bird,1,1,1.0,0.17966649,0.17966649,qd_006,low_precision,0.06429324,7.0,1.0,0.0,0.0,0.909377,0.672507
+m2_60_maskpath_rescue,QuickDraw,cat,1,1,1.0,0.28770565,0.28770565,qd_001,low_precision,0.09974865,10.0,1.0,0.4714,0.0,0.999605,0.51074
+m2_60_maskpath_rescue,QuickDraw,dog,1,1,1.0,0.14471679,0.14471679,qd_002,low_precision,0.03336654,4.0,0.0,0.0,0.0,0.997816,0.600599
+m2_60_maskpath_rescue,QuickDraw,fish,1,1,1.0,0.24483596,0.24483596,qd_003,low_precision,0.04986571,6.0,0.0,0.0,0.0,1.0,0.314119
+m2_60_maskpath_rescue,QuickDraw,flower,1,1,1.0,0.1876252,0.1876252,qd_004,low_precision,0.07266845,8.0,1.0,0.0,0.0,0.926755,0.698173
+m2_60_maskpath_rescue,QuickDraw,moon,1,1,1.0,0.38129687,0.38129687,qd_007,high_loss|high_jump|low_precision,0.12174937,14.0,1.0,0.0,0.0,0.987986,0.66381
+m2_60_maskpath_rescue,QuickDraw,star,1,1,1.0,0.11118266,0.11118266,qd_008,low_precision,0.03308916,4.0,0.0,0.0,0.0,0.990681,0.733626
+m2_60_maskpath_rescue,Rendered text,2026,1,1,1.0,0.1029027,0.1029027,txt_004,low_precision,0.0246597,3.0,0.0,0.0,0.0,1.0,0.709028
+m2_60_maskpath_rescue,Rendered text,AI,1,0,0.0,0.014,0.014,txt_001,,0.008,1.0,0.0,0.0,0.0,0.996709,0.836556
+m2_60_maskpath_rescue,Rendered text,DST,1,1,1.0,0.08445981,0.08445981,txt_002,low_precision,0.01619731,2.0,0.0,0.0,0.0,1.0,0.72495
+m2_60_maskpath_rescue,Rendered text,HELLO,1,1,1.0,0.14615769,0.14615769,txt_005,low_precision,0.03295144,4.0,0.0,0.0,0.0,1.0,0.593175
+m2_60_maskpath_rescue,Rendered text,WKU,1,0,0.0,0.05693545,0.05693545,txt_003,,0.03293545,4.0,0.0,0.0,0.0,0.996639,0.759544

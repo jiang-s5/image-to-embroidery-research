@@ -1,0 +1,34 @@
+﻿sample_id,source_name,category,baseline_candidate,selected_candidate,changed,delta_unified_loss,delta_jump_count,delta_trim_count,delta_off_mask_stitch_length_mm,delta_visible_connector_count,delta_coverage_ratio,delta_stitch_precision_ratio
+ocp_001,Openclipart,flower,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_002,Openclipart,butterfly,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_003,Openclipart,cat,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_004,Openclipart,koi_fish,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_005,Openclipart,public_domain_logo,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_006,Openclipart,butterfly_2,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_007,Openclipart,sitting_cat,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_008,Openclipart,fish,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_009,Openclipart,flower_2,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ocp_010,Openclipart,thought_bubble,auto_evalrepair_r10_c20,auto_evalrepair_r10_c20,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_001,OpenMoji,heart,auto_hybrid_skeleton_c12,auto_hybrid_skeleton_c12,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_002,OpenMoji,star,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_003,OpenMoji,butterfly,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_004,OpenMoji,fish,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_005,OpenMoji,sun,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_006,OpenMoji,cherry_blossom,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_007,OpenMoji,ribbon,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_008,OpenMoji,paw_prints,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_009,OpenMoji,lady_beetle,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+omj_010,OpenMoji,seedling,topology_open_min100,topology_open_min100,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+qd_001,QuickDraw,cat,mask_fill_edgewalk_nearestrow_rows16_p40,mask_fill_edgewalk_nearestrow_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+qd_002,QuickDraw,dog,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,mask_fill_edgewalk_nearestrow_inset1_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+qd_003,QuickDraw,fish,mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40,mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+qd_004,QuickDraw,flower,skeleton_c30_m20,maskpath_c20_i095_r32,True,-0.00219001,-1.0,1.0,0.0,0.0,0.041031,0.029201
+qd_005,QuickDraw,bicycle,skeleton_c30_m4,skeleton_c30_m4,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+qd_006,QuickDraw,bird,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,maskpath_c20_i095_r32,True,-0.0167644,-2.0,0.0,0.0,0.0,-0.038933,-0.023335
+qd_007,QuickDraw,moon,grouped_topology_c20_i095,grouped_topology_c20_i095,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+qd_008,QuickDraw,star,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+txt_001,Rendered text,AI,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+txt_002,Rendered text,DST,mask_fill_edgewalk_nearestrow_rows16_p40,mask_fill_edgewalk_nearestrow_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+txt_003,Rendered text,WKU,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+txt_004,Rendered text,2026,mask_fill_edgewalk_nearestrow_rows16_p40,mask_fill_edgewalk_nearestrow_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+txt_005,Rendered text,HELLO,mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40,mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0

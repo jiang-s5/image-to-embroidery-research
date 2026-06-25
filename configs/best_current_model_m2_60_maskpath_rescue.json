@@ -1,0 +1,123 @@
+{
+  "model_id": "m2_60_maskpath_rescue",
+  "date": "2026-06-25",
+  "status": "positive_maskpath_line_domain_update",
+  "description": "Adds a mask-internal path routing candidate for line-domain skeleton fragments. The anchored selector accepts safe mask-path candidates for qd_004 and qd_006, reducing mean loss and jump without increasing off-mask or visible connector risk.",
+  "base_model": "m2_59_anchored_quality_rescue",
+  "current_research_default": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard + m2_58_coverage_aware_relative_rescue_gate + m2_59_anchored_quality_rescue + m2_60_maskpath_rescue",
+  "tools": [
+    "tools/run_line_domain_maskpath_merger_candidate.py",
+    "tools/select_m2_line_domain_guard.py"
+  ],
+  "candidate_generator": {
+    "mode": "line_domain_maskpath_merger",
+    "accepted_candidate": "maskpath_c20_i095_r32",
+    "source_dir": "results/public_benchmark_v1_ext33_m2_60_maskpath_mp_d0_r0_c20_i095_route32_f26_min12",
+    "parameters": {
+      "connector_dilation_px": 0,
+      "route_mask_dilation_px": 0,
+      "max_connect_mm": 20.0,
+      "min_connect_inside_fraction": 0.95,
+      "short_gap_mm": 4.0,
+      "short_gap_inside_fraction": 0.8,
+      "min_component_pixels": 12,
+      "max_route_mm": 32.0,
+      "max_route_factor": 2.6
+    }
+  },
+  "selector": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_60_maskpath_rescue_selector",
+    "risk_audit_dir": "results/public_benchmark_v1_ext33_m2_60_maskpath_rescue_risk_audit",
+    "anchor_baseline_selection": "results/public_benchmark_v1_ext33_m2_59_anchored_quality_rescue_selector/line_guard_selected_rows.csv",
+    "line_relative_rescue": true,
+    "line_rescue_min_jump_gain": 1.0,
+    "line_rescue_max_loss_slack": 0.0,
+    "line_rescue_max_coverage_drop": 0.05,
+    "line_rescue_max_precision_drop": 0.03,
+    "line_rescue_max_visible_increase": 0.0,
+    "line_rescue_max_off_mask_increase": 0.0
+  },
+  "public_ext33": {
+    "dataset": "datasets/public_benchmark_v1_ext33",
+    "samples": 33,
+    "hard_fail": 0,
+    "changed_samples_vs_m2_59": 2,
+    "mean_unified_loss": 0.048007,
+    "mean_jump_count": 4.818182,
+    "mean_trim_count": 0.606061,
+    "mean_off_mask_stitch_length_mm": 0.199076,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.980904,
+    "mean_stitch_precision_ratio": 0.79361,
+    "review_samples": 15,
+    "mean_risk_score": 0.12462978,
+    "worst_risk_score": 0.38129687,
+    "worst_sample_id": "qd_007"
+  },
+  "comparison_to_m2_59": {
+    "mean_delta_unified_loss": -0.000574,
+    "mean_delta_jump_count": -0.090909,
+    "mean_delta_trim_count": 0.030303,
+    "mean_delta_off_mask_stitch_length_mm": 0.0,
+    "mean_delta_visible_connector_count": 0.0,
+    "mean_delta_coverage_ratio": 0.000064,
+    "mean_delta_stitch_precision_ratio": 0.000178,
+    "mean_risk_score": {
+      "m2_59": 0.12740429,
+      "m2_60": 0.12462978
+    },
+    "worst_risk_score": {
+      "m2_59": 0.38129687,
+      "m2_60": 0.38129687
+    }
+  },
+  "accepted_changes": [
+    {
+      "sample_id": "qd_004",
+      "baseline_candidate": "skeleton_c30_m20",
+      "m2_60_candidate": "maskpath_c20_i095_r32",
+      "delta_unified_loss": -0.00219001,
+      "delta_jump_count": -1.0,
+      "delta_trim_count": 1.0,
+      "delta_off_mask_stitch_length_mm": 0.0,
+      "delta_visible_connector_count": 0.0,
+      "delta_coverage_ratio": 0.041031,
+      "delta_stitch_precision_ratio": 0.029201
+    },
+    {
+      "sample_id": "qd_006",
+      "baseline_candidate": "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+      "m2_60_candidate": "maskpath_c20_i095_r32",
+      "delta_unified_loss": -0.0167644,
+      "delta_jump_count": -2.0,
+      "delta_trim_count": 0.0,
+      "delta_off_mask_stitch_length_mm": 0.0,
+      "delta_visible_connector_count": 0.0,
+      "delta_coverage_ratio": -0.038933,
+      "delta_stitch_precision_ratio": -0.023335,
+      "routed_connects": 3,
+      "route_length_mm_total": 59.8095
+    }
+  ],
+  "not_promoted": {
+    "combo_selector": "results/public_benchmark_v1_ext33_m2_60_maskpath_combo_rescue_selector",
+    "reason": "The combo selector lowered loss and jump further but worsened risk audit by selecting a lower-coverage qd_004 candidate."
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_61_explicit_segment_graph_merge",
+    "reason": "M2.60 reduces jumps on qd_004 and qd_006, but qd_007 still has 14 jumps because no safe local mask route was found. The next step should solve endpoint pairing globally instead of greedily.",
+    "components": [
+      "segment graph construction from skeleton components",
+      "all-pairs mask-path route candidates",
+      "global endpoint pairing / matching",
+      "joint cost for jump, route length, off-mask, visible connectors, and coverage retention"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_60_maskpath_rescue.md",
+    "probe": "results/m2_60_maskpath_merger_probe/",
+    "selector_outputs": "results/public_benchmark_v1_ext33_m2_60_maskpath_rescue_selector/",
+    "risk_audit": "results/public_benchmark_v1_ext33_m2_60_maskpath_rescue_risk_audit/"
+  }
+}
+

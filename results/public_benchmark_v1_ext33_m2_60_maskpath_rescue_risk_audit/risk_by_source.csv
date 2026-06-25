@@ -1,0 +1,9 @@
+﻿selection,source_name,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+m2_59_anchored_quality_rescue,OpenMoji,10,2,0.2,0.10897789,0.14901926,omj_004,off_mask,0.05646639,5.3,1.5,0.15705,0.0,0.9936241,0.8880927
+m2_59_anchored_quality_rescue,Openclipart,10,2,0.2,0.09810027,0.24588679,ocp_001,off_mask,0.04136302,3.7,0.1,0.45276,0.0,0.9638887,0.8829867
+m2_59_anchored_quality_rescue,QuickDraw,8,8,1.0,0.21613805,0.38129687,qd_007,high_loss|high_jump|low_precision,0.06376649,7.25,0.375,0.058925,0.0,0.97490588,0.60615375
+m2_59_anchored_quality_rescue,Rendered text,5,3,0.6,0.08089113,0.14615769,txt_005,low_precision,0.02294878,2.8,0.0,0.0,0.0,0.9986696,0.7246506
+m2_60_maskpath_rescue,OpenMoji,10,2,0.2,0.10897789,0.14901926,omj_004,off_mask,0.05646639,5.3,1.5,0.15705,0.0,0.9936241,0.8880927
+m2_60_maskpath_rescue,Openclipart,10,2,0.2,0.09810027,0.24588679,ocp_001,off_mask,0.04136302,3.7,0.1,0.45276,0.0,0.9638887,0.8829867
+m2_60_maskpath_rescue,QuickDraw,8,8,1.0,0.20469319,0.38129687,qd_007,high_loss|high_jump|low_precision,0.06139719,6.875,0.5,0.058925,0.0,0.97516813,0.606887
+m2_60_maskpath_rescue,Rendered text,5,3,0.6,0.08089113,0.14615769,txt_005,low_precision,0.02294878,2.8,0.0,0.0,0.0,0.9986696,0.7246506
