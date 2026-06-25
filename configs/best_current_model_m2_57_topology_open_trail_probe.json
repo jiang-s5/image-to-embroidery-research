@@ -1,0 +1,70 @@
+{
+  "model_id": "m2_57_topology_open_trail_probe",
+  "date": "2026-06-25",
+  "status": "topology_probe_not_promoted",
+  "description": "Topology-aware open-trail line-domain candidate generator plus relative rescue selector test. It improves execution metrics for qd_007 but worsens coverage-driven risk, so it is not promoted as the default.",
+  "base_model": "m2_56_line_domain_stroke_candidate_probe",
+  "current_default_remains": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard",
+  "tools": [
+    "tools/run_line_domain_topology_candidate.py",
+    "tools/select_m2_line_domain_guard.py"
+  ],
+  "variant_sweep": {
+    "variants": 16,
+    "summary": "results/m2_57_topology_open_trail_probe/variant_summary.csv",
+    "best_hardfail0_by_quickdraw_loss": "d0_c30_i070_min100"
+  },
+  "m2_55_baseline": {
+    "mean_loss": 0.048797,
+    "mean_jump": 4.909091,
+    "mean_coverage": 0.9792,
+    "mean_precision": 0.79337,
+    "review_samples": 15,
+    "mean_risk_score": 0.12775735,
+    "worst_risk_score": 0.39294779,
+    "worst_sample_id": "qd_007"
+  },
+  "m2_57_relative_rescue": {
+    "mean_loss": 0.04835005,
+    "mean_jump": 4.87878788,
+    "mean_coverage": 0.97283461,
+    "mean_precision": 0.79323967,
+    "review_samples": 15,
+    "mean_risk_score": 0.13122463,
+    "worst_risk_score": 0.50736805,
+    "worst_sample_id": "qd_007",
+    "decision": "Do not promote because coverage-driven risk worsens despite better loss and jump."
+  },
+  "qd_007_tradeoff": {
+    "m2_55": {
+      "loss": 0.12888579,
+      "jump": 14,
+      "trim": 2,
+      "coverage": 0.933862,
+      "precision": 0.661752
+    },
+    "m2_57": {
+      "loss": 0.11413105,
+      "jump": 13,
+      "trim": 1,
+      "coverage": 0.723805,
+      "precision": 0.657442
+    }
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_58_coverage_aware_stroke_grouping",
+    "reason": "Open-trail topology improves execution but sacrifices coverage. The next candidate generator must group skeleton fragments into strokes and optimize endpoint pairing with coverage-aware costs.",
+    "components": [
+      "stroke-level skeleton component grouping",
+      "coverage-aware endpoint pairing",
+      "risk-aware relative rescue",
+      "separate thick text glyph strategy"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_57_topology_open_trail_probe.md",
+    "summary_dir": "results/m2_57_topology_open_trail_probe/",
+    "relative_rescue_dir": "results/public_benchmark_v1_ext33_m2_57_topology_relative_rescue/",
+    "risk_audit_dir": "results/public_benchmark_v1_ext33_m2_57_topology_relative_rescue_risk_audit/"
+  }
+}

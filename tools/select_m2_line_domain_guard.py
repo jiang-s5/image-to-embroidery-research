@@ -132,6 +132,70 @@ def choose_line_guard(
     }
 
 
+def choose_line_relative_rescue(
+    semantic_ranked: list[tuple[dict[str, Any], float, float, float]],
+    baseline: tuple[dict[str, Any], float, float, float],
+    current: tuple[dict[str, Any], float, float, float],
+    args: argparse.Namespace,
+) -> tuple[dict[str, Any], float, float, float, dict[str, Any]]:
+    baseline_row, _baseline_predicted, _baseline_semantic, _baseline_calibrated = baseline
+    current_row, current_predicted, current_semantic, current_calibrated = current
+    baseline_loss = safe_float(baseline_row.get("unified_loss"))
+    baseline_jump = safe_float(baseline_row.get("jump_count"))
+    baseline_precision = safe_float(baseline_row.get("stitch_precision_ratio"))
+    baseline_visible = safe_float(baseline_row.get("visible_connector_count"))
+    baseline_off_mask = safe_float(baseline_row.get("off_mask_stitch_length_mm"))
+
+    rescue_pool: list[tuple[float, dict[str, Any], float, float, float]] = []
+    for row, predicted_score, semantic_score, calibrated_score in semantic_ranked:
+        loss = safe_float(row.get("unified_loss"))
+        jump = safe_float(row.get("jump_count"))
+        coverage = safe_float(row.get("coverage_ratio"))
+        precision = safe_float(row.get("stitch_precision_ratio"))
+        visible = safe_float(row.get("visible_connector_count"))
+        off_mask = safe_float(row.get("off_mask_stitch_length_mm"))
+        if coverage + 1e-9 < args.line_rescue_min_coverage:
+            continue
+        if jump > baseline_jump - args.line_rescue_min_jump_gain + 1e-9:
+            continue
+        if loss > baseline_loss + args.line_rescue_max_loss_slack + 1e-9:
+            continue
+        if precision + args.line_rescue_max_precision_drop + 1e-9 < baseline_precision:
+            continue
+        if visible > baseline_visible + args.line_rescue_max_visible_increase + 1e-9:
+            continue
+        if off_mask > baseline_off_mask + args.line_rescue_max_off_mask_increase + 1e-9:
+            continue
+        rescue_score = (
+            loss
+            + args.line_rescue_jump_weight * jump
+            + args.line_rescue_coverage_deficit_weight * max(0.0, args.line_rescue_target_coverage - coverage)
+            + args.line_rescue_precision_deficit_weight * max(0.0, args.line_rescue_target_precision - precision)
+        )
+        rescue_pool.append((rescue_score, row, predicted_score, semantic_score, calibrated_score))
+
+    if not rescue_pool:
+        return current_row, current_predicted, current_semantic, current_calibrated, {
+            "line_rescue_mode": "no_rescue_candidate",
+            "line_rescue_score": "",
+            "line_rescue_pool_size": 0,
+            "line_rescue_baseline_candidate": baseline_row.get("candidate", ""),
+            "line_rescue_baseline_jump": baseline_jump,
+            "line_rescue_baseline_loss": baseline_loss,
+        }
+    rescue_score, row, predicted_score, semantic_score, calibrated_score = sorted(rescue_pool, key=lambda item: item[0])[0]
+    return row, predicted_score, semantic_score, calibrated_score, {
+        "line_rescue_mode": "relative_rescue",
+        "line_rescue_score": rescue_score,
+        "line_rescue_pool_size": len(rescue_pool),
+        "line_rescue_baseline_candidate": baseline_row.get("candidate", ""),
+        "line_rescue_baseline_jump": baseline_jump,
+        "line_rescue_baseline_loss": baseline_loss,
+        "line_rescue_jump_gain": baseline_jump - safe_float(row.get("jump_count")),
+        "line_rescue_loss_delta": safe_float(row.get("unified_loss")) - baseline_loss,
+    }
+
+
 def mean_metric(rows: list[dict[str, Any]], key: str) -> float:
     if not rows:
         return 0.0
@@ -245,6 +309,18 @@ def main() -> int:
     parser.add_argument("--line-coverage-deficit-weight", type=float, default=0.55)
     parser.add_argument("--line-precision-deficit-weight", type=float, default=0.22)
     parser.add_argument("--line-skeleton-bonus", type=float, default=0.0)
+    parser.add_argument("--line-relative-rescue", action="store_true")
+    parser.add_argument("--line-rescue-min-coverage", type=float, default=0.70)
+    parser.add_argument("--line-rescue-min-jump-gain", type=float, default=1.0)
+    parser.add_argument("--line-rescue-max-loss-slack", type=float, default=0.0)
+    parser.add_argument("--line-rescue-max-precision-drop", type=float, default=0.02)
+    parser.add_argument("--line-rescue-max-visible-increase", type=float, default=0.0)
+    parser.add_argument("--line-rescue-max-off-mask-increase", type=float, default=0.0)
+    parser.add_argument("--line-rescue-jump-weight", type=float, default=0.004)
+    parser.add_argument("--line-rescue-target-coverage", type=float, default=0.80)
+    parser.add_argument("--line-rescue-target-precision", type=float, default=0.70)
+    parser.add_argument("--line-rescue-coverage-deficit-weight", type=float, default=0.20)
+    parser.add_argument("--line-rescue-precision-deficit-weight", type=float, default=0.10)
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -326,6 +402,14 @@ def main() -> int:
             "line_guard_valid_pool_size": "",
             "line_guard_rejected_candidate": "",
             "line_guard_loss_slack": "",
+            "line_rescue_mode": "",
+            "line_rescue_score": "",
+            "line_rescue_pool_size": "",
+            "line_rescue_baseline_candidate": "",
+            "line_rescue_baseline_jump": "",
+            "line_rescue_baseline_loss": "",
+            "line_rescue_jump_gain": "",
+            "line_rescue_loss_delta": "",
         }
         if is_line_domain(base_chosen, line_sources):
             chosen, predicted_score, semantic_score, calibrated_score, line_details = choose_line_guard(
@@ -333,6 +417,18 @@ def main() -> int:
                 (base_chosen, base_predicted, base_semantic, base_calibrated),
                 args,
             )
+            if args.line_relative_rescue:
+                rescue_chosen, rescue_predicted, rescue_semantic, rescue_calibrated, rescue_details = choose_line_relative_rescue(
+                    semantic_ranked,
+                    (base_chosen, base_predicted, base_semantic, base_calibrated),
+                    (chosen, predicted_score, semantic_score, calibrated_score),
+                    args,
+                )
+                chosen = rescue_chosen
+                predicted_score = rescue_predicted
+                semantic_score = rescue_semantic
+                calibrated_score = rescue_calibrated
+                line_details.update(rescue_details)
 
         sample_out = output_dir / str(sample_id)
         copy_outputs(candidate_dirs, chosen, sample_out)
@@ -399,6 +495,18 @@ def main() -> int:
                 "line_coverage_deficit_weight": args.line_coverage_deficit_weight,
                 "line_precision_deficit_weight": args.line_precision_deficit_weight,
                 "line_skeleton_bonus": args.line_skeleton_bonus,
+                "line_relative_rescue": bool(args.line_relative_rescue),
+                "line_rescue_min_coverage": args.line_rescue_min_coverage,
+                "line_rescue_min_jump_gain": args.line_rescue_min_jump_gain,
+                "line_rescue_max_loss_slack": args.line_rescue_max_loss_slack,
+                "line_rescue_max_precision_drop": args.line_rescue_max_precision_drop,
+                "line_rescue_max_visible_increase": args.line_rescue_max_visible_increase,
+                "line_rescue_max_off_mask_increase": args.line_rescue_max_off_mask_increase,
+                "line_rescue_jump_weight": args.line_rescue_jump_weight,
+                "line_rescue_target_coverage": args.line_rescue_target_coverage,
+                "line_rescue_target_precision": args.line_rescue_target_precision,
+                "line_rescue_coverage_deficit_weight": args.line_rescue_coverage_deficit_weight,
+                "line_rescue_precision_deficit_weight": args.line_rescue_precision_deficit_weight,
             },
         }
     )

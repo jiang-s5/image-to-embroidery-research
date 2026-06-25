@@ -1,0 +1,2 @@
+﻿selection,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+public_m2_57_topology_rescue,33,15,0.454545,0.13122463,0.50736805,qd_007,high_loss|high_jump|low_coverage|low_precision,0.04835005,4.87878788,0.57575758,0.19907576,0.0,0.97283461,0.79323967
