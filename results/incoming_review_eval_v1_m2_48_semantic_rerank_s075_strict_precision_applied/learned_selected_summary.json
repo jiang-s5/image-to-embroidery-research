@@ -1,0 +1,20 @@
+{
+  "samples": 4,
+  "hard_fail": 0,
+  "mean_predicted_score": -6.028724,
+  "mean_oracle_score": 0.097043,
+  "mean_unified_loss": 0.091316,
+  "mean_jump_count": 9.0,
+  "mean_trim_count": 2.75,
+  "mean_off_mask_stitch_length_mm": 0.0,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.863788,
+  "mean_stitch_precision_ratio": 0.858754,
+  "chosen_counts": {
+    "auto_evalrepair_r10_c20": 1,
+    "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40": 3
+  },
+  "task_profile": "strict_precision",
+  "profile_semantic_rerank": true,
+  "profile_rerank_strength": 0.75
+}

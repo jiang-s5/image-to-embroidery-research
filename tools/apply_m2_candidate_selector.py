@@ -60,6 +60,105 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def normalized_metric(row: dict[str, Any], key: str, ranges: dict[str, tuple[float, float]]) -> float:
+    value = safe_float(row.get(key))
+    low, high = ranges.get(key, (value, value))
+    span = high - low
+    if abs(span) < 1e-9:
+        return 0.0
+    return max(0.0, min(1.0, (value - low) / span))
+
+
+def inverse_normalized_metric(row: dict[str, Any], key: str, ranges: dict[str, tuple[float, float]]) -> float:
+    return 1.0 - normalized_metric(row, key, ranges)
+
+
+def profile_semantic_score(row: dict[str, Any], profile: str, ranges: dict[str, tuple[float, float]]) -> float:
+    loss = normalized_metric(row, "unified_loss", ranges)
+    jump = normalized_metric(row, "jump_count", ranges)
+    trim = normalized_metric(row, "trim_count", ranges)
+    off_mask = normalized_metric(row, "off_mask_stitch_length_mm", ranges)
+    visible = normalized_metric(row, "visible_connector_count", ranges)
+    low_coverage = inverse_normalized_metric(row, "coverage_ratio", ranges)
+    low_precision = inverse_normalized_metric(row, "stitch_precision_ratio", ranges)
+
+    if profile in {"precision", "strict_precision"}:
+        precision_weight = 0.62 if profile == "strict_precision" else 0.52
+        return (
+            precision_weight * low_precision
+            + 0.14 * loss
+            + 0.10 * low_coverage
+            + 0.08 * jump
+            + 0.03 * trim
+            + 0.03 * off_mask
+        )
+    if profile in {"coverage", "strict_coverage"}:
+        coverage_weight = 0.62 if profile == "strict_coverage" else 0.52
+        return (
+            coverage_weight * low_coverage
+            + 0.16 * loss
+            + 0.10 * low_precision
+            + 0.07 * jump
+            + 0.03 * trim
+            + 0.02 * off_mask
+        )
+    if profile in {"low_jump", "strict_low_jump"}:
+        jump_weight = 0.62 if profile == "strict_low_jump" else 0.52
+        return (
+            jump_weight * jump
+            + 0.12 * trim
+            + 0.14 * loss
+            + 0.08 * low_coverage
+            + 0.02 * low_precision
+            + 0.02 * off_mask
+        )
+    if profile == "low_loss":
+        return 0.60 * loss + 0.12 * jump + 0.06 * trim + 0.12 * low_coverage + 0.04 * low_precision + 0.06 * off_mask
+    return (
+        0.34 * loss
+        + 0.12 * jump
+        + 0.06 * trim
+        + 0.20 * low_coverage
+        + 0.14 * low_precision
+        + 0.08 * off_mask
+        + 0.06 * visible
+    )
+
+
+def semantic_rerank(
+    ranked: list[tuple[dict[str, Any], float]],
+    profile: str,
+    strength: float,
+) -> list[tuple[dict[str, Any], float, float, float]]:
+    if not ranked:
+        return []
+    metric_keys = [
+        "unified_loss",
+        "jump_count",
+        "trim_count",
+        "off_mask_stitch_length_mm",
+        "visible_connector_count",
+        "coverage_ratio",
+        "stitch_precision_ratio",
+    ]
+    rows = [row for row, _score in ranked]
+    ranges = {
+        key: (
+            min(safe_float(row.get(key)) for row in rows),
+            max(safe_float(row.get(key)) for row in rows),
+        )
+        for key in metric_keys
+    }
+    denom = max(1, len(ranked) - 1)
+    reranked: list[tuple[dict[str, Any], float, float, float]] = []
+    for index, (row, predicted_score) in enumerate(ranked):
+        learned_rank_score = index / denom
+        semantic_score = profile_semantic_score(row, profile, ranges)
+        calibrated_score = (1.0 - strength) * learned_rank_score + strength * semantic_score
+        reranked.append((row, predicted_score, semantic_score, calibrated_score))
+    return sorted(reranked, key=lambda item: item[3])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Apply a trained M2 learned candidate selector.")
     parser.add_argument("--dataset-dir", required=True)
@@ -89,6 +188,8 @@ def main() -> int:
     parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
     parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
     parser.add_argument("--task-profile", default="", help="Task-conditioned profile to apply when the model was trained with --task-profiles.")
+    parser.add_argument("--profile-semantic-rerank", action="store_true", help="Apply profile-specific metric calibration after learned ranking.")
+    parser.add_argument("--profile-rerank-strength", type=float, default=0.65, help="Blend strength for --profile-semantic-rerank. 0 keeps learned rank; 1 uses semantic metric score.")
     args = parser.parse_args()
 
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
@@ -152,7 +253,14 @@ def main() -> int:
         predictions = predict(model, selectable)
         reverse = str(model.get("select_direction", "min")) == "max"
         ranked = sorted(zip(selectable, predictions), key=lambda item: item[1], reverse=reverse)
-        chosen, predicted_score = ranked[0]
+        semantic_score = 0.0
+        calibrated_score = 0.0
+        if args.profile_semantic_rerank:
+            profile_name = active_task_profile or "balanced"
+            semantic_ranked = semantic_rerank(ranked, profile_name, max(0.0, min(1.0, args.profile_rerank_strength)))
+            chosen, predicted_score, semantic_score, calibrated_score = semantic_ranked[0]
+        else:
+            chosen, predicted_score = ranked[0]
         sample_out = output_dir / sample_id
         sample_out.mkdir(parents=True, exist_ok=True)
         source_dir = candidate_dirs[str(chosen["candidate"])] / sample_id
@@ -168,6 +276,8 @@ def main() -> int:
                 "task_profile": active_task_profile,
                 "chosen_candidate": chosen["candidate"],
                 "predicted_score": round(float(predicted_score), 8),
+                "semantic_score": round(float(semantic_score), 8),
+                "calibrated_score": round(float(calibrated_score), 8),
                 "oracle_score": chosen["oracle_score"],
                 "quality_level": chosen["oracle_quality_level"],
                 "unified_loss": chosen["unified_loss"],
@@ -183,6 +293,8 @@ def main() -> int:
     write_csv(selected, output_dir / "learned_selected_rows.csv")
     summary = summarize(selected)
     summary["task_profile"] = active_task_profile
+    summary["profile_semantic_rerank"] = bool(args.profile_semantic_rerank)
+    summary["profile_rerank_strength"] = args.profile_rerank_strength
     (output_dir / "learned_selected_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0

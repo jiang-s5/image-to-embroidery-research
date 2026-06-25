@@ -1,0 +1,5 @@
+﻿sample_id,source_name,category,task_profile,chosen_candidate,predicted_score,semantic_score,calibrated_score,oracle_score,quality_level,unified_loss,jump_count,trim_count,off_mask_stitch_length_mm,visible_connector_count,coverage_ratio,stitch_precision_ratio
+pair_006,Incoming paired review,pair_006,strict_low_jump,auto_evalrepair_r10_c20,-17.60894171,0.15310132,0.19174906,0.0593456,excellent,0.038,1,5,0.0,0,0.696636,0.967827
+pair_008,Incoming paired review,pair_008,strict_low_jump,mask_fill_edgewalk_nearestrow_rows16_p40,13.0877612,0.09567226,0.09258753,0.15571733,warning,0.15128003,16,3,0.0,0,0.990137,0.670418
+pair_010,Incoming paired review,pair_010,strict_low_jump,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,-20.62398492,0.21311159,0.1598337,0.08108601,excellent,0.08108601,9,1,0.0,0,0.997482,0.94671
+pair_011a,Incoming paired review,pair_011a,strict_low_jump,mask_fill_edgewalk_rows16_p40,-19.4336106,0.01636334,0.01227251,0.04468639,excellent,0.02495959,3,0,0.0,0,0.998544,0.568488
