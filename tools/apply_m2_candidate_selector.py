@@ -236,6 +236,81 @@ def choose_with_coverage_constraint(
     return chosen, predicted_score, semantic_score, calibrated_score, False, safe_float(chosen.get("coverage_ratio"))
 
 
+def choose_with_benefit_gate(
+    semantic_ranked: list[tuple[dict[str, Any], float, float, float]],
+    min_coverage: float,
+    absolute_min_coverage: float,
+    min_jump_gain: float,
+    min_precision: float,
+    max_loss_slack: float,
+) -> tuple[dict[str, Any], float, float, float, dict[str, Any]]:
+    if not semantic_ranked:
+        raise ValueError("Cannot choose from an empty ranked list.")
+    if min_coverage < 0.0:
+        chosen, predicted_score, semantic_score, calibrated_score = semantic_ranked[0]
+        return chosen, predicted_score, semantic_score, calibrated_score, {
+            "coverage_gate_mode": "disabled",
+            "coverage_gate_met": True,
+        }
+
+    safe_ranked = [
+        item for item in semantic_ranked
+        if safe_float(item[0].get("coverage_ratio")) + 1e-9 >= min_coverage
+    ]
+    baseline = safe_ranked[0] if safe_ranked else semantic_ranked[0]
+    baseline_row = baseline[0]
+    baseline_loss = safe_float(baseline_row.get("unified_loss"))
+    baseline_jump = safe_float(baseline_row.get("jump_count"))
+    baseline_precision = safe_float(baseline_row.get("stitch_precision_ratio"))
+    baseline_coverage = safe_float(baseline_row.get("coverage_ratio"))
+
+    for row, predicted_score, semantic_score, calibrated_score in semantic_ranked:
+        coverage = safe_float(row.get("coverage_ratio"))
+        if coverage + 1e-9 >= min_coverage:
+            return row, predicted_score, semantic_score, calibrated_score, {
+                "coverage_gate_mode": "safe_coverage",
+                "coverage_gate_met": True,
+                "coverage_gate_baseline_candidate": baseline_row.get("candidate", ""),
+                "coverage_gate_baseline_coverage": baseline_coverage,
+                "coverage_gate_baseline_jump": baseline_jump,
+                "coverage_gate_baseline_precision": baseline_precision,
+                "coverage_gate_jump_gain": max(0.0, baseline_jump - safe_float(row.get("jump_count"))),
+            }
+
+        jump_gain = baseline_jump - safe_float(row.get("jump_count"))
+        precision = safe_float(row.get("stitch_precision_ratio"))
+        loss = safe_float(row.get("unified_loss"))
+        loss_slack = loss - baseline_loss
+        if (
+            coverage + 1e-9 >= absolute_min_coverage
+            and jump_gain + 1e-9 >= min_jump_gain
+            and precision + 1e-9 >= min_precision
+            and loss_slack <= max_loss_slack + 1e-9
+        ):
+            return row, predicted_score, semantic_score, calibrated_score, {
+                "coverage_gate_mode": "benefit_tradeoff",
+                "coverage_gate_met": True,
+                "coverage_gate_baseline_candidate": baseline_row.get("candidate", ""),
+                "coverage_gate_baseline_coverage": baseline_coverage,
+                "coverage_gate_baseline_jump": baseline_jump,
+                "coverage_gate_baseline_precision": baseline_precision,
+                "coverage_gate_jump_gain": jump_gain,
+                "coverage_gate_loss_slack": loss_slack,
+            }
+
+    row, predicted_score, semantic_score, calibrated_score = baseline
+    return row, predicted_score, semantic_score, calibrated_score, {
+        "coverage_gate_mode": "safe_fallback",
+        "coverage_gate_met": bool(safe_ranked),
+        "coverage_gate_baseline_candidate": baseline_row.get("candidate", ""),
+        "coverage_gate_baseline_coverage": baseline_coverage,
+        "coverage_gate_baseline_jump": baseline_jump,
+        "coverage_gate_baseline_precision": baseline_precision,
+        "coverage_gate_jump_gain": 0.0,
+        "coverage_gate_loss_slack": 0.0,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Apply a trained M2 learned candidate selector.")
     parser.add_argument("--dataset-dir", required=True)
@@ -273,6 +348,11 @@ def main() -> int:
     parser.add_argument("--profile-min-coverage-by-name", default="", help="Comma-separated profile coverage floors such as balanced=0.93,low_jump=0.90,coverage=0.98.")
     parser.add_argument("--profile-coverage-fallback-margin", type=float, default=0.03, help="If no candidate satisfies the coverage floor, allow this much floor relaxation before falling back to the unconstrained top candidate.")
     parser.add_argument("--profile-coverage-penalty-weight", type=float, default=0.35, help="Soft coverage deficit penalty weight used with --profile-coverage-soft-penalty.")
+    parser.add_argument("--profile-coverage-benefit-gate", action="store_true", help="Allow below-floor coverage only when the candidate has enough jump/precision/loss benefit over the best coverage-safe candidate.")
+    parser.add_argument("--profile-benefit-min-coverage", type=float, default=0.65, help="Absolute minimum coverage for a benefit-gated below-floor candidate.")
+    parser.add_argument("--profile-benefit-min-jump-gain", type=float, default=3.0, help="Minimum jump-count reduction versus the best coverage-safe candidate for a benefit-gated candidate.")
+    parser.add_argument("--profile-benefit-min-precision", type=float, default=0.80, help="Minimum stitch precision for a benefit-gated below-floor candidate.")
+    parser.add_argument("--profile-benefit-max-loss-slack", type=float, default=0.02, help="Maximum allowed unified-loss increase versus the best coverage-safe candidate for a benefit-gated candidate.")
     parser.add_argument("--disable-default-profile-coverage-floors", action="store_true", help="Disable built-in profile coverage floors when --profile-min-coverage is negative.")
     args = parser.parse_args()
 
@@ -343,6 +423,7 @@ def main() -> int:
         coverage_constraint_enabled = bool(args.profile_coverage_constrained_rerank)
         coverage_constraint_min = -1.0
         coverage_constraint_met = True
+        coverage_gate_details: dict[str, Any] = {}
         if args.profile_semantic_rerank:
             profile_name = active_task_profile or "balanced"
             coverage_constraint_min = profile_coverage_floor(
@@ -358,7 +439,23 @@ def main() -> int:
                 coverage_constraint_min if args.profile_coverage_soft_penalty else -1.0,
                 max(0.0, args.profile_coverage_penalty_weight),
             )
-            if coverage_constraint_enabled:
+            if args.profile_coverage_benefit_gate:
+                (
+                    chosen,
+                    predicted_score,
+                    semantic_score,
+                    calibrated_score,
+                    coverage_gate_details,
+                ) = choose_with_benefit_gate(
+                    semantic_ranked,
+                    coverage_constraint_min,
+                    max(0.0, args.profile_benefit_min_coverage),
+                    max(0.0, args.profile_benefit_min_jump_gain),
+                    max(0.0, args.profile_benefit_min_precision),
+                    args.profile_benefit_max_loss_slack,
+                )
+                coverage_constraint_met = bool(coverage_gate_details.get("coverage_gate_met", True))
+            elif coverage_constraint_enabled:
                 (
                     chosen,
                     predicted_score,
@@ -395,6 +492,13 @@ def main() -> int:
                 "coverage_constraint_enabled": coverage_constraint_enabled,
                 "coverage_constraint_min": coverage_constraint_min,
                 "coverage_constraint_met": coverage_constraint_met,
+                "coverage_gate_enabled": bool(args.profile_coverage_benefit_gate),
+                "coverage_gate_mode": coverage_gate_details.get("coverage_gate_mode", ""),
+                "coverage_gate_baseline_candidate": coverage_gate_details.get("coverage_gate_baseline_candidate", ""),
+                "coverage_gate_baseline_coverage": coverage_gate_details.get("coverage_gate_baseline_coverage", ""),
+                "coverage_gate_baseline_jump": coverage_gate_details.get("coverage_gate_baseline_jump", ""),
+                "coverage_gate_jump_gain": coverage_gate_details.get("coverage_gate_jump_gain", ""),
+                "coverage_gate_loss_slack": coverage_gate_details.get("coverage_gate_loss_slack", ""),
                 "oracle_score": chosen["oracle_score"],
                 "quality_level": chosen["oracle_quality_level"],
                 "unified_loss": chosen["unified_loss"],
@@ -414,14 +518,23 @@ def main() -> int:
     summary["profile_rerank_strength"] = args.profile_rerank_strength
     summary["profile_coverage_constrained_rerank"] = bool(args.profile_coverage_constrained_rerank)
     summary["profile_coverage_soft_penalty"] = bool(args.profile_coverage_soft_penalty)
+    summary["profile_coverage_benefit_gate"] = bool(args.profile_coverage_benefit_gate)
     summary["profile_min_coverage"] = args.profile_min_coverage
     summary["profile_min_coverage_by_name"] = profile_min_coverage_by_name
     summary["profile_coverage_fallback_margin"] = args.profile_coverage_fallback_margin
     summary["profile_coverage_penalty_weight"] = args.profile_coverage_penalty_weight
+    summary["profile_benefit_min_coverage"] = args.profile_benefit_min_coverage
+    summary["profile_benefit_min_jump_gain"] = args.profile_benefit_min_jump_gain
+    summary["profile_benefit_min_precision"] = args.profile_benefit_min_precision
+    summary["profile_benefit_max_loss_slack"] = args.profile_benefit_max_loss_slack
     summary["coverage_constraint_failed_samples"] = sum(
         1 for row in selected
         if row.get("coverage_constraint_enabled") and not row.get("coverage_constraint_met")
     )
+    summary["coverage_gate_modes"] = {
+        mode: sum(1 for row in selected if row.get("coverage_gate_mode") == mode)
+        for mode in sorted({str(row.get("coverage_gate_mode", "")) for row in selected if row.get("coverage_gate_mode")})
+    }
     (output_dir / "learned_selected_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0

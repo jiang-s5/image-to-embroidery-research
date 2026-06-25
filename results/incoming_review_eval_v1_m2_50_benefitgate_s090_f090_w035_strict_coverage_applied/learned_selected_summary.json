@@ -1,0 +1,40 @@
+{
+  "samples": 4,
+  "hard_fail": 0,
+  "mean_predicted_score": -8.909975,
+  "mean_oracle_score": 0.084331,
+  "mean_unified_loss": 0.07829,
+  "mean_jump_count": 8.5,
+  "mean_trim_count": 1.25,
+  "mean_off_mask_stitch_length_mm": 0.0,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.995549,
+  "mean_stitch_precision_ratio": 0.781068,
+  "chosen_counts": {
+    "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40": 2,
+    "mask_fill_edgewalk_nearestrow_rows16_p40": 1,
+    "mask_fill_edgewalk_rows16_p40": 1
+  },
+  "task_profile": "strict_coverage",
+  "profile_semantic_rerank": true,
+  "profile_rerank_strength": 0.9,
+  "profile_coverage_constrained_rerank": false,
+  "profile_coverage_soft_penalty": true,
+  "profile_coverage_benefit_gate": true,
+  "profile_min_coverage": -1.0,
+  "profile_min_coverage_by_name": {
+    "balanced": 0.9,
+    "low_jump": 0.9,
+    "strict_low_jump": 0.9
+  },
+  "profile_coverage_fallback_margin": 0.03,
+  "profile_coverage_penalty_weight": 0.35,
+  "profile_benefit_min_coverage": 0.65,
+  "profile_benefit_min_jump_gain": 3.0,
+  "profile_benefit_min_precision": 0.8,
+  "profile_benefit_max_loss_slack": 0.02,
+  "coverage_constraint_failed_samples": 0,
+  "coverage_gate_modes": {
+    "safe_coverage": 4
+  }
+}
