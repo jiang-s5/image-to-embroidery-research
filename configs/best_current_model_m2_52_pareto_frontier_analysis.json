@@ -1,0 +1,166 @@
+{
+  "model_id": "m2_52_pareto_frontier_analysis",
+  "date": "2026-06-25",
+  "status": "pareto_frontier_decision_analysis",
+  "description": "Pareto-frontier analysis layer for M2.51 sweep-tuned benefit gate outputs. It collapses duplicate metric outcomes and exposes low-jump, high-coverage, and balanced-knee tradeoffs.",
+  "base_model": "m2_51_sweep_tuned_benefit_gate",
+  "analysis_tool": "tools/analyze_m2_pareto_frontier.py",
+  "decision": "Keep the M2.51 low_jump best-objective policy as the current default. Use M2.52 to report tradeoffs rather than claiming a single scalar objective is the only optimum.",
+  "current_default_apply_args": {
+    "exclude_hard_fail": true,
+    "profile_semantic_rerank": true,
+    "profile": "low_jump",
+    "profile_rerank_strength": 0.9,
+    "profile_coverage_soft_penalty": true,
+    "profile_coverage_penalty_weight": 0.2,
+    "profile_min_coverage_by_name": {
+      "balanced": 0.85,
+      "low_jump": 0.85,
+      "strict_low_jump": 0.85
+    },
+    "profile_coverage_benefit_gate": true,
+    "profile_benefit_min_coverage": 0.6,
+    "profile_benefit_min_jump_gain": 2.0,
+    "profile_benefit_min_precision": 0.78,
+    "profile_benefit_max_loss_slack": 0.0
+  },
+  "pareto_metrics": {
+    "minimize": [
+      "mean_unified_loss",
+      "mean_jump_count",
+      "mean_trim_count",
+      "mean_off_mask_stitch_length_mm",
+      "mean_visible_connector_count"
+    ],
+    "maximize": [
+      "mean_coverage_ratio",
+      "mean_stitch_precision_ratio"
+    ],
+    "constraints": {
+      "min_mean_coverage": 0.9,
+      "max_hard_fail": 0
+    }
+  },
+  "incoming_review": {
+    "samples": 4,
+    "balanced": {
+      "raw_rows": 1458,
+      "unique_outcome_rows": 3,
+      "pareto_rows": 3,
+      "best_objective": {
+        "mean_unified_loss": 0.073831,
+        "mean_jump_count": 7.25,
+        "mean_trim_count": 2.25,
+        "mean_off_mask_stitch_length_mm": 0.0,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.9207,
+        "mean_stitch_precision_ratio": 0.788361
+      },
+      "best_high_coverage": {
+        "mean_unified_loss": 0.07471,
+        "mean_jump_count": 8.25,
+        "mean_trim_count": 1.0,
+        "mean_off_mask_stitch_length_mm": 0.0,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.996541,
+        "mean_stitch_precision_ratio": 0.753519
+      }
+    },
+    "low_jump": {
+      "raw_rows": 1458,
+      "unique_outcome_rows": 2,
+      "pareto_rows": 2,
+      "best_objective": {
+        "mean_unified_loss": 0.073831,
+        "mean_jump_count": 7.25,
+        "mean_trim_count": 2.25,
+        "mean_off_mask_stitch_length_mm": 0.0,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.9207,
+        "mean_stitch_precision_ratio": 0.788361
+      },
+      "best_high_coverage": {
+        "mean_unified_loss": 0.07471,
+        "mean_jump_count": 8.25,
+        "mean_trim_count": 1.0,
+        "mean_off_mask_stitch_length_mm": 0.0,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.996541,
+        "mean_stitch_precision_ratio": 0.753519
+      }
+    }
+  },
+  "public_ext33_sanity": {
+    "samples": 33,
+    "note": "This is a sanity check, not a clean generalization claim, because public ext33 candidate tables were used during selector development.",
+    "balanced": {
+      "raw_rows": 1458,
+      "unique_outcome_rows": 8,
+      "pareto_rows": 8,
+      "best_objective": {
+        "mean_unified_loss": 0.052103,
+        "mean_jump_count": 5.606061,
+        "mean_trim_count": 0.757576,
+        "mean_off_mask_stitch_length_mm": 0.047591,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.982012,
+        "mean_stitch_precision_ratio": 0.806207
+      },
+      "best_high_coverage": {
+        "mean_unified_loss": 0.05356,
+        "mean_jump_count": 5.757576,
+        "mean_trim_count": 0.787879,
+        "mean_off_mask_stitch_length_mm": 0.047591,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.991577,
+        "mean_stitch_precision_ratio": 0.805335
+      }
+    },
+    "low_jump": {
+      "raw_rows": 1458,
+      "unique_outcome_rows": 24,
+      "pareto_rows": 23,
+      "best_objective": {
+        "mean_unified_loss": 0.048809,
+        "mean_jump_count": 4.909091,
+        "mean_trim_count": 0.606061,
+        "mean_off_mask_stitch_length_mm": 0.199076,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.979476,
+        "mean_stitch_precision_ratio": 0.793264
+      },
+      "best_low_jump": {
+        "mean_unified_loss": 0.049139,
+        "mean_jump_count": 4.818182,
+        "mean_trim_count": 0.787879,
+        "mean_off_mask_stitch_length_mm": 0.199076,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.970612,
+        "mean_stitch_precision_ratio": 0.794352
+      },
+      "best_high_coverage": {
+        "mean_unified_loss": 0.051126,
+        "mean_jump_count": 5.121212,
+        "mean_trim_count": 0.69697,
+        "mean_off_mask_stitch_length_mm": 0.199076,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.993914,
+        "mean_stitch_precision_ratio": 0.785532
+      },
+      "balanced_knee": {
+        "mean_unified_loss": 0.049667,
+        "mean_jump_count": 5.090909,
+        "mean_trim_count": 0.606061,
+        "mean_off_mask_stitch_length_mm": 0.169776,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.977453,
+        "mean_stitch_precision_ratio": 0.804424
+      }
+    }
+  },
+  "artifacts": {
+    "documentation": "docs/m2_52_pareto_frontier_analysis.md",
+    "incoming_frontier": "results/incoming_review_eval_v1_m2_52_pareto_frontier/",
+    "public_sanity_frontier": "results/public_benchmark_v1_ext33_m2_52_pareto_frontier_sanity/"
+  }
+}
