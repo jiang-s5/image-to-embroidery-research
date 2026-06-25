@@ -1,0 +1,83 @@
+{
+  "model_id": "m2_58_coverage_aware_relative_rescue",
+  "date": "2026-06-25",
+  "status": "coverage_aware_safety_gate",
+  "description": "Adds a relative coverage-drop guard to the M2.57 relative rescue selector. It blocks lower-jump topology candidates when they lose too much coverage relative to the baseline.",
+  "base_model": "m2_57_topology_open_trail_probe",
+  "current_default": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard + m2_58_coverage_aware_relative_rescue_gate",
+  "tool": "tools/select_m2_line_domain_guard.py",
+  "new_argument": {
+    "name": "--line-rescue-max-coverage-drop",
+    "default": 0.05,
+    "rule": "candidate_coverage >= baseline_coverage - max_coverage_drop"
+  },
+  "public_ext33": {
+    "dataset": "datasets/public_benchmark_v1_ext33",
+    "result_dir": "results/public_benchmark_v1_ext33_m2_58_coverage_aware_relative_rescue",
+    "risk_audit_dir": "results/public_benchmark_v1_ext33_m2_58_coverage_aware_risk_audit",
+    "samples": 33,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.048797,
+    "mean_jump_count": 4.909091,
+    "mean_trim_count": 0.606061,
+    "mean_off_mask_stitch_length_mm": 0.199076,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.9792,
+    "mean_stitch_precision_ratio": 0.79337,
+    "review_samples": 15,
+    "mean_risk_score": 0.12775735,
+    "worst_risk_score": 0.39294779,
+    "worst_sample_id": "qd_007"
+  },
+  "comparison": {
+    "m2_55": {
+      "mean_unified_loss": 0.048797,
+      "mean_jump_count": 4.909091,
+      "mean_coverage_ratio": 0.9792,
+      "mean_risk_score": 0.12775735,
+      "worst_risk_score": 0.39294779
+    },
+    "m2_57_relative_rescue": {
+      "mean_unified_loss": 0.04835005,
+      "mean_jump_count": 4.87878788,
+      "mean_coverage_ratio": 0.97283461,
+      "mean_risk_score": 0.13122463,
+      "worst_risk_score": 0.50736805,
+      "failure_mode": "Lower loss and jump were achieved by dropping qd_007 coverage from 0.933862 to 0.723805."
+    },
+    "m2_58_coverage_aware": {
+      "mean_unified_loss": 0.048797,
+      "mean_jump_count": 4.909091,
+      "mean_coverage_ratio": 0.9792,
+      "mean_risk_score": 0.12775735,
+      "worst_risk_score": 0.39294779,
+      "decision": "Adopt as a safety gate because it blocks the M2.57 coverage-collapse rescue. It does not yet solve the hard line-domain sample."
+    }
+  },
+  "qd_007_gate": {
+    "baseline_candidate": "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "rejected_candidate": "topology_open_min100",
+    "baseline_coverage": 0.933862,
+    "candidate_coverage": 0.723805,
+    "coverage_delta": -0.210057,
+    "allowed_drop": -0.05,
+    "decision": "Rejected by coverage-aware relative rescue."
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_59_coverage_aware_stroke_grouping",
+    "reason": "M2.58 prevents unsafe topology rescues but does not create a better line-domain candidate. The next step must improve candidate generation by grouping skeleton fragments into stroke-level components and optimizing endpoint pairing under coverage-aware costs.",
+    "components": [
+      "stroke-level skeleton grouping",
+      "coverage-aware endpoint pairing",
+      "jump-and-coverage joint cost",
+      "separate strategy for thick text glyphs"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_58_coverage_aware_relative_rescue.md",
+    "selector_tool": "tools/select_m2_line_domain_guard.py",
+    "public_outputs": "results/public_benchmark_v1_ext33_m2_58_coverage_aware_relative_rescue/",
+    "public_risk_audit": "results/public_benchmark_v1_ext33_m2_58_coverage_aware_risk_audit/"
+  }
+}
+
