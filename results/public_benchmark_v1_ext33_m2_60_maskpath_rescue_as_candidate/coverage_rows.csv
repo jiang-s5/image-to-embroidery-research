@@ -1,0 +1,34 @@
+﻿sample_id,source_name,category,coverage_ratio,stitch_precision_ratio
+ocp_001,Openclipart,flower,0.998209,0.752954
+ocp_002,Openclipart,butterfly,0.971346,0.943255
+ocp_003,Openclipart,cat,0.995802,0.933175
+ocp_004,Openclipart,koi_fish,0.998581,0.870697
+ocp_005,Openclipart,public_domain_logo,1.0,0.964093
+ocp_006,Openclipart,butterfly_2,0.988768,0.92991
+ocp_007,Openclipart,sitting_cat,1.0,0.874258
+ocp_008,Openclipart,fish,1.0,0.807752
+ocp_009,Openclipart,flower_2,0.99727,0.765745
+ocp_010,Openclipart,thought_bubble,0.688911,0.988028
+omj_001,OpenMoji,heart,0.955519,0.917291
+omj_002,OpenMoji,star,0.999481,0.897558
+omj_003,OpenMoji,butterfly,1.0,0.896875
+omj_004,OpenMoji,fish,0.997043,0.950702
+omj_005,OpenMoji,sun,0.998635,0.916461
+omj_006,OpenMoji,cherry_blossom,0.992683,0.916022
+omj_007,OpenMoji,ribbon,1.0,0.891565
+omj_008,OpenMoji,paw_prints,0.99951,0.814631
+omj_009,OpenMoji,lady_beetle,0.994021,0.927864
+omj_010,OpenMoji,seedling,0.999349,0.751958
+qd_001,QuickDraw,cat,0.999605,0.51074
+qd_002,QuickDraw,dog,0.997816,0.600599
+qd_003,QuickDraw,fish,1.0,0.314119
+qd_004,QuickDraw,flower,0.926755,0.698173
+qd_005,QuickDraw,bicycle,0.989125,0.661522
+qd_006,QuickDraw,bird,0.909377,0.672507
+qd_007,QuickDraw,moon,0.987986,0.66381
+qd_008,QuickDraw,star,0.990681,0.733626
+txt_001,Rendered text,AI,0.996709,0.836556
+txt_002,Rendered text,DST,1.0,0.72495
+txt_003,Rendered text,WKU,0.996639,0.759544
+txt_004,Rendered text,2026,1.0,0.709028
+txt_005,Rendered text,HELLO,1.0,0.593175

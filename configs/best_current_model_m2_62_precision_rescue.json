@@ -1,0 +1,104 @@
+{
+  "model_id": "m2_62_precision_rescue",
+  "date": "2026-06-25",
+  "status": "promoted_precision_aware_tradeoff",
+  "description": "Adds a line-domain precision-rescue gate to choose alternatives with substantially better stitch footprint precision when the current selection overfills around thin line drawings.",
+  "base_model": "m2_60_maskpath_rescue",
+  "evaluation_context": "Uses M2.61 component-aware jump audit.",
+  "current_precision_aware_default": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard + m2_58_coverage_aware_relative_rescue_gate + m2_59_anchored_quality_rescue + m2_60_maskpath_rescue + m2_62_precision_rescue",
+  "raw_loss_default": "m2_60_maskpath_rescue",
+  "tools": [
+    "tools/select_m2_line_domain_guard.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "selector": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_62_precision_rescue_selector",
+    "base_candidate_helper": "results/public_benchmark_v1_ext33_m2_60_maskpath_rescue_as_candidate",
+    "extra_candidates": [
+      "results/public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+      "results/public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+      "results/public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t3_m6_rows16_p40",
+      "results/public_benchmark_v1_ext33_m2_56_line_stroke_d0_c8_i095",
+      "results/public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min20"
+    ],
+    "precision_rescue": {
+      "enabled": true,
+      "trigger_precision": 0.60,
+      "min_precision": 0.65,
+      "min_gain": 0.10,
+      "min_coverage": 0.85,
+      "max_coverage_drop": 0.08,
+      "max_loss_slack": 0.06,
+      "max_jump_increase": 6.0,
+      "max_trim_increase": 2.0,
+      "max_visible_increase": 0.0,
+      "max_off_mask_increase": 0.0
+    }
+  },
+  "public_ext33": {
+    "dataset": "datasets/public_benchmark_v1_ext33",
+    "samples": 33,
+    "hard_fail": 0,
+    "changed_metric_samples": 2,
+    "mean_unified_loss": 0.04916026,
+    "mean_jump_count": 4.96969697,
+    "mean_trim_count": 0.63636364,
+    "mean_off_mask_stitch_length_mm": 0.18479091,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.97895385,
+    "mean_stitch_precision_ratio": 0.80950997,
+    "component_aware_mean_risk": 0.09653159,
+    "component_aware_worst_risk": 0.25929687,
+    "worst_sample_id": "qd_007",
+    "worst_flags": "high_loss|low_precision"
+  },
+  "comparison_to_m2_60": {
+    "mean_delta_unified_loss": 0.00115347,
+    "mean_delta_jump_count": 0.15151518,
+    "mean_delta_trim_count": 0.03030339,
+    "mean_delta_off_mask_stitch_length_mm": -0.01428476,
+    "mean_delta_visible_connector_count": 0.0,
+    "mean_delta_coverage_ratio": -0.00194967,
+    "mean_delta_stitch_precision_ratio": 0.01589961,
+    "mean_delta_component_aware_risk": -0.00240122,
+    "review_samples_delta": 0
+  },
+  "changed_samples": [
+    {
+      "sample_id": "qd_001",
+      "m2_60_candidate": "mask_fill_edgewalk_nearestrow_rows16_p40",
+      "m2_62_candidate": "inset2",
+      "delta_unified_loss": -0.00191936,
+      "delta_jump_count": 1.0,
+      "delta_coverage_ratio": -0.051661,
+      "delta_stitch_precision_ratio": 0.167014,
+      "delta_component_aware_risk": -0.05781486
+    },
+    {
+      "sample_id": "qd_003",
+      "m2_60_candidate": "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40",
+      "m2_62_candidate": "adapt_t2m5",
+      "delta_unified_loss": 0.03999255,
+      "delta_jump_count": 4.0,
+      "delta_coverage_ratio": -0.012683,
+      "delta_stitch_precision_ratio": 0.357672,
+      "delta_component_aware_risk": -0.02142545
+    }
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_63_line_domain_adaptive_precision",
+    "reason": "Low-precision flags remain because strict pixel precision may be too harsh for thin line drawings rendered with thread-width footprints.",
+    "components": [
+      "stroke-width-normalized precision mask",
+      "expected stitch footprint width estimation",
+      "strict precision plus adaptive line precision reporting",
+      "overfill penalty outside local stroke band"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_62_precision_rescue.md",
+    "probe": "results/m2_62_precision_rescue_probe/",
+    "selector_outputs": "results/public_benchmark_v1_ext33_m2_62_precision_rescue_selector/",
+    "component_aware_audit": "results/public_benchmark_v1_ext33_m2_62_precision_rescue_component_audit/"
+  }
+}
