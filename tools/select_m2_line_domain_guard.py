@@ -265,6 +265,25 @@ def compare_to_baseline(selected: list[dict[str, Any]], baseline_path: Path) -> 
     return comparison
 
 
+def anchor_baseline_choice(
+    semantic_ranked: list[tuple[dict[str, Any], float, float, float]],
+    anchor_row: dict[str, Any] | None,
+    fallback: tuple[dict[str, Any], float, float, float],
+) -> tuple[dict[str, Any], float, float, float, dict[str, Any]]:
+    if not anchor_row:
+        return (*fallback, {"anchor_mode": "no_anchor_row", "anchor_candidate": ""})
+    anchor_candidate = str(anchor_row.get("chosen_candidate", "")).strip()
+    if not anchor_candidate:
+        return (*fallback, {"anchor_mode": "missing_anchor_candidate", "anchor_candidate": ""})
+    for row, predicted_score, semantic_score, calibrated_score in semantic_ranked:
+        if str(row.get("candidate", "")) == anchor_candidate:
+            return row, predicted_score, semantic_score, calibrated_score, {
+                "anchor_mode": "anchored_baseline",
+                "anchor_candidate": anchor_candidate,
+            }
+    return (*fallback, {"anchor_mode": "anchor_candidate_not_found", "anchor_candidate": anchor_candidate})
+
+
 def copy_outputs(candidate_dirs: dict[str, Path], chosen: dict[str, Any], sample_out: Path) -> None:
     sample_out.mkdir(parents=True, exist_ok=True)
     source_dir = candidate_dirs[str(chosen["candidate"])] / str(chosen["sample_id"])
@@ -281,6 +300,7 @@ def main() -> int:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--candidate", action="append", nargs=2, metavar=("NAME", "DIR"), required=True)
     parser.add_argument("--baseline-selection", default="")
+    parser.add_argument("--anchor-baseline-selection", default="")
     parser.add_argument("--profile", default="low_jump")
     parser.add_argument("--exclude-hard-fail", action="store_true")
     parser.add_argument("--flat-min-coverage", type=float, default=0.75)
@@ -335,6 +355,7 @@ def main() -> int:
     model = read_json(Path(args.model))
     candidates = [(name, Path(path)) for name, path in args.candidate]
     candidate_dirs = {name: path for name, path in candidates}
+    anchor_rows = {row["sample_id"]: row for row in read_csv(Path(args.anchor_baseline_selection))} if args.anchor_baseline_selection else {}
     rows = build_candidate_rows(
         Path(args.dataset_dir),
         candidates,
@@ -398,6 +419,11 @@ def main() -> int:
             max(0.0, args.profile_benefit_min_precision),
             args.profile_benefit_max_loss_slack,
         )
+        base_chosen, base_predicted, base_semantic, base_calibrated, anchor_details = anchor_baseline_choice(
+            semantic_ranked,
+            anchor_rows.get(sample_id),
+            (base_chosen, base_predicted, base_semantic, base_calibrated),
+        )
         chosen = base_chosen
         predicted_score = base_predicted
         semantic_score = base_semantic
@@ -460,6 +486,8 @@ def main() -> int:
                 "coverage_gate_baseline_jump": gate_details.get("coverage_gate_baseline_jump", ""),
                 "coverage_gate_jump_gain": gate_details.get("coverage_gate_jump_gain", ""),
                 "coverage_gate_loss_slack": gate_details.get("coverage_gate_loss_slack", ""),
+                "anchor_mode": anchor_details.get("anchor_mode", ""),
+                "anchor_candidate": anchor_details.get("anchor_candidate", ""),
                 **line_details,
                 "oracle_score": chosen["oracle_score"],
                 "quality_level": chosen["oracle_quality_level"],
@@ -487,6 +515,7 @@ def main() -> int:
             "changed_samples": len(changed_rows),
             "line_domain_samples": sum(1 for row in selected if str(row.get("source_name", "")) in line_sources),
             "line_guard_args": {
+                "anchor_baseline_selection": args.anchor_baseline_selection,
                 "line_target_coverage": args.line_target_coverage,
                 "line_target_precision": args.line_target_precision,
                 "line_absolute_min_coverage": args.line_absolute_min_coverage,

@@ -1,0 +1,98 @@
+{
+  "model_id": "m2_59_anchored_quality_rescue",
+  "date": "2026-06-25",
+  "status": "small_positive_selector_and_generator_update",
+  "description": "Adds a grouped-topology line-domain candidate generator and an anchored baseline selector mode. The final selector safely accepts one grouped candidate for qd_007, improving loss, trim, and coverage without increasing jump, off-mask, or visible connector risk.",
+  "base_model": "m2_58_coverage_aware_relative_rescue",
+  "current_research_default": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard + m2_58_coverage_aware_relative_rescue_gate + m2_59_anchored_quality_rescue",
+  "tools": [
+    "tools/run_line_domain_grouped_topology_candidate.py",
+    "tools/select_m2_line_domain_guard.py"
+  ],
+  "selector_changes": {
+    "anchor_baseline_selection": {
+      "argument": "--anchor-baseline-selection",
+      "purpose": "Freeze the existing baseline choice before adding new candidates, so new candidates can only replace baseline rows through explicit rescue gates.",
+      "anchor": "results/public_benchmark_v1_ext33_m2_58_coverage_aware_relative_rescue/line_guard_selected_rows.csv"
+    },
+    "quality_rescue": {
+      "line_relative_rescue": true,
+      "line_rescue_min_jump_gain": 0.0,
+      "line_rescue_max_coverage_drop": 0.05,
+      "line_rescue_max_loss_slack": 0.0,
+      "line_rescue_max_visible_increase": 0.0,
+      "line_rescue_max_off_mask_increase": 0.0
+    }
+  },
+  "grouped_topology_probe": {
+    "variants": 10,
+    "summary": "results/m2_59_grouped_topology_probe/variant_summary.csv",
+    "best_hardfail0_by_mean_loss": "g_d0_c20_i095_s4_min12_p100",
+    "standalone_decision": "Do not use the grouped topology candidate as a standalone replacement. It improves precision but still increases jump and loses text coverage."
+  },
+  "public_ext33": {
+    "dataset": "datasets/public_benchmark_v1_ext33",
+    "result_dir": "results/public_benchmark_v1_ext33_m2_59_anchored_quality_rescue_selector",
+    "risk_audit_dir": "results/public_benchmark_v1_ext33_m2_59_anchored_quality_rescue_risk_audit",
+    "samples": 33,
+    "hard_fail": 0,
+    "changed_samples_vs_m2_58": 1,
+    "mean_unified_loss": 0.048581,
+    "mean_jump_count": 4.909091,
+    "mean_trim_count": 0.575758,
+    "mean_off_mask_stitch_length_mm": 0.199076,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98084,
+    "mean_stitch_precision_ratio": 0.793433,
+    "review_samples": 15,
+    "mean_risk_score": 0.12740429,
+    "worst_risk_score": 0.38129687,
+    "worst_sample_id": "qd_007"
+  },
+  "comparison_to_m2_58": {
+    "mean_delta_unified_loss": -0.000216,
+    "mean_delta_jump_count": 0.0,
+    "mean_delta_trim_count": -0.030303,
+    "mean_delta_off_mask_stitch_length_mm": 0.0,
+    "mean_delta_visible_connector_count": 0.0,
+    "mean_delta_coverage_ratio": 0.00164,
+    "mean_delta_stitch_precision_ratio": 0.000062,
+    "mean_risk_score": {
+      "m2_58": 0.12775735,
+      "m2_59": 0.12740429
+    },
+    "worst_risk_score": {
+      "m2_58": 0.39294779,
+      "m2_59": 0.38129687
+    }
+  },
+  "qd_007_change": {
+    "baseline_candidate": "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "m2_59_candidate": "grouped_topology_c20_i095",
+    "delta_unified_loss": -0.00713642,
+    "delta_jump_count": 0.0,
+    "delta_trim_count": -1.0,
+    "delta_off_mask_stitch_length_mm": 0.0,
+    "delta_visible_connector_count": 0.0,
+    "delta_coverage_ratio": 0.054124,
+    "delta_stitch_precision_ratio": 0.002058,
+    "decision": "Accepted by anchored quality rescue."
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_60_line_domain_segment_merger",
+    "reason": "M2.59 improves qd_007 without extra risk, but jump count remains 14. The next generator must merge fragmented skeleton segments into stroke-level paths instead of only reordering components.",
+    "components": [
+      "segment-level skeleton merger",
+      "endpoint pairing under jump/off-mask/coverage costs",
+      "separate thick text glyph path strategy",
+      "selector gate that requires no jump/off-mask regression"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_59_anchored_quality_rescue.md",
+    "grouped_topology_probe": "results/m2_59_grouped_topology_probe/",
+    "selector_outputs": "results/public_benchmark_v1_ext33_m2_59_anchored_quality_rescue_selector/",
+    "risk_audit": "results/public_benchmark_v1_ext33_m2_59_anchored_quality_rescue_risk_audit/"
+  }
+}
+
