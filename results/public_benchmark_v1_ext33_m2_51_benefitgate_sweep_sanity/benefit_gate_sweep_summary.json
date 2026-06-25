@@ -1,0 +1,57 @@
+{
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "model": "results/public_benchmark_v1_ext33_m2_47_profile_specific_heads_e180/m2_candidate_selector_model.json",
+  "profiles": [
+    "balanced",
+    "low_jump"
+  ],
+  "grid_size": 2916,
+  "min_mean_coverage": 0.9,
+  "max_hard_fail": 0,
+  "best_by_profile": [
+    {
+      "profile": "balanced",
+      "strength": 0.9,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.07091224,
+      "samples": 33,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.052103,
+      "mean_jump_count": 5.606061,
+      "mean_trim_count": 0.757576,
+      "mean_off_mask_stitch_length_mm": 0.047591,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.982012,
+      "mean_stitch_precision_ratio": 0.806207,
+      "coverage_gate_modes": "{\"benefit_tradeoff\": 1, \"safe_coverage\": 32}",
+      "chosen_counts": "{\"auto_evalrepair_r10_c20\": 1, \"auto_hybrid_skeleton_c12\": 1, \"mask_fill_edgewalk_nearestrow_adapt_t3_m6_rows16_p40\": 2, \"mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40\": 15, \"mask_fill_edgewalk_nearestrow_inset1_rows16_p40\": 2, \"mask_fill_edgewalk_nearestrow_inset2_rows16_p40\": 1, \"mask_fill_edgewalk_nearestrow_rows16_p40\": 5, \"mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40\": 3, \"mask_fill_edgewalk_rows16_p40\": 1, \"skeleton_c30_m4\": 2}"
+    },
+    {
+      "profile": "low_jump",
+      "strength": 0.9,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.06673915,
+      "samples": 33,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.048809,
+      "mean_jump_count": 4.909091,
+      "mean_trim_count": 0.606061,
+      "mean_off_mask_stitch_length_mm": 0.199076,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.979476,
+      "mean_stitch_precision_ratio": 0.793264,
+      "coverage_gate_modes": "{\"benefit_tradeoff\": 1, \"safe_coverage\": 32}",
+      "chosen_counts": "{\"auto_evalrepair_r10_c20\": 1, \"auto_hybrid_skeleton_c12\": 1, \"mask_fill_edgewalk_nearestrow_inset1_rows16_p40\": 5, \"mask_fill_edgewalk_nearestrow_inset2_rows16_p40\": 10, \"mask_fill_edgewalk_nearestrow_rows16_p40\": 7, \"mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40\": 5, \"mask_fill_edgewalk_rows16_p40\": 1, \"skeleton_c30_m20\": 1, \"skeleton_c30_m4\": 1, \"skeleton_c30_m8\": 1}"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "skeleton_path": "datasets\\public_benchmark_v1_ext33\\priors\\qd_004\\skeleton.png",
+  "connector_mask_path": "results\\public_benchmark_v1_ext33_eval_masks\\eval_masks\\qd_004_eval_mask_r7.png",
+  "output_dst": "results\\public_benchmark_v1_ext33_all_skeleton_connect30_trimcap20\\qd_004\\prediction_pre_trimcap.dst",
+  "components": 24,
+  "jump_commands_added": 6,
+  "safe_component_connects": 18,
+  "rejected_component_connects": 5,
+  "stitch_segments_added": 2775,
+  "target_width_mm": 90.0,
+  "max_stitch_mm": 3.2,
+  "max_connect_mm": 30.0,
+  "min_connect_inside_fraction": 0.95,
+  "min_component_pixels": 4,
+  "trim_cap": {
+    "input": "results\\public_benchmark_v1_ext33_all_skeleton_connect30_trimcap20\\qd_004\\prediction_pre_trimcap.dst",
+    "output": "results\\public_benchmark_v1_ext33_all_skeleton_connect30_trimcap20\\qd_004\\prediction.dst",
+    "trim_commands_before": 0,
+    "trim_commands_converted_to_jump": 0,
+    "max_trim_commands": 20
+  }
+}

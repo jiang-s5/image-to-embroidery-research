@@ -1,0 +1,172 @@
+{
+  "model_id": "m2_51_sweep_tuned_benefit_gate",
+  "date": "2026-06-25",
+  "status": "sweep_tuned_decision_safety_branch",
+  "description": "Reproducible threshold-sweep layer for the M2.50 benefit-aware coverage gate. It searches coverage floor, coverage penalty, minimum coverage, jump gain, precision, and loss slack under a coverage-constrained objective.",
+  "decision": "M2.51 is the recommended research protocol for low-jump profile tuning because it replaces manually chosen safety thresholds with a reproducible sweep. M2.42 remains the safest high-coverage default.",
+  "base_model": "results/public_benchmark_v1_ext33_m2_47_profile_specific_heads_e180/m2_candidate_selector_model.json",
+  "sweep_tool": "tools/sweep_m2_benefit_gate.py",
+  "sweep_objective": {
+    "formula": "loss + 0.003*jump + 0.002*trim + 0.010*off_mask + 0.002*visible + 0.500*coverage_deficit + hard_fail_penalty",
+    "min_mean_coverage": 0.9,
+    "max_hard_fail": 0
+  },
+  "recommended_apply_args": {
+    "exclude_hard_fail": true,
+    "profile_semantic_rerank": true,
+    "profile_rerank_strength": 0.9,
+    "profile_coverage_soft_penalty": true,
+    "profile_coverage_penalty_weight": 0.2,
+    "profile_min_coverage_by_name": {
+      "balanced": 0.85,
+      "low_jump": 0.85,
+      "strict_low_jump": 0.85
+    },
+    "profile_coverage_benefit_gate": true,
+    "profile_benefit_min_coverage": 0.6,
+    "profile_benefit_min_jump_gain": 2.0,
+    "profile_benefit_min_precision": 0.78,
+    "profile_benefit_max_loss_slack": 0.0
+  },
+  "incoming_review_sweep": {
+    "grid_size": 2916,
+    "best_balanced": {
+      "strength": 0.75,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.100081,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_coverage_ratio": 0.9207
+    },
+    "best_low_jump": {
+      "strength": 0.75,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.100081,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_coverage_ratio": 0.9207
+    }
+  },
+  "public_ext33_sanity_sweep": {
+    "grid_size": 2916,
+    "best_balanced": {
+      "strength": 0.9,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.07091224,
+      "mean_unified_loss": 0.052103,
+      "mean_jump_count": 5.606061,
+      "mean_coverage_ratio": 0.982012
+    },
+    "best_low_jump": {
+      "strength": 0.9,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.06673915,
+      "mean_unified_loss": 0.048809,
+      "mean_jump_count": 4.909091,
+      "mean_coverage_ratio": 0.979476
+    }
+  },
+  "incoming_review_applied": {
+    "balanced": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361,
+      "coverage_gate_modes": {
+        "benefit_tradeoff": 1,
+        "safe_coverage": 3
+      }
+    },
+    "low_jump": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361,
+      "coverage_gate_modes": {
+        "benefit_tradeoff": 1,
+        "safe_coverage": 3
+      }
+    }
+  },
+  "public_ext33_sanity_applied": {
+    "balanced": {
+      "samples": 33,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.052103,
+      "mean_jump_count": 5.606061,
+      "mean_trim_count": 0.757576,
+      "mean_off_mask_stitch_length_mm": 0.047591,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.982012,
+      "mean_stitch_precision_ratio": 0.806207,
+      "coverage_gate_modes": {
+        "benefit_tradeoff": 1,
+        "safe_coverage": 32
+      }
+    },
+    "low_jump": {
+      "samples": 33,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.048809,
+      "mean_jump_count": 4.909091,
+      "mean_trim_count": 0.606061,
+      "mean_off_mask_stitch_length_mm": 0.199076,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.979476,
+      "mean_stitch_precision_ratio": 0.793264,
+      "coverage_gate_modes": {
+        "benefit_tradeoff": 1,
+        "safe_coverage": 32
+      }
+    }
+  },
+  "comparison": {
+    "m2_50_public_low_jump_loss": 0.049587,
+    "m2_50_public_low_jump_jump": 4.848485,
+    "m2_50_public_low_jump_trim": 0.818182,
+    "m2_50_public_low_jump_coverage": 0.97405,
+    "m2_51_public_low_jump_loss": 0.048809,
+    "m2_51_public_low_jump_jump": 4.909091,
+    "m2_51_public_low_jump_trim": 0.606061,
+    "m2_51_public_low_jump_coverage": 0.979476,
+    "summary": "M2.51 keeps the incoming low-jump behavior and improves public sanity loss, trim, coverage, and precision with a tiny jump increase versus M2.50 low_jump."
+  },
+  "artifacts": {
+    "documentation": "docs/m2_51_sweep_tuned_benefit_gate.md",
+    "incoming_sweep": "results/incoming_review_eval_v1_m2_51_benefitgate_sweep/",
+    "public_sanity_sweep": "results/public_benchmark_v1_ext33_m2_51_benefitgate_sweep_sanity/",
+    "incoming_outputs": "results/incoming_review_eval_v1_m2_51_sweeptuned_gate_*_applied/",
+    "public_outputs": "results/public_benchmark_v1_ext33_m2_51_sweeptuned_gate_*_applied/"
+  }
+}
+

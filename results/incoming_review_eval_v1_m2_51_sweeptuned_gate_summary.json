@@ -1,0 +1,28 @@
+[
+    {
+        "profile":  "balanced",
+        "samples":  4,
+        "hard_fail":  0,
+        "loss":  0.073831,
+        "jump":  7.25,
+        "trim":  2.25,
+        "off_mask":  0.0,
+        "visible":  0.0,
+        "coverage":  0.9207,
+        "precision":  0.788361,
+        "gate_modes":  "{\"benefit_tradeoff\":1,\"safe_coverage\":3}"
+    },
+    {
+        "profile":  "low_jump",
+        "samples":  4,
+        "hard_fail":  0,
+        "loss":  0.073831,
+        "jump":  7.25,
+        "trim":  2.25,
+        "off_mask":  0.0,
+        "visible":  0.0,
+        "coverage":  0.9207,
+        "precision":  0.788361,
+        "gate_modes":  "{\"benefit_tradeoff\":1,\"safe_coverage\":3}"
+    }
+]

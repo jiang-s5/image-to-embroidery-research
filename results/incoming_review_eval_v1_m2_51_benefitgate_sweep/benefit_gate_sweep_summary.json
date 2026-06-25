@@ -1,0 +1,57 @@
+{
+  "dataset_dir": "datasets/incoming_review_eval_v1",
+  "model": "results/public_benchmark_v1_ext33_m2_47_profile_specific_heads_e180/m2_candidate_selector_model.json",
+  "profiles": [
+    "balanced",
+    "low_jump"
+  ],
+  "grid_size": 2916,
+  "min_mean_coverage": 0.9,
+  "max_hard_fail": 0,
+  "best_by_profile": [
+    {
+      "profile": "balanced",
+      "strength": 0.75,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.100081,
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361,
+      "coverage_gate_modes": "{\"benefit_tradeoff\": 1, \"safe_coverage\": 3}",
+      "chosen_counts": "{\"auto_evalrepair_r10_c20\": 1, \"mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40\": 1, \"mask_fill_edgewalk_nearestrow_rows16_p40\": 1, \"mask_fill_edgewalk_rows16_p40\": 1}"
+    },
+    {
+      "profile": "low_jump",
+      "strength": 0.75,
+      "coverage_floor": 0.85,
+      "penalty_weight": 0.2,
+      "min_coverage": 0.6,
+      "min_jump_gain": 2.0,
+      "min_precision": 0.78,
+      "max_loss_slack": 0.0,
+      "objective": 0.100081,
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361,
+      "coverage_gate_modes": "{\"benefit_tradeoff\": 1, \"safe_coverage\": 3}",
+      "chosen_counts": "{\"auto_evalrepair_r10_c20\": 1, \"mask_fill_edgewalk_nearestrow_inset2_rows16_p40\": 1, \"mask_fill_edgewalk_nearestrow_rows16_p40\": 1, \"mask_fill_edgewalk_rows16_p40\": 1}"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "samples": 33,
+  "hard_fail": 0,
+  "mean_predicted_score": -14.417849,
+  "mean_oracle_score": 0.053626,
+  "mean_unified_loss": 0.048809,
+  "mean_jump_count": 4.909091,
+  "mean_trim_count": 0.606061,
+  "mean_off_mask_stitch_length_mm": 0.199076,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.979476,
+  "mean_stitch_precision_ratio": 0.793264,
+  "chosen_counts": {
+    "mask_fill_edgewalk_nearestrow_rows16_p40": 7,
+    "mask_fill_edgewalk_nearestrow_inset2_rows16_p40": 10,
+    "mask_fill_edgewalk_nearestrow_inset1_rows16_p40": 5,
+    "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40": 5,
+    "auto_evalrepair_r10_c20": 1,
+    "auto_hybrid_skeleton_c12": 1,
+    "mask_fill_edgewalk_rows16_p40": 1,
+    "skeleton_c30_m20": 1,
+    "skeleton_c30_m4": 1,
+    "skeleton_c30_m8": 1
+  },
+  "task_profile": "low_jump",
+  "profile_semantic_rerank": true,
+  "profile_rerank_strength": 0.9,
+  "profile_coverage_constrained_rerank": false,
+  "profile_coverage_soft_penalty": true,
+  "profile_coverage_benefit_gate": true,
+  "profile_min_coverage": -1.0,
+  "profile_min_coverage_by_name": {
+    "balanced": 0.85,
+    "low_jump": 0.85,
+    "strict_low_jump": 0.85
+  },
+  "profile_coverage_fallback_margin": 0.03,
+  "profile_coverage_penalty_weight": 0.2,
+  "profile_benefit_min_coverage": 0.6,
+  "profile_benefit_min_jump_gain": 2.0,
+  "profile_benefit_min_precision": 0.78,
+  "profile_benefit_max_loss_slack": 0.0,
+  "coverage_constraint_failed_samples": 0,
+  "coverage_gate_modes": {
+    "benefit_tradeoff": 1,
+    "safe_coverage": 32
+  }
+}

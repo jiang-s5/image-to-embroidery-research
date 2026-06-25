@@ -1,0 +1,23 @@
+{
+  "trim_cap": {
+    "input": "results\\public_benchmark_v1_ext33_auto_hybrid_skeleton_connect12_trimcap20\\omj_001\\prediction_pre_trimcap.dst",
+    "output": "results\\public_benchmark_v1_ext33_auto_hybrid_skeleton_connect12_trimcap20\\omj_001\\prediction.dst",
+    "trim_commands_before": 9,
+    "trim_commands_converted_to_jump": 0,
+    "max_trim_commands": 20
+  },
+  "branch_selection": {
+    "branch": "flat_icon_fill",
+    "confidence": 1.0,
+    "line_score": 0.0,
+    "reasons": [],
+    "features": {
+      "mask_area_ratio": 0.29913330078125,
+      "skeleton_area_ratio": 0.002593994140625,
+      "skeleton_to_mask_ratio": 0.008671699653132013,
+      "skeleton_components": 49,
+      "large_skeleton_components": 3,
+      "largest_skeleton_component": 97
+    }
+  }
+}
