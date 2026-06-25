@@ -33,6 +33,91 @@ def annotate_selected(row: dict[str, Any], sample_id: str, config_id: int, objec
     return out
 
 
+def annotate_config_heldout(row: dict[str, Any], sample_id: str, config_id: int, objective: float, config: dict[str, Any]) -> dict[str, Any]:
+    out = annotate_selected(row, sample_id, config_id, objective, config)
+    out["config_id"] = config_id
+    for key, value in config.items():
+        out[f"config.{key}"] = value
+    return out
+
+
+def config_summary_row(config_id: int, config: dict[str, Any], rows: list[dict[str, Any]], train_objectives: list[float]) -> dict[str, Any]:
+    summary = summarize_selected(rows)
+    row: dict[str, Any] = {
+        "config_id": config_id,
+        "heldout_samples": summary.get("samples", 0),
+        "mean_train_objective": round(sum(train_objectives) / max(1, len(train_objectives)), 8),
+        **{f"config.{key}": value for key, value in config.items()},
+        **{key: value for key, value in summary.items() if key not in {"chosen_counts", "coverage_profile_counts"}},
+    }
+    row["chosen_counts_json"] = json.dumps(summary.get("chosen_counts", {}), ensure_ascii=False, sort_keys=True)
+    row["coverage_profile_counts_json"] = json.dumps(summary.get("coverage_profile_counts", {}), ensure_ascii=False, sort_keys=True)
+    return row
+
+
+def dominates(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    minimize_keys = [
+        "hard_fail",
+        "mean_unified_loss",
+        "mean_jump_count",
+        "mean_trim_count",
+        "mean_off_mask_stitch_length_mm",
+        "mean_visible_connector_count",
+    ]
+    maximize_keys = [
+        "mean_coverage_ratio",
+        "mean_stitch_precision_ratio",
+    ]
+    better_or_equal = True
+    strictly_better = False
+    for key in minimize_keys:
+        l_val = safe_float(left.get(key))
+        r_val = safe_float(right.get(key))
+        if l_val > r_val:
+            better_or_equal = False
+            break
+        if l_val < r_val:
+            strictly_better = True
+    if better_or_equal:
+        for key in maximize_keys:
+            l_val = safe_float(left.get(key))
+            r_val = safe_float(right.get(key))
+            if l_val < r_val:
+                better_or_equal = False
+                break
+            if l_val > r_val:
+                strictly_better = True
+    return better_or_equal and strictly_better
+
+
+def annotate_pareto(summary_rows: list[dict[str, Any]], coverage_target: float, precision_target: float) -> list[dict[str, Any]]:
+    annotated: list[dict[str, Any]] = []
+    for row in summary_rows:
+        out = dict(row)
+        out["pareto_dominated"] = any(dominates(other, row) for other in summary_rows if other is not row)
+        coverage_deficit = max(0.0, coverage_target - safe_float(row.get("mean_coverage_ratio")))
+        precision_deficit = max(0.0, precision_target - safe_float(row.get("mean_stitch_precision_ratio")))
+        out["m2_43_pareto_score"] = round(
+            safe_float(row.get("mean_unified_loss"))
+            + 0.25 * coverage_deficit
+            + 0.10 * precision_deficit
+            + 0.04 * safe_float(row.get("mean_off_mask_stitch_length_mm"))
+            + 0.01 * safe_float(row.get("mean_visible_connector_count"))
+            + 0.006 * (safe_float(row.get("mean_jump_count")) / 20.0)
+            + 0.006 * (safe_float(row.get("mean_trim_count")) / 8.0)
+            + 1.0 * safe_float(row.get("hard_fail")),
+            8,
+        )
+        annotated.append(out)
+    return annotated
+
+
+def best_summary_by(rows: list[dict[str, Any]], key: str, reverse: bool = False) -> dict[str, Any] | None:
+    if not rows:
+        return None
+    return min(rows, key=lambda row: safe_float(row.get(key)) * (-1.0 if reverse else 1.0))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Leave-one-out evaluation for calibrated M2 candidate selector.")
     parser.add_argument("--dataset-dir", required=True)
@@ -76,6 +161,8 @@ def main() -> int:
     parser.add_argument("--mask-fill-max-trim-count", type=float, default=5.0)
     parser.add_argument("--mask-fill-min-precision", type=float, default=0.68)
     parser.add_argument("--mask-fill-min-coverage", type=float, default=0.78)
+    parser.add_argument("--pareto-coverage-target", type=float, default=0.82)
+    parser.add_argument("--pareto-precision-target", type=float, default=0.78)
     args = parser.parse_args()
 
     dataset_dir = Path(args.dataset_dir)
@@ -98,12 +185,16 @@ def main() -> int:
     selected_rows: list[dict[str, Any]] = []
     best_config_rows: list[dict[str, Any]] = []
     all_config_rows: list[dict[str, Any]] = []
+    heldout_rows_by_config: dict[int, list[dict[str, Any]]] = {}
+    train_objectives_by_config: dict[int, list[float]] = {}
+    config_by_id: dict[int, dict[str, Any]] = {}
 
     for sample_id in sorted(groups):
         train_rows = [row for row in rows if str(row["sample_id"]) != sample_id]
         held_rows = groups[sample_id]
         best: tuple[float, int, dict[str, Any], dict[str, Any]] | None = None
         for config_id, config in enumerate(configs):
+            config_by_id[config_id] = config
             selected_train = select_rows(
                 train_rows,
                 config,
@@ -120,7 +211,25 @@ def main() -> int:
             )
             train_summary = summarize_selected(selected_train)
             objective = selection_objective(train_summary, args.selection_coverage_target)
+            train_objectives_by_config.setdefault(config_id, []).append(objective)
             all_config_rows.append(config_row(config_id, config, objective, train_summary, sample_id))
+            selected_held_for_config = select_rows(
+                held_rows,
+                config,
+                args.flat_min_coverage,
+                args.line_min_coverage,
+                args.exclude_hard_fail,
+                args.enforce_coverage_floor,
+                args.enforce_adaptive_coverage_floor,
+                args.coverage_floor_tolerance,
+                args.coverage_floor_mode,
+                coverage_floor_line_sources,
+                args.style_aware_hard_gate,
+                args.mask_fill_hard_gate,
+            )
+            heldout_rows_by_config.setdefault(config_id, []).extend(
+                annotate_config_heldout(row, sample_id, config_id, objective, config) for row in selected_held_for_config
+            )
             if best is None or objective < best[0]:
                 best = (objective, config_id, config, train_summary)
         if best is None:
@@ -162,6 +271,8 @@ def main() -> int:
         "jump_weights": args.jump_weights,
         "trim_weights": args.trim_weights,
         "off_mask_weights": args.off_mask_weights,
+        "pareto_coverage_target": args.pareto_coverage_target,
+        "pareto_precision_target": args.pareto_precision_target,
         "leave_one_out": summarize_selected(selected_rows),
         "best_config_counts": {},
     }
@@ -173,9 +284,27 @@ def main() -> int:
         6,
     )
 
+    config_summary_rows = [
+        config_summary_row(config_id, config_by_id[config_id], heldout_rows_by_config.get(config_id, []), train_objectives_by_config.get(config_id, []))
+        for config_id in sorted(config_by_id)
+    ]
+    config_summary_rows = annotate_pareto(config_summary_rows, args.pareto_coverage_target, args.pareto_precision_target)
+    pareto_rows = [row for row in config_summary_rows if not row.get("pareto_dominated")]
+    pareto_rows = sorted(pareto_rows, key=lambda row: safe_float(row.get("m2_43_pareto_score")))
+    config_summary_rows = sorted(config_summary_rows, key=lambda row: safe_float(row.get("m2_43_pareto_score")))
+    summary["config_summary_count"] = len(config_summary_rows)
+    summary["pareto_front_count"] = len(pareto_rows)
+    summary["m2_43_recommended_config"] = pareto_rows[0] if pareto_rows else None
+    summary["best_mean_unified_loss_config"] = best_summary_by(config_summary_rows, "mean_unified_loss")
+    summary["best_mean_precision_config"] = best_summary_by(config_summary_rows, "mean_stitch_precision_ratio", reverse=True)
+    summary["best_mean_coverage_config"] = best_summary_by(config_summary_rows, "mean_coverage_ratio", reverse=True)
+
     write_csv(selected_rows, output_dir / "loo_selected_rows.csv")
     write_csv(best_config_rows, output_dir / "loo_best_config_rows.csv")
     write_csv(all_config_rows, output_dir / "loo_all_config_rows.csv")
+    write_csv([row for rows_for_config in heldout_rows_by_config.values() for row in rows_for_config], output_dir / "loo_config_selected_rows.csv")
+    write_csv(config_summary_rows, output_dir / "loo_config_summary_rows.csv")
+    write_csv(pareto_rows, output_dir / "loo_config_pareto_rows.csv")
     (output_dir / "loo_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0

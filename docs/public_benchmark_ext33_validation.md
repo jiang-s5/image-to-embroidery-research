@@ -167,12 +167,39 @@ M2.42 retunes the M2.41 selector with a stronger precision term. It keeps the sa
 
 M2.42 is therefore the recommended current selector config, while M2.34 remains the precision-safer baseline. See `docs/m2_42_precision_safeadt_selector.md`.
 
+
+## M2.43 Pareto-Aware Selector Audit
+
+M2.43 adds held-out config summary and Pareto-front reporting to the LOO selector evaluation. It does not introduce a new generator. Its purpose is to make the loss/coverage/precision tradeoff explicit instead of relying on one selected LOO result.
+
+New outputs from `tools/eval_m2_calibrated_selector_loo.py`:
+
+- `loo_config_selected_rows.csv`
+- `loo_config_summary_rows.csv`
+- `loo_config_pareto_rows.csv`
+
+Public ext33 result:
+
+| Selector | Samples | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M2.42 dynamic LOO | 33 | 0.049160 | 5.485 | 0.424 | 0.0500 | 0.9787 | 0.8015 | 0 |
+| M2.43 Pareto fixed config | 33 | 0.049596 | 5.394 | 0.697 | 0.0300 | 0.9657 | 0.8069 | 0 |
+
+Incoming review result:
+
+| Selector | Samples | Loss | Jump | Trim | Off-Mask mm | Coverage | Precision | Hard Fail |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| M2.42 incoming | 4 | 0.074710 | 8.250 | 1.000 | 0.0000 | 0.9965 | 0.7535 | 0 |
+| M2.43 incoming Pareto | 4 | 0.074710 | 8.250 | 1.000 | 0.0000 | 0.9965 | 0.7535 | 0 |
+
+Decision: M2.42 remains the default current selector. M2.43 is a reporting and optional public-balanced configuration step: it improves public off-mask and precision at the cost of slightly higher loss, lower coverage, and more trims. See `docs/m2_43_pareto_safeadt_selector.md`.
+
 ## Current Decision
 
 For reporting and GitHub documentation:
 
 1. Use M2.1 as the historical baseline, not the final promoted system.
-2. Use M2.42 as the current recommended selector config; keep M2.34 as the precision-safer baseline and M2.41 as the first safe_dt candidate proof.
+2. Use M2.42 as the current recommended selector config; keep M2.43 as the Pareto audit / optional public-balanced setting, M2.34 as the precision-safer baseline, and M2.41 as the first safe_dt candidate proof.
 3. Record M2.39/M2.40 as learned-selector experiments that expose a loss versus
    coverage tradeoff.
 4. Treat the 7-sample geometry-prior experiment as a negative result showing
