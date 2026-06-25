@@ -1,0 +1,56 @@
+{
+  "model_id": "m2_56_line_domain_stroke_candidate_probe",
+  "date": "2026-06-25",
+  "status": "candidate_generator_probe_negative_result",
+  "description": "A line-domain skeleton/running-stitch candidate generator probe. It tests whether pure skeleton tracing can improve QuickDraw and rendered-text failures identified by M2.54 and M2.55.",
+  "base_model": "m2_55_line_domain_guard",
+  "tool": "tools/run_line_domain_stroke_candidate.py",
+  "decision": "Do not promote M2.56 to the current default. The best tested line-stroke candidate improves precision but substantially worsens jump count, loss, and coverage on QuickDraw.",
+  "current_default_remains": "m2_53_cross_eval_robust_policy + m2_55_line_domain_guard",
+  "summary": {
+    "variants_tested": 10,
+    "best_probe_variant": "d0_c12_i090_min30",
+    "baseline_public_low_jump": {
+      "mean_loss": 0.048809,
+      "mean_jump": 4.909091,
+      "mean_coverage": 0.979476,
+      "mean_precision": 0.793264,
+      "quickdraw_loss": 0.064707,
+      "quickdraw_jump": 7.25,
+      "quickdraw_coverage": 0.969279,
+      "quickdraw_precision": 0.605459,
+      "qd_007_loss": 0.12888579,
+      "qd_007_jump": 14.0,
+      "qd_007_precision": 0.661752
+    },
+    "best_probe_result": {
+      "mean_loss": 0.080492,
+      "mean_jump": 8.454545,
+      "mean_coverage": 0.883959,
+      "mean_precision": 0.847001,
+      "quickdraw_loss": 0.160356,
+      "quickdraw_jump": 17.75,
+      "quickdraw_coverage": 0.837139,
+      "quickdraw_precision": 0.69186,
+      "qd_007_loss": 0.20318683,
+      "qd_007_jump": 23,
+      "qd_007_quality": "warning"
+    }
+  },
+  "interpretation": "Pure skeleton tracing is too fragmented for QuickDraw and under-covers thick text glyphs. The next stage should group skeleton components into strokes before path planning.",
+  "next_recommended_stage": {
+    "model_id": "m2_57_stroke_grouping_topology_planner",
+    "components": [
+      "skeleton component clustering",
+      "endpoint pairing",
+      "contour-to-centerline stroke grouping",
+      "minimum-jump stroke ordering",
+      "text-specific thick-stroke strategy"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_56_line_domain_stroke_candidate_probe.md",
+    "tool": "tools/run_line_domain_stroke_candidate.py",
+    "summary_dir": "results/m2_56_line_domain_stroke_candidate_probe/"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "variants": 10,
+  "best_probe_variant_by_quickdraw_loss": {
+    "variant": "d0_c12_i090_min30",
+    "result_dir": "results/public_benchmark_v1_ext33_m2_56_line_stroke_d0_c12_i090_min30",
+    "hard_fail": 0,
+    "mean_loss": 0.080492,
+    "mean_jump": 8.454545,
+    "mean_off_mask": 0.184791,
+    "mean_visible": 0.0,
+    "mean_coverage": 0.883959,
+    "mean_precision": 0.847001,
+    "quickdraw_loss": 0.160356,
+    "quickdraw_jump": 17.75,
+    "quickdraw_coverage": 0.837139,
+    "quickdraw_precision": 0.69186,
+    "text_loss": 0.079016,
+    "text_jump": 9.4,
+    "text_coverage": 0.57968,
+    "text_precision": 0.941071,
+    "qd_007_loss": "0.20318683",
+    "qd_007_jump": "23",
+    "qd_007_off_mask": "0.0",
+    "qd_007_visible": "0",
+    "qd_007_quality": "warning"
+  },
+  "baseline_public_low_jump": {
+    "mean_loss": 0.048809,
+    "mean_jump": 4.909091,
+    "mean_coverage": 0.979476,
+    "mean_precision": 0.793264,
+    "quickdraw_loss": 0.064707,
+    "quickdraw_jump": 7.25,
+    "quickdraw_precision": 0.605459,
+    "qd_007_loss": 0.12888579,
+    "qd_007_jump": 14.0,
+    "quickdraw_coverage": 0.969279,
+    "qd_007_precision": 0.661752
+  },
+  "conclusion": "Line stroke tracing increases line-like precision in some text cases but does not beat the existing low-jump candidate pool; QuickDraw jump counts remain too high, especially qd_007."
+}
