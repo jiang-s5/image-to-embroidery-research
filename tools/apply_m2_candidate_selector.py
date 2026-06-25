@@ -18,6 +18,17 @@ from train_m2_candidate_selector import (
     selectable_candidates,
 )
 
+DEFAULT_PROFILE_COVERAGE_FLOORS: dict[str, float] = {
+    "low_loss": 0.90,
+    "balanced": 0.90,
+    "precision": 0.88,
+    "coverage": 0.97,
+    "low_jump": 0.90,
+    "strict_precision": 0.85,
+    "strict_coverage": 0.99,
+    "strict_low_jump": 0.90,
+}
+
 
 def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -129,6 +140,8 @@ def semantic_rerank(
     ranked: list[tuple[dict[str, Any], float]],
     profile: str,
     strength: float,
+    coverage_penalty_floor: float = -1.0,
+    coverage_penalty_weight: float = 0.0,
 ) -> list[tuple[dict[str, Any], float, float, float]]:
     if not ranked:
         return []
@@ -154,9 +167,73 @@ def semantic_rerank(
     for index, (row, predicted_score) in enumerate(ranked):
         learned_rank_score = index / denom
         semantic_score = profile_semantic_score(row, profile, ranges)
+        if coverage_penalty_floor >= 0.0 and coverage_penalty_weight > 0.0:
+            coverage = safe_float(row.get("coverage_ratio"))
+            coverage_deficit = max(0.0, coverage_penalty_floor - coverage)
+            semantic_score += coverage_penalty_weight * coverage_deficit
         calibrated_score = (1.0 - strength) * learned_rank_score + strength * semantic_score
         reranked.append((row, predicted_score, semantic_score, calibrated_score))
     return sorted(reranked, key=lambda item: item[3])
+
+
+def parse_profile_thresholds(text: str) -> dict[str, float]:
+    thresholds: dict[str, float] = {}
+    for raw_item in text.split(","):
+        item = raw_item.strip()
+        if not item:
+            continue
+        if "=" not in item:
+            raise ValueError(f"Expected PROFILE=VALUE threshold entry, got: {item!r}")
+        name, value_text = item.split("=", 1)
+        thresholds[name.strip()] = safe_float(value_text.strip())
+    return thresholds
+
+
+def profile_coverage_floor(
+    profile: str,
+    global_floor: float,
+    profile_floors: dict[str, float],
+    use_defaults: bool,
+) -> float:
+    if profile in profile_floors:
+        return profile_floors[profile]
+    if global_floor >= 0.0:
+        return global_floor
+    if use_defaults:
+        return DEFAULT_PROFILE_COVERAGE_FLOORS.get(profile, 0.90)
+    return -1.0
+
+
+def choose_with_coverage_constraint(
+    semantic_ranked: list[tuple[dict[str, Any], float, float, float]],
+    min_coverage: float,
+    fallback_margin: float,
+) -> tuple[dict[str, Any], float, float, float, bool, float]:
+    if not semantic_ranked:
+        raise ValueError("Cannot choose from an empty ranked list.")
+    if min_coverage < 0.0:
+        chosen, predicted_score, semantic_score, calibrated_score = semantic_ranked[0]
+        return chosen, predicted_score, semantic_score, calibrated_score, True, safe_float(chosen.get("coverage_ratio"))
+
+    valid = [
+        item for item in semantic_ranked
+        if safe_float(item[0].get("coverage_ratio")) + 1e-9 >= min_coverage
+    ]
+    if valid:
+        chosen, predicted_score, semantic_score, calibrated_score = valid[0]
+        return chosen, predicted_score, semantic_score, calibrated_score, True, safe_float(chosen.get("coverage_ratio"))
+
+    relaxed_floor = max(0.0, min_coverage - max(0.0, fallback_margin))
+    relaxed = [
+        item for item in semantic_ranked
+        if safe_float(item[0].get("coverage_ratio")) + 1e-9 >= relaxed_floor
+    ]
+    if relaxed:
+        chosen, predicted_score, semantic_score, calibrated_score = relaxed[0]
+        return chosen, predicted_score, semantic_score, calibrated_score, False, safe_float(chosen.get("coverage_ratio"))
+
+    chosen, predicted_score, semantic_score, calibrated_score = semantic_ranked[0]
+    return chosen, predicted_score, semantic_score, calibrated_score, False, safe_float(chosen.get("coverage_ratio"))
 
 
 def main() -> int:
@@ -190,6 +267,13 @@ def main() -> int:
     parser.add_argument("--task-profile", default="", help="Task-conditioned profile to apply when the model was trained with --task-profiles.")
     parser.add_argument("--profile-semantic-rerank", action="store_true", help="Apply profile-specific metric calibration after learned ranking.")
     parser.add_argument("--profile-rerank-strength", type=float, default=0.65, help="Blend strength for --profile-semantic-rerank. 0 keeps learned rank; 1 uses semantic metric score.")
+    parser.add_argument("--profile-coverage-constrained-rerank", action="store_true", help="After semantic reranking, choose the best candidate that satisfies a profile-aware coverage floor.")
+    parser.add_argument("--profile-coverage-soft-penalty", action="store_true", help="Add a profile-aware soft coverage deficit penalty to semantic reranking.")
+    parser.add_argument("--profile-min-coverage", type=float, default=-1.0, help="Global coverage floor for --profile-coverage-constrained-rerank. Negative uses defaults or per-profile overrides.")
+    parser.add_argument("--profile-min-coverage-by-name", default="", help="Comma-separated profile coverage floors such as balanced=0.93,low_jump=0.90,coverage=0.98.")
+    parser.add_argument("--profile-coverage-fallback-margin", type=float, default=0.03, help="If no candidate satisfies the coverage floor, allow this much floor relaxation before falling back to the unconstrained top candidate.")
+    parser.add_argument("--profile-coverage-penalty-weight", type=float, default=0.35, help="Soft coverage deficit penalty weight used with --profile-coverage-soft-penalty.")
+    parser.add_argument("--disable-default-profile-coverage-floors", action="store_true", help="Disable built-in profile coverage floors when --profile-min-coverage is negative.")
     args = parser.parse_args()
 
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
@@ -225,6 +309,7 @@ def main() -> int:
             model = profile_models[active_task_profile]
     elif args.task_profile:
         raise ValueError("--task-profile can only be used with a task-conditioned selector model.")
+    profile_min_coverage_by_name = parse_profile_thresholds(args.profile_min_coverage_by_name)
     coverage_floor_line_sources = {item.strip() for item in args.coverage_floor_line_sources.split(",") if item.strip()}
     selected: list[dict[str, Any]] = []
     for sample_id, group in sorted(groups_by_sample(rows).items()):
@@ -255,10 +340,39 @@ def main() -> int:
         ranked = sorted(zip(selectable, predictions), key=lambda item: item[1], reverse=reverse)
         semantic_score = 0.0
         calibrated_score = 0.0
+        coverage_constraint_enabled = bool(args.profile_coverage_constrained_rerank)
+        coverage_constraint_min = -1.0
+        coverage_constraint_met = True
         if args.profile_semantic_rerank:
             profile_name = active_task_profile or "balanced"
-            semantic_ranked = semantic_rerank(ranked, profile_name, max(0.0, min(1.0, args.profile_rerank_strength)))
-            chosen, predicted_score, semantic_score, calibrated_score = semantic_ranked[0]
+            coverage_constraint_min = profile_coverage_floor(
+                profile_name,
+                args.profile_min_coverage,
+                profile_min_coverage_by_name,
+                not args.disable_default_profile_coverage_floors,
+            )
+            semantic_ranked = semantic_rerank(
+                ranked,
+                profile_name,
+                max(0.0, min(1.0, args.profile_rerank_strength)),
+                coverage_constraint_min if args.profile_coverage_soft_penalty else -1.0,
+                max(0.0, args.profile_coverage_penalty_weight),
+            )
+            if coverage_constraint_enabled:
+                (
+                    chosen,
+                    predicted_score,
+                    semantic_score,
+                    calibrated_score,
+                    coverage_constraint_met,
+                    _coverage_value,
+                ) = choose_with_coverage_constraint(
+                    semantic_ranked,
+                    coverage_constraint_min,
+                    args.profile_coverage_fallback_margin,
+                )
+            else:
+                chosen, predicted_score, semantic_score, calibrated_score = semantic_ranked[0]
         else:
             chosen, predicted_score = ranked[0]
         sample_out = output_dir / sample_id
@@ -278,6 +392,9 @@ def main() -> int:
                 "predicted_score": round(float(predicted_score), 8),
                 "semantic_score": round(float(semantic_score), 8),
                 "calibrated_score": round(float(calibrated_score), 8),
+                "coverage_constraint_enabled": coverage_constraint_enabled,
+                "coverage_constraint_min": coverage_constraint_min,
+                "coverage_constraint_met": coverage_constraint_met,
                 "oracle_score": chosen["oracle_score"],
                 "quality_level": chosen["oracle_quality_level"],
                 "unified_loss": chosen["unified_loss"],
@@ -295,6 +412,16 @@ def main() -> int:
     summary["task_profile"] = active_task_profile
     summary["profile_semantic_rerank"] = bool(args.profile_semantic_rerank)
     summary["profile_rerank_strength"] = args.profile_rerank_strength
+    summary["profile_coverage_constrained_rerank"] = bool(args.profile_coverage_constrained_rerank)
+    summary["profile_coverage_soft_penalty"] = bool(args.profile_coverage_soft_penalty)
+    summary["profile_min_coverage"] = args.profile_min_coverage
+    summary["profile_min_coverage_by_name"] = profile_min_coverage_by_name
+    summary["profile_coverage_fallback_margin"] = args.profile_coverage_fallback_margin
+    summary["profile_coverage_penalty_weight"] = args.profile_coverage_penalty_weight
+    summary["coverage_constraint_failed_samples"] = sum(
+        1 for row in selected
+        if row.get("coverage_constraint_enabled") and not row.get("coverage_constraint_met")
+    )
     (output_dir / "learned_selected_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0

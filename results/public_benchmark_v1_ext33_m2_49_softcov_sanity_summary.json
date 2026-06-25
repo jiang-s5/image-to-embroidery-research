@@ -1,0 +1,26 @@
+[
+    {
+        "profile":  "balanced",
+        "samples":  33,
+        "hard_fail":  0,
+        "loss":  0.052103,
+        "jump":  5.606061,
+        "trim":  0.757576,
+        "off_mask":  0.047591,
+        "visible":  0.0,
+        "coverage":  0.982012,
+        "precision":  0.806207
+    },
+    {
+        "profile":  "low_jump",
+        "samples":  33,
+        "hard_fail":  0,
+        "loss":  0.04624,
+        "jump":  4.515152,
+        "trim":  0.727273,
+        "off_mask":  0.199076,
+        "visible":  0.0,
+        "coverage":  0.925772,
+        "precision":  0.799349
+    }
+]

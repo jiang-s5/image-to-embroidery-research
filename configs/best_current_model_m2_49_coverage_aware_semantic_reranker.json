@@ -1,0 +1,171 @@
+{
+  "model_id": "m2_49_coverage_aware_semantic_reranker",
+  "date": "2026-06-25",
+  "status": "coverage_aware_semantic_decoding_branch",
+  "description": "Apply-time coverage-aware semantic reranker for M2.47 profile-specific heads. It extends M2.48 with soft and hard coverage controls so profile reranking cannot silently optimize loss/jump by collapsing coverage.",
+  "decision": "M2.49 is the best current controllable low-jump semantic branch. M2.42 remains the safest high-coverage default.",
+  "base_model": "results/public_benchmark_v1_ext33_m2_47_profile_specific_heads_e180/m2_candidate_selector_model.json",
+  "external_dataset": "datasets/incoming_review_eval_v1",
+  "candidate_pool": [
+    "mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_rows16_p40",
+    "mask_fill_edgewalk_rows16_p40",
+    "auto_evalrepair_r10_c20",
+    "skeleton_c30_m20",
+    "skeleton_c30_m4",
+    "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_adapt_t3_m6_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40",
+    "skeleton_c30_m12",
+    "skeleton_c30_m8",
+    "auto_hybrid_skeleton_c12"
+  ],
+  "recommended_apply_args": {
+    "exclude_hard_fail": true,
+    "profile_semantic_rerank": true,
+    "profile_rerank_strength": 0.9,
+    "profile_coverage_soft_penalty": true,
+    "profile_coverage_penalty_weight": 0.35,
+    "profile_min_coverage_by_name": {
+      "balanced": 0.85,
+      "low_jump": 0.85,
+      "strict_low_jump": 0.85
+    }
+  },
+  "incoming_review_applied": {
+    "low_loss": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07471,
+      "mean_jump_count": 8.25,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.996541,
+      "mean_stitch_precision_ratio": 0.753519
+    },
+    "balanced": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361
+    },
+    "precision": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.091316,
+      "mean_jump_count": 9.0,
+      "mean_trim_count": 2.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.863788,
+      "mean_stitch_precision_ratio": 0.858754
+    },
+    "coverage": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.076681,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.994577,
+      "mean_stitch_precision_ratio": 0.772159
+    },
+    "low_jump": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361
+    },
+    "strict_precision": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.091321,
+      "mean_jump_count": 9.0,
+      "mean_trim_count": 2.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.852231,
+      "mean_stitch_precision_ratio": 0.865129
+    },
+    "strict_coverage": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07829,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.995549,
+      "mean_stitch_precision_ratio": 0.781068
+    },
+    "strict_low_jump": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.073831,
+      "mean_jump_count": 7.25,
+      "mean_trim_count": 2.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9207,
+      "mean_stitch_precision_ratio": 0.788361
+    }
+  },
+  "public_ext33_sanity": {
+    "note": "This is a non-LOO sanity check only because the selector was trained from public ext33 candidate tables.",
+    "balanced": {
+      "samples": 33,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.052103,
+      "mean_jump_count": 5.606061,
+      "mean_trim_count": 0.757576,
+      "mean_off_mask_stitch_length_mm": 0.047591,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.982012,
+      "mean_stitch_precision_ratio": 0.806207
+    },
+    "low_jump": {
+      "samples": 33,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.04624,
+      "mean_jump_count": 4.515152,
+      "mean_trim_count": 0.727273,
+      "mean_off_mask_stitch_length_mm": 0.199076,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.925772,
+      "mean_stitch_precision_ratio": 0.799349
+    }
+  },
+  "comparison": {
+    "m2_42_incoming_loss": 0.07471,
+    "m2_42_incoming_jump": 8.25,
+    "m2_42_incoming_coverage": 0.996541,
+    "m2_49_low_jump_loss": 0.073831,
+    "m2_49_low_jump_jump": 7.25,
+    "m2_49_low_jump_coverage": 0.9207,
+    "summary": "M2.49 preserves the M2.48 low-jump tradeoff while making coverage risk an explicit apply-time term. It should be reported as a controlled tradeoff branch, not a universal replacement for M2.42."
+  },
+  "artifacts": {
+    "documentation": "docs/m2_49_coverage_aware_semantic_reranker.md",
+    "incoming_outputs": "results/incoming_review_eval_v1_m2_49_softcov_s090_f085_w035_*_applied",
+    "incoming_summary_csv": "results/incoming_review_eval_v1_m2_49_softcov_s090_f085_w035_summary.csv",
+    "incoming_summary_json": "results/incoming_review_eval_v1_m2_49_softcov_s090_f085_w035_summary.json",
+    "soft_sweep_csv": "results/incoming_review_eval_v1_m2_49_covsemantic_soft_sweep.csv",
+    "public_sanity_csv": "results/public_benchmark_v1_ext33_m2_49_softcov_sanity_summary.csv",
+    "public_sanity_json": "results/public_benchmark_v1_ext33_m2_49_softcov_sanity_summary.json"
+  }
+}
+

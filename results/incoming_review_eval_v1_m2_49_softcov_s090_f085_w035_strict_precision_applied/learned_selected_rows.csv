@@ -1,0 +1,5 @@
+﻿sample_id,source_name,category,task_profile,chosen_candidate,predicted_score,semantic_score,calibrated_score,coverage_constraint_enabled,coverage_constraint_min,coverage_constraint_met,oracle_score,quality_level,unified_loss,jump_count,trim_count,off_mask_stitch_length_mm,visible_connector_count,coverage_ratio,stitch_precision_ratio
+pair_006,Incoming paired review,pair_006,strict_precision,auto_evalrepair_r10_c20,-15.16921868,0.17504669,0.20369586,False,0.85,True,0.0593456,excellent,0.038,1,5,0.0,0,0.696636,0.967827
+pair_008,Incoming paired review,pair_008,strict_precision,mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40,9.50982618,0.19362503,0.18259586,False,0.85,True,0.19019241,warning,0.19019241,20,4,0.0,0,0.904201,0.8309
+pair_010,Incoming paired review,pair_010,strict_precision,mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40,-14.95917032,0.29706415,0.26735774,False,0.85,True,0.08108601,excellent,0.08108601,9,1,0.0,0,0.997482,0.94671
+pair_011a,Incoming paired review,pair_011a,strict_precision,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,4.97580677,0.10970049,0.14488429,False,0.85,True,0.05600681,excellent,0.05600681,6,1,0.0,0,0.810604,0.715081
