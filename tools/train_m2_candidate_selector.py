@@ -15,6 +15,49 @@ import numpy as np
 from auto_planner_branch import compute_branch_features, select_planner_branch
 from rerank_planner_candidates import score_candidate
 
+TASK_PROFILE_PRESETS: dict[str, dict[str, float]] = {
+    "low_loss": {
+        "coverage": 0.0,
+        "precision": 0.0,
+        "off_mask": 0.0,
+        "visible": 0.0,
+        "jump": 0.0,
+        "trim": 0.0,
+    },
+    "balanced": {
+        "coverage": 0.10,
+        "precision": 0.05,
+        "off_mask": 0.02,
+        "visible": 0.005,
+        "jump": 0.003,
+        "trim": 0.003,
+    },
+    "precision": {
+        "coverage": 0.10,
+        "precision": 0.20,
+        "off_mask": 0.02,
+        "visible": 0.005,
+        "jump": 0.003,
+        "trim": 0.003,
+    },
+    "coverage": {
+        "coverage": 0.35,
+        "precision": 0.05,
+        "off_mask": 0.02,
+        "visible": 0.005,
+        "jump": 0.003,
+        "trim": 0.003,
+    },
+    "low_jump": {
+        "coverage": 0.10,
+        "precision": 0.05,
+        "off_mask": 0.02,
+        "visible": 0.005,
+        "jump": 0.03,
+        "trim": 0.02,
+    },
+}
+
 
 def safe_float(value: Any, default: float = 0.0) -> float:
     try:
@@ -47,6 +90,64 @@ def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
         writer = csv.DictWriter(handle, fieldnames=keys, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
+
+
+def parse_task_profiles(text: str) -> list[str]:
+    profiles = [item.strip() for item in text.split(",") if item.strip()]
+    unknown = [item for item in profiles if item not in TASK_PROFILE_PRESETS]
+    if unknown:
+        raise ValueError(f"Unknown task profile(s): {', '.join(unknown)}")
+    return profiles
+
+
+def with_task_profile(row: dict[str, Any], profile_name: str) -> dict[str, Any]:
+    if profile_name not in TASK_PROFILE_PRESETS:
+        raise ValueError(f"Unknown task profile: {profile_name}")
+    profile = TASK_PROFILE_PRESETS[profile_name]
+    out = dict(row)
+    features = dict(row.get("features", {})) if isinstance(row.get("features"), dict) else {}
+    out["task_profile"] = profile_name
+    out["sample_task_id"] = f"{row.get('sample_id', '')}::{profile_name}"
+    for name in TASK_PROFILE_PRESETS:
+        features[f"task_is_{name}"] = 1.0 if name == profile_name else 0.0
+    for key, value in profile.items():
+        features[f"task_{key}_weight"] = value
+        out[f"task_teacher_{key}_weight"] = value
+
+    coverage = safe_float(row.get("coverage_ratio"))
+    precision = safe_float(row.get("stitch_precision_ratio"))
+    unified = safe_float(row.get("unified_loss"))
+    jump = safe_float(row.get("jump_count"))
+    trim = safe_float(row.get("trim_count"))
+    off_mask = safe_float(row.get("off_mask_stitch_length_mm"))
+    visible = safe_float(row.get("visible_connector_count"))
+    features["task_coverage_weight_x_coverage_ratio"] = profile["coverage"] * coverage
+    features["task_precision_weight_x_precision_ratio"] = profile["precision"] * precision
+    features["task_off_mask_weight_x_metric_off_mask_mm"] = profile["off_mask"] * off_mask
+    features["task_visible_weight_x_metric_visible_count"] = profile["visible"] * visible
+    features["task_jump_weight_x_metric_jump_count"] = profile["jump"] * jump
+    features["task_trim_weight_x_metric_trim_count"] = profile["trim"] * trim
+    features["task_low_loss_x_metric_unified_loss"] = (1.0 if profile_name == "low_loss" else 0.0) * unified
+    out["features"] = features
+    return out
+
+
+def apply_task_profile(rows: list[dict[str, Any]], profile_name: str) -> list[dict[str, Any]]:
+    return [with_task_profile(row, profile_name) for row in rows]
+
+
+def expand_task_profiles(rows: list[dict[str, Any]], profiles: list[str]) -> list[dict[str, Any]]:
+    if not profiles:
+        return rows
+    return [with_task_profile(row, profile) for row in rows for profile in profiles]
+
+
+def listwise_group_key(row: dict[str, Any]) -> str:
+    if row.get("sample_task_id"):
+        return str(row["sample_task_id"])
+    if row.get("task_profile"):
+        return f"{row.get('sample_id', '')}::{row.get('task_profile', '')}"
+    return str(row["sample_id"])
 
 
 def build_candidate_rows(
@@ -319,6 +420,12 @@ def listwise_teacher_score(
     jump_scale: float,
     trim_scale: float,
 ) -> float:
+    coverage_weight = safe_float(row.get("task_teacher_coverage_weight"), coverage_weight)
+    precision_weight = safe_float(row.get("task_teacher_precision_weight"), precision_weight)
+    off_mask_weight = safe_float(row.get("task_teacher_off_mask_weight"), off_mask_weight)
+    visible_weight = safe_float(row.get("task_teacher_visible_weight"), visible_weight)
+    jump_weight = safe_float(row.get("task_teacher_jump_weight"), jump_weight)
+    trim_weight = safe_float(row.get("task_teacher_trim_weight"), trim_weight)
     source_name = str(row.get("source_name", ""))
     target_branch = str(row.get("target_branch", ""))
     is_line_like = target_branch == "line_text_skeleton" or source_name in {"QuickDraw", "Rendered text"}
@@ -365,7 +472,7 @@ def fit_listwise_softmax_ranker(
 
     row_groups: dict[str, list[int]] = defaultdict(list)
     for index, row in enumerate(rows):
-        row_groups[str(row["sample_id"])].append(index)
+        row_groups[listwise_group_key(row)].append(index)
     groups = [indices for indices in row_groups.values() if indices]
     weights = np.zeros(xz.shape[1], dtype=np.float64)
     temp = max(1e-6, temperature)
@@ -740,12 +847,17 @@ def leave_one_out(
     mask_fill_max_trim_count: float = 3.0,
     mask_fill_min_precision: float = 0.70,
     mask_fill_min_coverage: float = 0.80,
+    task_profiles: list[str] | None = None,
+    eval_task_profile: str = "",
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     groups = groups_by_sample(rows)
     chosen: list[dict[str, Any]] = []
+    active_profiles = task_profiles or []
+    active_eval_profile = eval_task_profile or (active_profiles[0] if active_profiles else "")
     for sample_id in sorted(groups):
-        train = [row for row in rows if row["sample_id"] != sample_id]
-        held = groups[sample_id]
+        train_base = [row for row in rows if row["sample_id"] != sample_id]
+        train = expand_task_profiles(train_base, active_profiles)
+        held = apply_task_profile(groups[sample_id], active_eval_profile) if active_eval_profile else groups[sample_id]
         model = fit_selector_model(
             train,
             names,
@@ -819,6 +931,8 @@ def leave_one_out(
         chosen_row["predicted_score"] = round(ranked[0][1], 8)
         chosen_row["oracle_candidate"] = oracle_row["candidate"]
         chosen_row["learned_matches_oracle"] = 1 if chosen_row["candidate"] == oracle_row["candidate"] else 0
+        if active_eval_profile:
+            chosen_row["eval_task_profile"] = active_eval_profile
         chosen.append(chosen_row)
     return chosen, summarize_selected(chosen)
 
@@ -867,6 +981,8 @@ def main() -> int:
     parser.add_argument("--listwise-teacher-min-precision", type=float, default=0.72)
     parser.add_argument("--listwise-teacher-jump-scale", type=float, default=20.0)
     parser.add_argument("--listwise-teacher-trim-scale", type=float, default=8.0)
+    parser.add_argument("--task-profiles", default="", help="Comma-separated task-conditioned profiles: low_loss,balanced,precision,coverage,low_jump.")
+    parser.add_argument("--eval-task-profile", default="", help="Task profile used for leave-one-out selection when --task-profiles is enabled.")
     args = parser.parse_args()
 
     output_dir = Path(args.output_dir)
@@ -881,10 +997,15 @@ def main() -> int:
         args.precision_weight,
         args.hard_fail_penalty,
     )
-    names = feature_names(rows)
+    task_profiles = parse_task_profiles(args.task_profiles)
+    eval_task_profile = args.eval_task_profile.strip()
+    if eval_task_profile and eval_task_profile not in TASK_PROFILE_PRESETS:
+        raise ValueError(f"Unknown eval task profile: {eval_task_profile}")
+    train_model_rows = expand_task_profiles(rows, task_profiles)
+    names = feature_names(train_model_rows)
     coverage_floor_line_sources = {item.strip() for item in args.coverage_floor_line_sources.split(",") if item.strip()}
     flat_rows = []
-    for row in rows:
+    for row in train_model_rows:
         out = {key: value for key, value in row.items() if key != "features"}
         features = row.get("features", {})
         if isinstance(features, dict):
@@ -932,10 +1053,12 @@ def main() -> int:
         args.mask_fill_max_trim_count,
         args.mask_fill_min_precision,
         args.mask_fill_min_coverage,
+        task_profiles,
+        eval_task_profile,
     )
     write_csv([{key: value for key, value in row.items() if key != "features"} for row in loo_rows], output_dir / "loo_selected_rows.csv")
     model = fit_selector_model(
-        rows,
+        train_model_rows,
         names,
         args.alpha,
         args.target,
@@ -955,6 +1078,10 @@ def main() -> int:
         args.listwise_teacher_jump_scale,
         args.listwise_teacher_trim_scale,
     )
+    if task_profiles:
+        model["task_profiles"] = task_profiles
+        model["default_task_profile"] = eval_task_profile or task_profiles[0]
+        model["task_profile_presets"] = {name: TASK_PROFILE_PRESETS[name] for name in task_profiles}
     (output_dir / "m2_candidate_selector_model.json").write_text(json.dumps(model, ensure_ascii=False, indent=2), encoding="utf-8")
     summary = {
         "samples": len(groups_by_sample(rows)),
@@ -978,6 +1105,8 @@ def main() -> int:
         "listwise_teacher_min_precision": args.listwise_teacher_min_precision,
         "listwise_teacher_jump_scale": args.listwise_teacher_jump_scale,
         "listwise_teacher_trim_scale": args.listwise_teacher_trim_scale,
+        "task_profiles": task_profiles,
+        "eval_task_profile": eval_task_profile or (task_profiles[0] if task_profiles else ""),
         "exclude_hard_fail": args.exclude_hard_fail,
         "enforce_coverage_floor": args.enforce_coverage_floor,
         "coverage_floor_tolerance": args.coverage_floor_tolerance,

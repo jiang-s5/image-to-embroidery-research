@@ -1,0 +1,120 @@
+{
+  "model_id": "m2_45_task_conditioned_selector",
+  "date": "2026-06-25",
+  "status": "task_conditioned_research_branch",
+  "description": "Task-conditioned listwise selector that expands the M2.44 Pareto-teacher learned selector with task profiles for low_loss, balanced, precision, coverage, and low_jump selection.",
+  "decision": "Do not replace M2.42 as the default low-loss selector. Use M2.45 for controllable profile-based selector ablations and for testing whether different application goals can be expressed without retraining separate fixed-objective selectors.",
+  "train_dataset": "datasets/public_benchmark_v1_ext33",
+  "external_dataset": "datasets/incoming_review_eval_v1",
+  "candidate_pool": [
+    "mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "mask_fill_edgewalk_nearestrow_rows16_p40",
+    "mask_fill_edgewalk_rows16_p40",
+    "auto_evalrepair_r10_c20",
+    "skeleton_c30_m20",
+    "skeleton_c30_m4",
+    "mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40"
+  ],
+  "task_profiles": [
+    "low_loss",
+    "balanced",
+    "precision",
+    "coverage",
+    "low_jump"
+  ],
+  "training_args": {
+    "target": "listwise_softmax",
+    "alpha": 0.001,
+    "listwise_temperature": 0.02,
+    "listwise_epochs": 1200,
+    "listwise_learning_rate": 0.05,
+    "exclude_hard_fail": true,
+    "task_profiles": "low_loss,balanced,precision,coverage,low_jump",
+    "eval_task_profile": "balanced",
+    "listwise_teacher_flat_min_coverage": 0.84,
+    "listwise_teacher_line_min_coverage": 0.58,
+    "listwise_teacher_min_precision": 0.78,
+    "listwise_teacher_jump_scale": 20.0,
+    "listwise_teacher_trim_scale": 8.0
+  },
+  "public_ext33_loo_balanced": {
+    "samples": 33,
+    "oracle_match": 25,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.050318,
+    "mean_jump_count": 5.484848,
+    "mean_trim_count": 0.454545,
+    "mean_off_mask_stitch_length_mm": 0.093536,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.956618,
+    "mean_stitch_precision_ratio": 0.816809
+  },
+  "incoming_review_applied": {
+    "balanced": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07829,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.995549,
+      "mean_stitch_precision_ratio": 0.781068
+    },
+    "precision": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.080262,
+      "mean_jump_count": 8.75,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.993585,
+      "mean_stitch_precision_ratio": 0.799709
+    },
+    "coverage": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07829,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.995549,
+      "mean_stitch_precision_ratio": 0.781068
+    },
+    "low_jump": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07829,
+      "mean_jump_count": 8.5,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.995549,
+      "mean_stitch_precision_ratio": 0.781068
+    },
+    "low_loss": {
+      "samples": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.080262,
+      "mean_jump_count": 8.75,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_coverage_ratio": 0.993585,
+      "mean_stitch_precision_ratio": 0.799709
+    }
+  },
+  "comparison": {
+    "m2_42_public_loss": 0.04916,
+    "m2_42_public_precision": 0.801506,
+    "m2_42_incoming_loss": 0.07471,
+    "m2_42_incoming_precision": 0.753519,
+    "summary": "M2.45 preserves the M2.44 Pareto-teacher branch and adds task-conditioned inference. Precision mode improves incoming precision relative to balanced/M2.44, but unified loss is worse than M2.42 and M2.44 balanced."
+  },
+  "artifacts": {
+    "public_model": "results/public_benchmark_v1_ext33_m2_45_task_conditioned_balanced",
+    "incoming_balanced": "results/incoming_review_eval_v1_m2_45_task_conditioned_balanced_applied",
+    "incoming_precision": "results/incoming_review_eval_v1_m2_45_task_conditioned_precision_applied",
+    "incoming_low_loss": "results/incoming_review_eval_v1_m2_45_task_conditioned_low_loss_applied",
+    "incoming_coverage": "results/incoming_review_eval_v1_m2_45_task_conditioned_coverage_applied",
+    "incoming_low_jump": "results/incoming_review_eval_v1_m2_45_task_conditioned_low_jump_applied"
+  }
+}

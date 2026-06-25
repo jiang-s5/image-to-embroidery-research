@@ -8,7 +8,15 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from train_m2_candidate_selector import build_candidate_rows, groups_by_sample, predict, safe_float, selectable_candidates
+from train_m2_candidate_selector import (
+    TASK_PROFILE_PRESETS,
+    apply_task_profile,
+    build_candidate_rows,
+    groups_by_sample,
+    predict,
+    safe_float,
+    selectable_candidates,
+)
 
 
 def write_csv(rows: list[dict[str, Any]], path: Path) -> None:
@@ -80,6 +88,7 @@ def main() -> int:
     parser.add_argument("--mask-fill-max-trim-count", type=float, default=3.0)
     parser.add_argument("--mask-fill-min-precision", type=float, default=0.70)
     parser.add_argument("--mask-fill-min-coverage", type=float, default=0.80)
+    parser.add_argument("--task-profile", default="", help="Task-conditioned profile to apply when the model was trained with --task-profiles.")
     args = parser.parse_args()
 
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
@@ -96,6 +105,20 @@ def main() -> int:
         args.precision_weight,
         args.hard_fail_penalty,
     )
+    active_task_profile = ""
+    model_task_profiles = model.get("task_profiles") or []
+    if model_task_profiles:
+        active_task_profile = args.task_profile or str(model.get("default_task_profile") or model_task_profiles[0])
+        if active_task_profile not in TASK_PROFILE_PRESETS:
+            raise ValueError(f"Unknown task profile: {active_task_profile}")
+        if active_task_profile not in model_task_profiles:
+            raise ValueError(
+                f"Task profile {active_task_profile!r} was not present during training. "
+                f"Available profiles: {', '.join(str(item) for item in model_task_profiles)}"
+            )
+        rows = apply_task_profile(rows, active_task_profile)
+    elif args.task_profile:
+        raise ValueError("--task-profile can only be used with a task-conditioned selector model.")
     coverage_floor_line_sources = {item.strip() for item in args.coverage_floor_line_sources.split(",") if item.strip()}
     selected: list[dict[str, Any]] = []
     for sample_id, group in sorted(groups_by_sample(rows).items()):
@@ -137,6 +160,7 @@ def main() -> int:
                 "sample_id": sample_id,
                 "source_name": chosen.get("source_name", ""),
                 "category": chosen.get("category", ""),
+                "task_profile": active_task_profile,
                 "chosen_candidate": chosen["candidate"],
                 "predicted_score": round(float(predicted_score), 8),
                 "oracle_score": chosen["oracle_score"],
@@ -153,6 +177,7 @@ def main() -> int:
 
     write_csv(selected, output_dir / "learned_selected_rows.csv")
     summary = summarize(selected)
+    summary["task_profile"] = active_task_profile
     (output_dir / "learned_selected_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
