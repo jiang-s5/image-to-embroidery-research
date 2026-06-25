@@ -1,0 +1,125 @@
+{
+  "model_id": "m2_63_line_domain_adaptive_precision",
+  "status": "positive_evaluation_upgrade",
+  "primary_radius_px": 2,
+  "primary_reason": "Matches the line_radius_px used to render stitch footprints in eval_stitch_coverage.",
+  "m2_60": {
+    "selection": "m2_60",
+    "samples": 33,
+    "mean_coverage_ratio": 0.98090367,
+    "mean_stitch_precision_ratio": 0.79361039,
+    "mean_adaptive_coverage_ratio": 0.95049315,
+    "mean_adaptive_stitch_precision_ratio": 0.92835473,
+    "mean_overfill_outside_adaptive_ratio": 0.07164527,
+    "low_strict_precision_samples": 11,
+    "low_adaptive_precision_samples": 8
+  },
+  "m2_62": {
+    "selection": "m2_62",
+    "samples": 33,
+    "mean_coverage_ratio": 0.97895385,
+    "mean_stitch_precision_ratio": 0.80950997,
+    "mean_adaptive_coverage_ratio": 0.94191394,
+    "mean_adaptive_stitch_precision_ratio": 0.94587239,
+    "mean_overfill_outside_adaptive_ratio": 0.05412761,
+    "low_strict_precision_samples": 11,
+    "low_adaptive_precision_samples": 6
+  },
+  "primary_deltas": {
+    "mean_adaptive_stitch_precision_ratio": 0.01751766,
+    "mean_overfill_outside_adaptive_ratio": -0.01751766,
+    "low_adaptive_precision_samples": -2
+  },
+  "radius_sweep": [
+    {
+      "adaptive_precision_radius_px": 1,
+      "m2_60_mean_adaptive_precision": 0.86298188,
+      "m2_62_mean_adaptive_precision": 0.88171897,
+      "delta_mean_adaptive_precision": 0.01873709,
+      "m2_60_mean_overfill_outside_adaptive": 0.13701812,
+      "m2_62_mean_overfill_outside_adaptive": 0.11828103,
+      "delta_mean_overfill_outside_adaptive": -0.01873709,
+      "m2_60_low_adaptive_precision_samples": 17,
+      "m2_62_low_adaptive_precision_samples": 17,
+      "delta_low_adaptive_precision_samples": 0,
+      "m2_60_mean_strict_precision": 0.79361039,
+      "m2_62_mean_strict_precision": 0.80950997
+    },
+    {
+      "adaptive_precision_radius_px": 2,
+      "m2_60_mean_adaptive_precision": 0.92835473,
+      "m2_62_mean_adaptive_precision": 0.94587239,
+      "delta_mean_adaptive_precision": 0.01751766,
+      "m2_60_mean_overfill_outside_adaptive": 0.07164527,
+      "m2_62_mean_overfill_outside_adaptive": 0.05412761,
+      "delta_mean_overfill_outside_adaptive": -0.01751766,
+      "m2_60_low_adaptive_precision_samples": 8,
+      "m2_62_low_adaptive_precision_samples": 6,
+      "delta_low_adaptive_precision_samples": -2,
+      "m2_60_mean_strict_precision": 0.79361039,
+      "m2_62_mean_strict_precision": 0.80950997
+    },
+    {
+      "adaptive_precision_radius_px": 3,
+      "m2_60_mean_adaptive_precision": 0.95895397,
+      "m2_62_mean_adaptive_precision": 0.97266788,
+      "delta_mean_adaptive_precision": 0.01371391,
+      "m2_60_mean_overfill_outside_adaptive": 0.04104603,
+      "m2_62_mean_overfill_outside_adaptive": 0.02733212,
+      "delta_mean_overfill_outside_adaptive": -0.01371391,
+      "m2_60_low_adaptive_precision_samples": 3,
+      "m2_62_low_adaptive_precision_samples": 1,
+      "delta_low_adaptive_precision_samples": -2,
+      "m2_60_mean_strict_precision": 0.79361039,
+      "m2_62_mean_strict_precision": 0.80950997
+    }
+  ],
+  "source_findings": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 20,
+      "mean_coverage_ratio": 0.9936241,
+      "mean_stitch_precision_ratio": 0.8880927,
+      "mean_adaptive_coverage_ratio": 0.9785832,
+      "mean_adaptive_stitch_precision_ratio": 0.9689798,
+      "mean_overfill_outside_adaptive_ratio": 0.0310202,
+      "low_strict_precision_samples": 0,
+      "low_adaptive_precision_samples": 0
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 20,
+      "mean_coverage_ratio": 0.9638887,
+      "mean_stitch_precision_ratio": 0.8829867,
+      "mean_adaptive_coverage_ratio": 0.9427844,
+      "mean_adaptive_stitch_precision_ratio": 0.960981,
+      "mean_overfill_outside_adaptive_ratio": 0.039019,
+      "low_strict_precision_samples": 0,
+      "low_adaptive_precision_samples": 2
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 16,
+      "mean_coverage_ratio": 0.97114663,
+      "mean_stitch_precision_ratio": 0.63967988,
+      "mean_adaptive_coverage_ratio": 0.89485475,
+      "mean_adaptive_stitch_precision_ratio": 0.90658806,
+      "mean_overfill_outside_adaptive_ratio": 0.09341194,
+      "low_strict_precision_samples": 16,
+      "low_adaptive_precision_samples": 4
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 10,
+      "mean_coverage_ratio": 0.9986696,
+      "mean_stitch_precision_ratio": 0.7246506,
+      "mean_adaptive_coverage_ratio": 0.9704406,
+      "mean_adaptive_stitch_precision_ratio": 0.874487,
+      "mean_overfill_outside_adaptive_ratio": 0.125513,
+      "low_strict_precision_samples": 6,
+      "low_adaptive_precision_samples": 8
+    }
+  ],
+  "interpretation": "Adaptive precision confirms that M2.62 reduces overfill beyond expected thread width. Strict precision remains useful, but adaptive precision is a fairer line-domain review metric.",
+  "remaining_bottleneck": "Rendered text still has the lowest adaptive precision, suggesting text needs a separate satin/outline-aware branch rather than the same line-domain fill candidates."
+}

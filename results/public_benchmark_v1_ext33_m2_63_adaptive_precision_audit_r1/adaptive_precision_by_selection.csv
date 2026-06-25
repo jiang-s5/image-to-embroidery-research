@@ -1,0 +1,3 @@
+﻿selection,samples,mean_coverage_ratio,mean_stitch_precision_ratio,mean_adaptive_coverage_ratio,mean_adaptive_stitch_precision_ratio,mean_overfill_outside_adaptive_ratio,low_strict_precision_samples,low_adaptive_precision_samples
+m2_60,33,0.98090367,0.79361039,0.97429555,0.86298188,0.13701812,11,17
+m2_62,33,0.97895385,0.80950997,0.97099885,0.88171897,0.11828103,11,17

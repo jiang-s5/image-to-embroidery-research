@@ -1,0 +1,4 @@
+﻿adaptive_precision_radius_px,m2_60_mean_adaptive_precision,m2_62_mean_adaptive_precision,delta_mean_adaptive_precision,m2_60_mean_overfill_outside_adaptive,m2_62_mean_overfill_outside_adaptive,delta_mean_overfill_outside_adaptive,m2_60_low_adaptive_precision_samples,m2_62_low_adaptive_precision_samples,delta_low_adaptive_precision_samples,m2_60_mean_strict_precision,m2_62_mean_strict_precision
+1,0.86298188,0.88171897,0.01873709,0.13701812,0.11828103,-0.01873709,17,17,0,0.79361039,0.80950997
+2,0.92835473,0.94587239,0.01751766,0.07164527,0.05412761,-0.01751766,8,6,-2,0.79361039,0.80950997
+3,0.95895397,0.97266788,0.01371391,0.04104603,0.02733212,-0.01371391,3,1,-2,0.79361039,0.80950997

@@ -1,0 +1,113 @@
+{
+  "model_id": "m2_63_line_domain_adaptive_precision",
+  "date": "2026-06-25",
+  "status": "promoted_evaluation_upgrade",
+  "description": "Adds adaptive stitch precision for line-domain review by comparing rendered stitch footprints against a thread-width-adjusted target mask. Confirms that M2.62 precision rescue reduces overfill beyond expected thread width.",
+  "base_generation_model": "m2_62_precision_rescue",
+  "generation_default": "m2_62_precision_rescue",
+  "evaluation_default": "m2_63_line_domain_adaptive_precision",
+  "tools": [
+    "tools/eval_stitch_coverage.py",
+    "tools/audit_adaptive_line_precision.py"
+  ],
+  "primary_audit": {
+    "dataset": "datasets/public_benchmark_v1_ext33",
+    "result_dir": "results/public_benchmark_v1_ext33_m2_63_adaptive_precision_audit_r2",
+    "line_radius_px": 2,
+    "adaptive_precision_radius_px": 2,
+    "adaptive_precision_threshold": 0.90,
+    "reason": "The adaptive radius matches the rendered stitch footprint radius used by eval_stitch_coverage."
+  },
+  "comparison_m2_60_to_m2_62": {
+    "strict_precision": {
+      "m2_60": 0.79361039,
+      "m2_62": 0.80950997,
+      "delta": 0.01589958
+    },
+    "adaptive_stitch_precision": {
+      "m2_60": 0.92835473,
+      "m2_62": 0.94587239,
+      "delta": 0.01751766
+    },
+    "overfill_outside_adaptive": {
+      "m2_60": 0.07164527,
+      "m2_62": 0.05412761,
+      "delta": -0.01751766
+    },
+    "low_strict_precision_samples": {
+      "m2_60": 11,
+      "m2_62": 11,
+      "delta": 0
+    },
+    "low_adaptive_precision_samples": {
+      "m2_60": 8,
+      "m2_62": 6,
+      "delta": -2
+    }
+  },
+  "radius_sensitivity": [
+    {
+      "adaptive_precision_radius_px": 1,
+      "m2_60_adaptive_precision": 0.86298188,
+      "m2_62_adaptive_precision": 0.88171897,
+      "delta": 0.01873709,
+      "m2_60_low_samples": 17,
+      "m2_62_low_samples": 17
+    },
+    {
+      "adaptive_precision_radius_px": 2,
+      "m2_60_adaptive_precision": 0.92835473,
+      "m2_62_adaptive_precision": 0.94587239,
+      "delta": 0.01751766,
+      "m2_60_low_samples": 8,
+      "m2_62_low_samples": 6
+    },
+    {
+      "adaptive_precision_radius_px": 3,
+      "m2_60_adaptive_precision": 0.95895397,
+      "m2_62_adaptive_precision": 0.97266788,
+      "delta": 0.01371391,
+      "m2_60_low_samples": 3,
+      "m2_62_low_samples": 1
+    }
+  ],
+  "source_findings": {
+    "OpenMoji": {
+      "samples": 20,
+      "adaptive_precision": 0.9689798
+    },
+    "Openclipart": {
+      "samples": 20,
+      "adaptive_precision": 0.960981
+    },
+    "QuickDraw": {
+      "samples": 16,
+      "adaptive_precision": 0.90658806
+    },
+    "Rendered text": {
+      "samples": 10,
+      "adaptive_precision": 0.874487,
+      "remaining_bottleneck": true
+    }
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_64_text_specific_precision_rescue",
+    "reason": "Rendered text remains the lowest adaptive-precision source after line-domain normalization.",
+    "components": [
+      "text/source-family detection",
+      "satin/outline-aware text candidates",
+      "counter/hole preservation",
+      "adaptive precision optimization without legibility loss"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_63_adaptive_precision.md",
+    "probe": "results/m2_63_adaptive_precision_probe/",
+    "primary_audit": "results/public_benchmark_v1_ext33_m2_63_adaptive_precision_audit_r2/",
+    "radius_sweep_audits": [
+      "results/public_benchmark_v1_ext33_m2_63_adaptive_precision_audit_r1/",
+      "results/public_benchmark_v1_ext33_m2_63_adaptive_precision_audit_r2/",
+      "results/public_benchmark_v1_ext33_m2_63_adaptive_precision_audit_r3/"
+    ]
+  }
+}

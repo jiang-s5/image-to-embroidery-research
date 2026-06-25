@@ -1,0 +1,5 @@
+﻿source_name,samples,mean_coverage_ratio,mean_stitch_precision_ratio,mean_adaptive_coverage_ratio,mean_adaptive_stitch_precision_ratio,mean_overfill_outside_adaptive_ratio,low_strict_precision_samples,low_adaptive_precision_samples
+OpenMoji,20,0.9936241,0.8880927,0.9904645,0.9271608,0.0728392,0,4
+Openclipart,20,0.9638887,0.8829867,0.9570074,0.9217149,0.0782851,0,6
+QuickDraw,16,0.97114663,0.63967988,0.95878419,0.78742638,0.21257362,16,16
+Rendered text,10,0.9986696,0.7246506,0.990473,0.7998792,0.2001208,6,8
