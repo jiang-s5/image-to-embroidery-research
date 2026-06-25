@@ -1,0 +1,5 @@
+﻿selection,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+incoming_balanced,4,3,0.75,0.25557028,0.47917553,pair_008,quality_warning|high_loss|high_jump|low_precision,0.07383141,7.25,2.25,0.0,0.0,0.92069975,0.78836075
+incoming_low_jump,4,3,0.75,0.25557028,0.47917553,pair_008,quality_warning|high_loss|high_jump|low_precision,0.07383141,7.25,2.25,0.0,0.0,0.92069975,0.78836075
+public_balanced,33,14,0.424242,0.13098386,0.43070155,qd_007,high_loss|high_jump|low_precision,0.05210337,5.60606061,0.75757576,0.04759091,0.0,0.98201236,0.80620655
+public_low_jump,33,15,0.454545,0.1277956,0.39294779,qd_007,high_loss|high_jump|low_precision,0.04880891,4.90909091,0.60606061,0.19907576,0.0,0.97947609,0.7932643

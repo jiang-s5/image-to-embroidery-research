@@ -1,0 +1,97 @@
+{
+  "model_id": "m2_54_policy_risk_audit",
+  "date": "2026-06-25",
+  "status": "sample_and_source_level_policy_risk_audit",
+  "description": "Risk-audit layer for M2.51/M2.53 selected policy rows. It identifies sample-level and source-level failures hidden by aggregate metrics.",
+  "base_policy": "m2_53_cross_eval_robust_policy",
+  "analysis_tool": "tools/audit_m2_policy_risk.py",
+  "decision": "Do not change the current low_jump default yet. The next actual planner optimization should target line-drawing/text-like inputs, especially QuickDraw, using a source-aware or image-feature-aware running-stitch branch.",
+  "thresholds": {
+    "max_loss": 0.1,
+    "max_jump": 10.0,
+    "max_trim": 3.0,
+    "max_off_mask": 1.0,
+    "max_visible": 0.0,
+    "min_coverage": 0.9,
+    "min_precision": 0.75
+  },
+  "inputs": {
+    "incoming_balanced": "results/incoming_review_eval_v1_m2_51_benefitgate_sweep/best_selected_balanced.csv",
+    "incoming_low_jump": "results/incoming_review_eval_v1_m2_51_benefitgate_sweep/best_selected_low_jump.csv",
+    "public_balanced": "results/public_benchmark_v1_ext33_m2_51_benefitgate_sweep_sanity/best_selected_balanced.csv",
+    "public_low_jump": "results/public_benchmark_v1_ext33_m2_51_benefitgate_sweep_sanity/best_selected_low_jump.csv"
+  },
+  "summary": {
+    "samples": 74,
+    "review_samples": 35,
+    "flag_counts": {
+      "low_precision": 26,
+      "high_jump": 6,
+      "low_coverage": 5,
+      "high_loss": 4,
+      "high_trim": 4,
+      "off_mask": 3,
+      "quality_warning": 2
+    }
+  },
+  "selection_summary": {
+    "incoming_balanced": {
+      "samples": 4,
+      "review_samples": 3,
+      "review_rate": 0.75,
+      "mean_unified_loss": 0.07383141,
+      "mean_jump_count": 7.25,
+      "mean_coverage_ratio": 0.92069975,
+      "mean_stitch_precision_ratio": 0.78836075,
+      "worst_sample_id": "pair_008",
+      "worst_flags": "quality_warning|high_loss|high_jump|low_precision"
+    },
+    "incoming_low_jump": {
+      "samples": 4,
+      "review_samples": 3,
+      "review_rate": 0.75,
+      "mean_unified_loss": 0.07383141,
+      "mean_jump_count": 7.25,
+      "mean_coverage_ratio": 0.92069975,
+      "mean_stitch_precision_ratio": 0.78836075,
+      "worst_sample_id": "pair_008",
+      "worst_flags": "quality_warning|high_loss|high_jump|low_precision"
+    },
+    "public_balanced": {
+      "samples": 33,
+      "review_samples": 14,
+      "review_rate": 0.424242,
+      "mean_unified_loss": 0.05210337,
+      "mean_jump_count": 5.60606061,
+      "mean_coverage_ratio": 0.98201236,
+      "mean_stitch_precision_ratio": 0.80620655,
+      "worst_sample_id": "qd_007",
+      "worst_flags": "high_loss|high_jump|low_precision"
+    },
+    "public_low_jump": {
+      "samples": 33,
+      "review_samples": 15,
+      "review_rate": 0.454545,
+      "mean_unified_loss": 0.04880891,
+      "mean_jump_count": 4.90909091,
+      "mean_coverage_ratio": 0.97947609,
+      "mean_stitch_precision_ratio": 0.7932643,
+      "worst_sample_id": "qd_007",
+      "worst_flags": "high_loss|high_jump|low_precision"
+    }
+  },
+  "main_failure_modes": [
+    "QuickDraw source has review_rate=1.0 for both public profiles.",
+    "Dominant flag is low_precision, not visible connector or hard fail.",
+    "pair_008 remains the worst incoming sample with high loss, high jump, and low precision.",
+    "pair_006 reveals a coverage tradeoff caused by benefit_tradeoff mode."
+  ],
+  "next_recommended_stage": {
+    "id": "m2_55_line_domain_guard",
+    "goal": "Add a line-drawing/text-aware branch that favors skeleton/centerline candidates and precision-aware reranking for QuickDraw-like samples while preserving the current low_jump default on flat/icon inputs."
+  },
+  "artifacts": {
+    "documentation": "docs/m2_54_policy_risk_audit.md",
+    "results": "results/m2_54_policy_risk_audit/"
+  }
+}
