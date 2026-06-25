@@ -1,0 +1,74 @@
+{
+  "model_id": "m2_55_line_domain_guard",
+  "date": "2026-06-25",
+  "status": "bounded_line_domain_selector_guard",
+  "description": "A bounded line-domain guard on top of the M2.53/M2.51 low-jump benefit-gate policy. It applies an extra precision/jump-aware rerank only for QuickDraw and rendered text sources.",
+  "base_model": "m2_53_cross_eval_robust_policy",
+  "previous_analysis": "m2_54_policy_risk_audit",
+  "tool": "tools/select_m2_line_domain_guard.py",
+  "decision": "Keep the M2.53 low-jump robust policy as the default. M2.55 is a safe diagnostic guard with very small gains; it shows that the remaining QuickDraw failures require a new line-domain candidate generator rather than more selector reranking.",
+  "line_domain_sources": [
+    "QuickDraw",
+    "Rendered text"
+  ],
+  "line_guard": {
+    "target_coverage": 0.88,
+    "target_precision": 0.75,
+    "absolute_min_coverage": 0.6,
+    "absolute_min_precision": 0.45,
+    "max_jump_count": 10.0,
+    "max_off_mask_mm": 1.0,
+    "max_visible_connector_count": 0.0,
+    "max_trim_count": 6.0,
+    "max_loss_slack_vs_baseline": 0.03,
+    "score": "loss + 0.004*jump + 0.002*trim + 0.010*off_mask + 0.005*visible + 0.55*coverage_deficit + 0.22*precision_deficit"
+  },
+  "public_ext33": {
+    "dataset": "datasets/public_benchmark_v1_ext33",
+    "baseline": "results/public_benchmark_v1_ext33_m2_51_benefitgate_sweep_sanity/best_selected_low_jump.csv",
+    "result_dir": "results/public_benchmark_v1_ext33_m2_55_line_domain_guard_low_jump",
+    "risk_audit_dir": "results/public_benchmark_v1_ext33_m2_55_line_domain_guard_risk_audit",
+    "samples": 33,
+    "changed_samples": 1,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.048797,
+    "mean_jump_count": 4.909091,
+    "mean_trim_count": 0.606061,
+    "mean_off_mask_stitch_length_mm": 0.199076,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.9792,
+    "mean_stitch_precision_ratio": 0.79337,
+    "review_samples": 15,
+    "interpretation": "Safe but not significant. It preserves jump and hard-fail metrics while making one small line-domain improvement."
+  },
+  "incoming_review": {
+    "dataset": "datasets/incoming_review_eval_v1",
+    "baseline": "results/incoming_review_eval_v1_m2_51_benefitgate_sweep/best_selected_low_jump.csv",
+    "result_dir": "results/incoming_review_eval_v1_m2_55_line_domain_guard_low_jump",
+    "samples": 4,
+    "changed_samples": 0,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.073831,
+    "mean_jump_count": 7.25,
+    "mean_coverage_ratio": 0.9207,
+    "mean_stitch_precision_ratio": 0.788361
+  },
+  "next_recommended_stage": {
+    "model_id": "m2_56_line_domain_candidate_generator",
+    "reason": "M2.55 demonstrates that selector reranking cannot fix the worst QuickDraw failures because the current candidate pool lacks a low-jump, high-precision line/running-stitch alternative.",
+    "components": [
+      "skeleton stroke tracing",
+      "stroke simplification",
+      "closed-loop stroke ordering",
+      "line-specific evaluator terms",
+      "selector integration"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_55_line_domain_guard.md",
+    "tool": "tools/select_m2_line_domain_guard.py",
+    "public_outputs": "results/public_benchmark_v1_ext33_m2_55_line_domain_guard_low_jump/",
+    "public_risk_audit": "results/public_benchmark_v1_ext33_m2_55_line_domain_guard_risk_audit/",
+    "incoming_outputs": "results/incoming_review_eval_v1_m2_55_line_domain_guard_low_jump/"
+  }
+}

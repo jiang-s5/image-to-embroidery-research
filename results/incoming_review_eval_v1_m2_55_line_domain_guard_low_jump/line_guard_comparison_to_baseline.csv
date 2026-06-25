@@ -1,0 +1,5 @@
+﻿sample_id,source_name,category,baseline_candidate,selected_candidate,changed,delta_unified_loss,delta_jump_count,delta_trim_count,delta_off_mask_stitch_length_mm,delta_visible_connector_count,delta_coverage_ratio,delta_stitch_precision_ratio
+pair_006,Incoming paired review,pair_006,auto_evalrepair_r10_c20,auto_evalrepair_r10_c20,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+pair_008,Incoming paired review,pair_008,mask_fill_edgewalk_nearestrow_rows16_p40,mask_fill_edgewalk_nearestrow_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+pair_010,Incoming paired review,pair_010,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,mask_fill_edgewalk_nearestrow_inset2_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+pair_011a,Incoming paired review,pair_011a,mask_fill_edgewalk_rows16_p40,mask_fill_edgewalk_rows16_p40,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0

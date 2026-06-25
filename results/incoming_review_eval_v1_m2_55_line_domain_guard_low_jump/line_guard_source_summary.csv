@@ -1,0 +1,2 @@
+﻿source_name,samples,changed_samples,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+Incoming paired review,4,0,0,0.073831,7.25,2.25,0.0,0.0,0.9207,0.788361

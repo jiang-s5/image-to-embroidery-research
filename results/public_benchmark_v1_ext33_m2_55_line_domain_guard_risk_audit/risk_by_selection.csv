@@ -1,0 +1,2 @@
+﻿selection,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+public_m2_55_line_guard,33,15,0.454545,0.12775735,0.39294779,qd_007,high_loss|high_jump|low_precision,0.04879716,4.90909091,0.60606061,0.19907576,0.0,0.97919997,0.79337027
