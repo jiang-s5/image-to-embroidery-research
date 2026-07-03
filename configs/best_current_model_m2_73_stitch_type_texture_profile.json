@@ -1,0 +1,131 @@
+{
+  "model_id": "m2_73_stitch_type_texture_profile",
+  "date": "2026-07-03",
+  "status": "promoted_conservative_stitch_type_texture_profile",
+  "base_profile_system": "m2_72_line_skeleton_fidelity_profile",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "selection_csv": "results/public_benchmark_v1_ext33_m2_73_stitch_type_texture_profile/texture_selected_rows.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_73_stitch_type_texture_profile",
+  "purpose": "Introduce guarded satin-like stitch texture candidates on top of M2.72 without increasing hard failures, jumps, trims, off-mask stitches, or visible connectors.",
+  "profile_stack": [
+    "safe_low_cost",
+    "text_legibility",
+    "line_art_precision",
+    "shape_fill_precision",
+    "text_wku_precision",
+    "line_art_jump_relief",
+    "m2_71_guarded_candidate_selector",
+    "line_skeleton_fidelity",
+    "stitch_type_texture"
+  ],
+  "new_tools": [
+    "tools/apply_m2_texture_profile.py"
+  ],
+  "candidate_generation": {
+    "base_safe_fill": "safe_dt adaptive fill-inset with eval-mask fill/connectors, nearest endpoint row ordering, quantized segment validation",
+    "tested_texture_candidates": [
+      {
+        "name": "texture_outline_safeadt",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_73_texture_outline_safeadt",
+        "decision": "rejected",
+        "reason": "16 hard_fail samples and high off-mask/visible-connector risk"
+      },
+      {
+        "name": "texture_satinrail_safeadt_light",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_73_texture_satinrail_safeadt_light",
+        "decision": "candidate_pool",
+        "reason": "0 hard_fail but higher average loss/jump, so use only through guarded per-sample promotion"
+      },
+      {
+        "name": "texture_dtsatin_safeadt_light",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_73_texture_dtsatin_safeadt_light",
+        "decision": "candidate_pool",
+        "reason": "0 hard_fail but higher average loss/jump, so use only through guarded per-sample promotion"
+      }
+    ]
+  },
+  "promotion_gate": {
+    "excluded_sources": [
+      "QuickDraw",
+      "TextRender"
+    ],
+    "max_off_mask_increase": 0.0,
+    "max_visible_increase": 0.0,
+    "max_jump_increase": 0.0,
+    "max_trim_increase": 0.0,
+    "max_loss_increase": 0.002,
+    "min_coverage_gain": 0.0,
+    "max_precision_drop": 0.01,
+    "min_texture_score_gain": 0.5,
+    "min_satin_like_segments": 60.0
+  },
+  "switched_samples": [
+    {
+      "sample_id": "ocp_005",
+      "source_name": "Openclipart",
+      "category": "public_domain_logo",
+      "texture_candidate": "satinrail_safeadt_light",
+      "loss_delta": 0.00000289,
+      "jump_delta": 0.0,
+      "trim_delta": 0.0,
+      "coverage_delta": 0.0,
+      "precision_delta": -0.009194,
+      "texture_score_delta": 0.97,
+      "satin_rail_segments": 97,
+      "dt_satin_segments": 0
+    },
+    {
+      "sample_id": "omj_005",
+      "source_name": "OpenMoji",
+      "category": "sun",
+      "texture_candidate": "dtsatin_safeadt_light",
+      "loss_delta": 0.0,
+      "jump_delta": 0.0,
+      "trim_delta": 0.0,
+      "coverage_delta": 0.00079,
+      "precision_delta": -0.004865,
+      "texture_score_delta": 1.276,
+      "satin_rail_segments": 0,
+      "dt_satin_segments": 115
+    }
+  ],
+  "mean_metrics": {
+    "samples": 33,
+    "texture_switches": 2,
+    "hard_fail": 0,
+    "unified_loss": 0.0550667,
+    "jump_count": 5.6969697,
+    "trim_count": 0.84848485,
+    "off_mask_stitch_length_mm": 0.12120606,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.97972955,
+    "stitch_precision_ratio": 0.83654112,
+    "adaptive_coverage_ratio": 0.92859709,
+    "adaptive_stitch_precision_ratio": 0.96587603,
+    "low_adaptive_precision_samples": 0,
+    "mean_texture_score": 0.14866667,
+    "mean_satin_rail_segments": 2.93939394,
+    "mean_dt_satin_segments": 3.48484848
+  },
+  "delta_vs_m2_72": {
+    "unified_loss": 0.00000009,
+    "jump_count": 0.0,
+    "trim_count": 0.0,
+    "off_mask_stitch_length_mm": 0.0,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.00002394,
+    "stitch_precision_ratio": -0.00042603,
+    "adaptive_coverage_ratio": 0.00001391,
+    "adaptive_stitch_precision_ratio": -0.00045703,
+    "low_strict_precision_samples": 0,
+    "low_adaptive_precision_samples": 0,
+    "component_risk_score": 0.00000008,
+    "worst_risk_score": 0.0
+  },
+  "interpretation": "M2.73 is a conservative stitch-type texture step. It does not claim a large executability improvement over M2.72; instead, it safely promotes two shape/icon samples to satin-like outputs while preserving zero hard_fail, zero visible connectors, and no jump/trim/off-mask increases.",
+  "remaining_bottlenecks": [
+    "Most satin-like candidates are still rejected because they increase jump, trim, off-mask, or precision risk.",
+    "The texture model is candidate-gated and deterministic, not yet a learned stitch-type planner.",
+    "Professional digitizing still requires true satin/tatami/running stitch segmentation, underlay, pull compensation, thread-density control, and 3D render-back texture metrics."
+  ]
+}

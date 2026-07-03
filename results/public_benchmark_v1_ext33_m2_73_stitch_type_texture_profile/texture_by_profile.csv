@@ -1,0 +1,8 @@
+﻿active_profile,samples,texture_switches,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio,mean_fill_rows,mean_outline_points,mean_satin_columns,mean_satin_rail_segments,mean_dt_satin_segments,mean_style_running_points,mean_texture_score
+line_art_jump_relief,1,0,0,0.07256709,8.0,1.0,0.0,0.0,0.99175,0.723491,138.0,0.0,0.0,0.0,0.0,0.0,0.276
+line_skeleton_fidelity,3,0,0,0.08909758,10.0,1.0,0.0,0.0,0.99905267,0.75695367,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+safe_low_cost,24,0,0,0.04577064,4.5,0.79166667,0.16665833,0.0,0.97401037,0.84737342,38.54166667,0.0,0.0,0.0,0.0,0.0,0.07708333
+shape_fill_precision,1,0,0,0.08927397,10.0,1.0,0.0,0.0,0.988461,0.833711,110.0,0.0,0.0,0.0,0.0,0.0,0.22
+stitch_type_texture,2,2,0,0.05695861,6.5,0.5,0.0,0.0,0.9997125,0.9332475,39.5,0.0,0.0,48.5,57.5,0.0,1.139
+text_legibility,1,0,0,0.14271031,15.0,3.0,0.0,0.0,0.985405,0.821273,65.0,0.0,0.0,0.0,0.0,0.0,0.13
+text_wku_precision,1,0,0,0.03294437,4.0,0.0,0.0,0.0,0.992627,0.753064,76.0,0.0,0.0,0.0,0.0,0.0,0.152
