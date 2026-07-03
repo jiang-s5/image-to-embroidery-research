@@ -1,0 +1,5 @@
+﻿source_name,rows,teacher_choices,allowed_candidates,mean_professional_utility,mean_delta_texture_score,mean_delta_unified_loss,mean_delta_jump_count,mean_delta_stitch_precision_ratio
+OpenMoji,50,10,20,-5.71895421,0.64412,0.03479915,3.68,-0.00373624
+Openclipart,50,10,14,-0.98013276,0.69908,0.05237539,5.72,-0.00303268
+QuickDraw,40,8,8,-2.45079999,0.909,0.06584519,6.8,-0.31630727
+Rendered text,25,5,5,-3.91002199,0.54848,-0.01656699,-2.04,-0.18503752

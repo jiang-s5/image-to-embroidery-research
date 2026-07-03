@@ -1,0 +1,84 @@
+{
+  "model_id": "m2_75_stitch_type_teacher_dataset",
+  "date": "2026-07-03",
+  "status": "teacher_dataset_for_learned_stitch_type_planner",
+  "promoted_output_profile": "m2_74_professional_texture_profile",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset",
+  "purpose": "Convert M2.74 professional texture gating into a candidate-level supervised dataset for a future learned stitch-type planner.",
+  "artifacts": {
+    "candidate_rows": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_candidate_rows.csv",
+    "teacher_choices": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_teacher_choices.csv",
+    "summary": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_teacher_summary.json",
+    "by_candidate_kind": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_by_candidate_kind.csv",
+    "by_source": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_by_source.csv",
+    "by_gate_reason": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_by_gate_reason.csv"
+  },
+  "new_tools": [
+    "tools/build_stitch_type_planner_dataset.py"
+  ],
+  "teacher_inputs": {
+    "base_selection": "results/public_benchmark_v1_ext33_m2_72_line_skeleton_profile/line_skeleton_selected_rows.csv",
+    "base_output_dir": "results/public_benchmark_v1_ext33_m2_72_line_skeleton_profile",
+    "candidate_dirs": [
+      "results/public_benchmark_v1_ext33_m2_73_texture_satinrail_safeadt_light",
+      "results/public_benchmark_v1_ext33_m2_73_texture_dtsatin_safeadt_light",
+      "results/public_benchmark_v1_ext33_m2_74_texture_satinrail_w4_s18_i4_cap40",
+      "results/public_benchmark_v1_ext33_m2_74_texture_satinrail_w5_s16_i5_cap45"
+    ]
+  },
+  "supervision_targets": [
+    "candidate_kind",
+    "allowed_by_professional_gate",
+    "gate_reason",
+    "professional_utility",
+    "is_teacher_choice",
+    "teacher_candidate",
+    "teacher_kind",
+    "teacher_is_texture_switch"
+  ],
+  "feature_groups": [
+    "sample source/category/split",
+    "planner branch and geometry features",
+    "candidate kind and stitch-type indicators",
+    "base and candidate command metrics",
+    "delta metrics versus base",
+    "texture counts and texture-score deltas"
+  ],
+  "gate": {
+    "excluded_sources": [
+      "QuickDraw",
+      "TextRender"
+    ],
+    "max_off_mask_increase": 0.0,
+    "max_visible_increase": 0.0,
+    "max_jump_increase": 8.0,
+    "max_trim_increase": 3.0,
+    "max_loss_increase": 0.03,
+    "min_coverage_gain": -0.015,
+    "max_precision_drop": 0.04,
+    "min_texture_score_gain": 0.35,
+    "min_satin_like_segments": 35.0
+  },
+  "summary": {
+    "samples": 33,
+    "candidate_rows": 165,
+    "teacher_texture_switches": 4,
+    "teacher_keep_base": 29,
+    "teacher_kinds": {
+      "base_keep": 29,
+      "dt_satin": 4
+    },
+    "allowed_candidate_rows_including_base": 47,
+    "teacher_mean_unified_loss": 0.05639949,
+    "teacher_mean_jump_count": 6.03030303,
+    "teacher_mean_trim_count": 0.60606061,
+    "teacher_mean_off_mask_stitch_length_mm": 0.12120606,
+    "teacher_mean_visible_connector_count": 0.0,
+    "teacher_mean_coverage_ratio": 0.98103933,
+    "teacher_mean_stitch_precision_ratio": 0.83779552,
+    "teacher_mean_texture_score": 0.20860606
+  },
+  "interpretation": "M2.75 is not a new DST output profile. It is the first explicit supervised data layer for learning stitch-type planning from professional texture tradeoffs. It preserves M2.74 as the current promoted output while exposing training targets for future running/satin/fill/tatami selection.",
+  "next_step": "Train a constrained stitch-type selector from this candidate table, then validate whether learned selection reproduces M2.74 choices under leave-one-out or source-held-out evaluation before allowing it to replace deterministic gating."
+}

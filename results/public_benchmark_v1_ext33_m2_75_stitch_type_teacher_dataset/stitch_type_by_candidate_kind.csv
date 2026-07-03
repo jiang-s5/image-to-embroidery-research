@@ -1,0 +1,4 @@
+﻿candidate_kind,rows,teacher_choices,allowed_candidates,mean_professional_utility,mean_delta_texture_score,mean_delta_unified_loss,mean_delta_jump_count,mean_delta_stitch_precision_ratio
+base_keep,33,29,33,0.0,0.0,0.0,0.0,0.0
+dt_satin,33,4,4,-3.46591446,1.13418182,0.05016017,5.27272727,-0.13492394
+satin_rail,99,0,10,-4.20567395,0.80610101,0.04972802,5.22222222,-0.13297157

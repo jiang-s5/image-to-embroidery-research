@@ -50,6 +50,8 @@ M2.74 is the current professional-texture profile. It promotes four shape/icon s
 
 M2.73 remains the strict no-regression texture gate when jump/loss must not increase. M2.72 remains the line-art skeleton-fidelity layer for selected QuickDraw samples. M2.71 remains as the no-regression guard that blocks unsafe route/segment candidates. M2.70 remains the earlier jump-relief profile for `qd_002 / dog`. M2.74 is the first profile in this line that intentionally accepts a small jump/loss cost for higher stitch-type texture, better coverage, and better precision.
 
+M2.75 adds the first stitch-type teacher dataset for the next learned planner. It expands the M2.74 texture decision into 165 `(sample, candidate)` rows with geometry features, command metrics, texture deltas, professional gate labels, utility scores, and teacher choices. M2.75 is a training substrate, not a new DST output profile; see [docs/m2_75_stitch_type_teacher_dataset.md](docs/m2_75_stitch_type_teacher_dataset.md).
+
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
 ## Research Contributions
@@ -318,7 +320,7 @@ Current paired-holdout command-level result:
 
 Interpretation: this table records the earlier 4-sample paired-holdout stage, where M2.1 global safe-connect repair20 was the best M2 decoding result. It reduced mean unified loss by 4.53% relative to M2 top4 and cut mean jumps from 192.75 to 83.00 while keeping visible connector count unchanged. M2.2 retraining on hard-mined traces was tested, but it did not beat the deterministic repair20 decode, so it is kept as an artifact rather than the promoted setting.
 
-Historical note: at the earlier fill-inset stage, M2.34 superseded M2.1 on the 33-sample public benchmark. The current promoted planner selector has since advanced through M2.70/M2.71/M2.72/M2.73 to M2.74. M2.34 and M2.1 are retained as historical baselines; see [docs/public_benchmark_ext33_validation.md](docs/public_benchmark_ext33_validation.md), [docs/m2_34_fill_inset_notes.md](docs/m2_34_fill_inset_notes.md), [docs/m2_72_line_skeleton_profile.md](docs/m2_72_line_skeleton_profile.md), [docs/m2_73_stitch_type_texture_profile.md](docs/m2_73_stitch_type_texture_profile.md), and [docs/m2_74_professional_texture_profile.md](docs/m2_74_professional_texture_profile.md).
+Historical note: at the earlier fill-inset stage, M2.34 superseded M2.1 on the 33-sample public benchmark. The current promoted planner selector has since advanced through M2.70/M2.71/M2.72/M2.73 to M2.74, while M2.75 starts the learned stitch-type planner data layer. M2.34 and M2.1 are retained as historical baselines; see [docs/public_benchmark_ext33_validation.md](docs/public_benchmark_ext33_validation.md), [docs/m2_34_fill_inset_notes.md](docs/m2_34_fill_inset_notes.md), [docs/m2_72_line_skeleton_profile.md](docs/m2_72_line_skeleton_profile.md), [docs/m2_73_stitch_type_texture_profile.md](docs/m2_73_stitch_type_texture_profile.md), [docs/m2_74_professional_texture_profile.md](docs/m2_74_professional_texture_profile.md), and [docs/m2_75_stitch_type_teacher_dataset.md](docs/m2_75_stitch_type_teacher_dataset.md).
 
 Run command-level executability evaluation after export:
 

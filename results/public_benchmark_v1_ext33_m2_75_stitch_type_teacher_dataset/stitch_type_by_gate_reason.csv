@@ -1,0 +1,9 @@
+﻿gate_reason,rows,teacher_choices,allowed_candidates,mean_professional_utility,mean_delta_texture_score,mean_delta_unified_loss,mean_delta_jump_count,mean_delta_stitch_precision_ratio
+base_keep,33,29,33,0.0,0.0,0.0,0.0,0.0
+excluded_source,32,0,0,-3.06349999,1.13625,0.08230649,8.5,-0.39538409
+jump_increase,11,0,0,-1.74210159,0.90854545,0.10993014,12.09090909,0.00905964
+loss_increase,29,0,0,-0.5039775,0.82641379,0.05481605,6.20689655,-0.010137
+not_enough_satin_like_segments,1,0,0,-0.80404284,0.366,0.01842164,8.0,0.017413
+off_mask_increase,22,0,0,-18.36215497,0.88327273,0.06102339,4.40909091,-0.03449468
+precision_drop_too_large,23,0,0,-0.04980981,0.65156522,-0.01510033,-1.39130435,-0.18012913
+professional_texture_allowed,14,4,14,0.49933175,0.86628571,0.00943046,2.35714286,0.0081695

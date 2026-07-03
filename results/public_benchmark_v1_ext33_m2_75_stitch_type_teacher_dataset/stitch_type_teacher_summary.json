@@ -1,0 +1,93 @@
+{
+  "model_id": "m2_75_stitch_type_teacher_dataset",
+  "samples": 33,
+  "candidate_rows": 165,
+  "teacher_texture_switches": 4,
+  "teacher_keep_base": 29,
+  "teacher_kinds": {
+    "base_keep": 29,
+    "dt_satin": 4
+  },
+  "allowed_candidate_rows": 47,
+  "gate_failure_counts": {
+    "dtsatin_safeadt_light:excluded_source": 8,
+    "dtsatin_safeadt_light:jump_increase": 3,
+    "dtsatin_safeadt_light:loss_increase": 7,
+    "dtsatin_safeadt_light:off_mask_increase": 6,
+    "dtsatin_safeadt_light:precision_drop_too_large": 5,
+    "dtsatin_safeadt_light:professional_texture_allowed": 4,
+    "satinrail_safeadt_light:excluded_source": 8,
+    "satinrail_safeadt_light:jump_increase": 3,
+    "satinrail_safeadt_light:loss_increase": 7,
+    "satinrail_safeadt_light:off_mask_increase": 5,
+    "satinrail_safeadt_light:precision_drop_too_large": 6,
+    "satinrail_safeadt_light:professional_texture_allowed": 4,
+    "satinrail_w4_s18_i4_cap40:excluded_source": 8,
+    "satinrail_w4_s18_i4_cap40:jump_increase": 3,
+    "satinrail_w4_s18_i4_cap40:loss_increase": 7,
+    "satinrail_w4_s18_i4_cap40:not_enough_satin_like_segments": 1,
+    "satinrail_w4_s18_i4_cap40:off_mask_increase": 6,
+    "satinrail_w4_s18_i4_cap40:precision_drop_too_large": 6,
+    "satinrail_w4_s18_i4_cap40:professional_texture_allowed": 2,
+    "satinrail_w5_s16_i5_cap45:excluded_source": 8,
+    "satinrail_w5_s16_i5_cap45:jump_increase": 2,
+    "satinrail_w5_s16_i5_cap45:loss_increase": 8,
+    "satinrail_w5_s16_i5_cap45:off_mask_increase": 5,
+    "satinrail_w5_s16_i5_cap45:precision_drop_too_large": 6,
+    "satinrail_w5_s16_i5_cap45:professional_texture_allowed": 4
+  },
+  "teacher_mean_unified_loss": 0.05639949,
+  "teacher_mean_jump_count": 6.03030303,
+  "teacher_mean_trim_count": 0.60606061,
+  "teacher_mean_off_mask_stitch_length_mm": 0.12120606,
+  "teacher_mean_visible_connector_count": 0.0,
+  "teacher_mean_coverage_ratio": 0.98103933,
+  "teacher_mean_stitch_precision_ratio": 0.83779552,
+  "teacher_mean_texture_score": 0.20860606,
+  "args": {
+    "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+    "base_selection": "results\\public_benchmark_v1_ext33_m2_72_line_skeleton_profile\\line_skeleton_selected_rows.csv",
+    "base_output_dir": "results\\public_benchmark_v1_ext33_m2_72_line_skeleton_profile",
+    "candidate": [
+      [
+        "satinrail_safeadt_light",
+        "results\\public_benchmark_v1_ext33_m2_73_texture_satinrail_safeadt_light"
+      ],
+      [
+        "dtsatin_safeadt_light",
+        "results\\public_benchmark_v1_ext33_m2_73_texture_dtsatin_safeadt_light"
+      ],
+      [
+        "satinrail_w4_s18_i4_cap40",
+        "results\\public_benchmark_v1_ext33_m2_74_texture_satinrail_w4_s18_i4_cap40"
+      ],
+      [
+        "satinrail_w5_s16_i5_cap45",
+        "results\\public_benchmark_v1_ext33_m2_74_texture_satinrail_w5_s16_i5_cap45"
+      ]
+    ],
+    "output_dir": "results\\public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset",
+    "model_id": "m2_75_stitch_type_teacher_dataset",
+    "exclude_sources": [
+      "QuickDraw",
+      "TextRender"
+    ],
+    "max_off_mask_increase": 0.0,
+    "max_visible_increase": 0.0,
+    "max_jump_increase": 8.0,
+    "max_trim_increase": 3.0,
+    "max_loss_increase": 0.03,
+    "min_coverage_gain": -0.015,
+    "max_precision_drop": 0.04,
+    "min_texture_score_gain": 0.35,
+    "min_satin_like_segments": 35.0,
+    "texture_weight": 1.0,
+    "coverage_weight": 2.0,
+    "precision_weight": 3.0,
+    "loss_weight": 6.0,
+    "jump_weight": 0.15,
+    "trim_weight": 0.1,
+    "off_mask_weight": 20.0,
+    "visible_weight": 4.0
+  }
+}
