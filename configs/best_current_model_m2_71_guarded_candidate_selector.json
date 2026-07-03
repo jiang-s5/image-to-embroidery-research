@@ -1,0 +1,89 @@
+{
+  "model_id": "m2_71_guarded_candidate_selector",
+  "date": "2026-07-03",
+  "status": "guarded_no_regression_selector",
+  "base_profile_system": "m2_70_line_art_jump_profile",
+  "selection_csv": "results/public_benchmark_v1_ext33_m2_71_guarded_candidate_selector/guarded_selected_rows.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_71_guarded_candidate_selector",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "purpose": "Prevent unsafe M2 candidate promotions by enforcing no-regression gates for execution risk, visual risk, coverage, and adaptive precision.",
+  "production_note": "M2.71 preserves the M2.70 output set because no candidate from the current pool passed the guarded no-regression gate. The improvement is governance: bad route/segment candidates are now rejected reproducibly instead of being promoted by a narrow metric.",
+  "candidate_scans": [
+    "results/m2_70_line_art_all_candidate_scan/candidate_rows.csv",
+    "results/m2_71_quickdraw_route_probe_scan/candidate_rows.csv"
+  ],
+  "profile_stack": [
+    "safe_low_cost",
+    "text_legibility",
+    "line_art_precision",
+    "shape_fill_precision",
+    "text_wku_precision",
+    "line_art_jump_relief",
+    "m2_71_guarded_candidate_selector"
+  ],
+  "guard": {
+    "max_off_mask_increase": 0.0,
+    "max_visible_increase": 0.0,
+    "max_jump_increase": 0.0,
+    "max_trim_increase": 0.0,
+    "max_loss_increase": 0.0,
+    "max_coverage_drop": 0.005,
+    "max_precision_drop": 0.005,
+    "max_adaptive_coverage_drop": 0.01,
+    "max_adaptive_precision_drop": 0.01,
+    "min_absolute_coverage": 0.90,
+    "min_absolute_adaptive_coverage": 0.85,
+    "min_absolute_adaptive_precision": 0.94,
+    "min_loss_reduction": 0.0005,
+    "min_jump_reduction": 1.0,
+    "min_trim_reduction": 1.0,
+    "min_coverage_gain": 0.01,
+    "min_precision_gain": 0.01,
+    "min_adaptive_coverage_gain": 0.01,
+    "min_adaptive_precision_gain": 0.005,
+    "min_guarded_score": 0.0
+  },
+  "mean_metrics": {
+    "samples": 33,
+    "promoted_samples": 0,
+    "hard_fail": 0,
+    "unified_loss": 0.05558126,
+    "jump_count": 5.75757576,
+    "trim_count": 0.84848485,
+    "off_mask_stitch_length_mm": 0.12120606,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.97682379,
+    "stitch_precision_ratio": 0.8297827,
+    "adaptive_coverage_ratio": 0.9320337,
+    "adaptive_stitch_precision_ratio": 0.96332882,
+    "overfill_outside_adaptive_ratio": 0.03667118
+  },
+  "component_risk_audit": {
+    "mean_risk_score": 0.09763792,
+    "worst_risk_score": 0.25929687,
+    "worst_sample_id": "qd_007",
+    "worst_flags": "high_loss|low_precision"
+  },
+  "adaptive_precision_audit": {
+    "low_adaptive_precision_samples": 0,
+    "low_strict_precision_samples": 8
+  },
+  "rejection_counts": {
+    "jump_increase": 490,
+    "candidate_hard_fail": 262,
+    "off_mask_increase": 146,
+    "strict_precision_drop": 54,
+    "absolute_adaptive_coverage_too_low": 46,
+    "no_material_improvement": 34,
+    "absolute_adaptive_precision_too_low": 31,
+    "coverage_drop": 22,
+    "loss_increase": 10,
+    "trim_increase": 7
+  },
+  "interpretation": "M2.71 confirms that M2.70 remains the best safe production profile in the current candidate pool. It also documents why newer route/segment experiments are not yet safe enough: they tend to increase jumps, off-mask stitches, hard failures, or precision/coverage regressions.",
+  "remaining_bottlenecks": [
+    "qd_007 / moon remains the worst risk sample with high_loss and low_precision.",
+    "QuickDraw line-art needs segment-level stroke grouping rather than mask-wide route connection.",
+    "Professional digitizing realism still requires stitch-type-aware satin/fill/running texture generation and render-back metrics beyond line coverage."
+  ]
+}

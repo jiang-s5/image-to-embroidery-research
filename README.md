@@ -42,11 +42,13 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-models/model_m2_34_current_best
-configs/best_current_model_m2_34_fill_inset_selector.json
+configs/best_current_model_m2_71_guarded_candidate_selector.json
+results/public_benchmark_v1_ext33_m2_71_guarded_candidate_selector/
 ```
 
-M2.34 adds 1px/2px fill-inset nearest-endpoint row-order candidates. It improves public LOO unified loss from M2.30's `0.068519` to `0.051174`, public core-to-full holdout loss from `0.074071` to `0.051748`, and incoming review loss from `0.084419` to `0.078290`, while keeping `0` hard_fail.
+M2.71 is a guarded no-regression selector on top of M2.70. It keeps the M2.70 production output because no newer route/segment candidate passes the execution, visual-risk, coverage, and adaptive-precision gate. The current public benchmark metrics are `0.055581` mean unified loss, `5.757576` mean jump count, `0` hard_fail, and `0` low-adaptive-precision samples across 33 public benchmark images.
+
+M2.70 remains the last version that changed a production stitch output: it added a QuickDraw line-art jump-relief profile for `qd_002 / dog`, reducing jumps from `15` to `8` while preserving zero visible/off-mask regression. M2.71 documents why the next candidate pool is not yet safe enough to promote.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
