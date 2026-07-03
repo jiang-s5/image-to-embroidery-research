@@ -1,0 +1,9 @@
+﻿category,samples,mean_skeleton_coverage_ratio,mean_skeleton_precision_ratio,mean_adaptive_skeleton_coverage_ratio,mean_adaptive_skeleton_precision_ratio,mean_skeleton_overfill_outside_adaptive_ratio,low_skeleton_coverage_samples,low_adaptive_skeleton_coverage_samples
+bicycle,2,0.99674,0.133326,0.993758,0.347106,0.652894,0,0
+bird,2,0.940114,0.153691,0.928872,0.377467,0.622533,2,2
+cat,2,0.933077,0.142304,0.9278,0.352769,0.647231,2,2
+dog,2,0.988827,0.13444,0.98393,0.352105,0.647895,0,0
+fish,2,0.991839,0.1646525,0.9885815,0.4066825,0.5933175,0,0
+flower,2,0.9759665,0.154469,0.9686025,0.408204,0.591796,0,1
+moon,2,0.9936875,0.170112,0.9924085,0.4237535,0.5762465,0,0
+star,2,0.996044,0.159386,0.988601,0.398069,0.601931,0,0

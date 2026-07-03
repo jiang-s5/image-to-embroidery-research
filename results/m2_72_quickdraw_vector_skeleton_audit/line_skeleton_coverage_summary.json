@@ -1,0 +1,209 @@
+{
+  "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+  "source_filter": [
+    "QuickDraw"
+  ],
+  "samples": 40,
+  "review_samples": 3,
+  "by_selection": [
+    {
+      "selection": "m2_71",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.97261538,
+      "mean_skeleton_precision_ratio": 0.14839162,
+      "mean_adaptive_skeleton_coverage_ratio": 0.96616825,
+      "mean_adaptive_skeleton_precision_ratio": 0.37492287,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.62507713,
+      "low_skeleton_coverage_samples": 2,
+      "low_adaptive_skeleton_coverage_samples": 3
+    },
+    {
+      "selection": "vector_nearest",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.9904255,
+      "mean_skeleton_precision_ratio": 0.16570737,
+      "mean_adaptive_skeleton_coverage_ratio": 0.99182863,
+      "mean_adaptive_skeleton_precision_ratio": 0.42206312,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.57793688,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "selection": "vector_nearest_reverse",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.9904255,
+      "mean_skeleton_precision_ratio": 0.16570737,
+      "mean_adaptive_skeleton_coverage_ratio": 0.99182863,
+      "mean_adaptive_skeleton_precision_ratio": 0.42206312,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.57793688,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "selection": "vector_nearest_reverse_connect8",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.99093487,
+      "mean_skeleton_precision_ratio": 0.16576113,
+      "mean_adaptive_skeleton_coverage_ratio": 0.99202375,
+      "mean_adaptive_skeleton_precision_ratio": 0.42207025,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.57792975,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "selection": "vector_original",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.9904255,
+      "mean_skeleton_precision_ratio": 0.16570737,
+      "mean_adaptive_skeleton_coverage_ratio": 0.99182863,
+      "mean_adaptive_skeleton_precision_ratio": 0.42206312,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.57793688,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    }
+  ],
+  "by_category": [
+    {
+      "category": "bicycle",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.979299,
+      "mean_skeleton_precision_ratio": 0.1524248,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9878278,
+      "mean_adaptive_skeleton_precision_ratio": 0.4016526,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5983474,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "bird",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.9697716,
+      "mean_skeleton_precision_ratio": 0.1620494,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9726192,
+      "mean_adaptive_skeleton_precision_ratio": 0.4040262,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5959738,
+      "low_skeleton_coverage_samples": 1,
+      "low_adaptive_skeleton_coverage_samples": 1
+    },
+    {
+      "category": "cat",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.9829234,
+      "mean_skeleton_precision_ratio": 0.1625192,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9798824,
+      "mean_adaptive_skeleton_precision_ratio": 0.4039386,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5960614,
+      "low_skeleton_coverage_samples": 1,
+      "low_adaptive_skeleton_coverage_samples": 1
+    },
+    {
+      "category": "dog",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.9818038,
+      "mean_skeleton_precision_ratio": 0.147888,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9812612,
+      "mean_adaptive_skeleton_precision_ratio": 0.389081,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.610919,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "fish",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.9967356,
+      "mean_skeleton_precision_ratio": 0.1718996,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9949058,
+      "mean_adaptive_skeleton_precision_ratio": 0.425173,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.574827,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "flower",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.9885056,
+      "mean_skeleton_precision_ratio": 0.1575866,
+      "mean_adaptive_skeleton_coverage_ratio": 0.985086,
+      "mean_adaptive_skeleton_precision_ratio": 0.4181436,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5818564,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 1
+    },
+    {
+      "category": "moon",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.997475,
+      "mean_skeleton_precision_ratio": 0.1748958,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9955252,
+      "mean_adaptive_skeleton_precision_ratio": 0.4353872,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5646128,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "star",
+      "samples": 5,
+      "mean_skeleton_coverage_ratio": 0.9992088,
+      "mean_skeleton_precision_ratio": 0.1687764,
+      "mean_adaptive_skeleton_coverage_ratio": 0.996777,
+      "mean_adaptive_skeleton_precision_ratio": 0.4236898,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5763102,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    }
+  ],
+  "args": {
+    "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+    "selection": [
+      [
+        "m2_71",
+        "results\\public_benchmark_v1_ext33_m2_71_guarded_candidate_selector\\guarded_selected_rows.csv"
+      ],
+      [
+        "vector_original",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_original\\source_aware_hybrid_rows.csv"
+      ],
+      [
+        "vector_nearest",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest\\source_aware_hybrid_rows.csv"
+      ],
+      [
+        "vector_nearest_reverse",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse\\source_aware_hybrid_rows.csv"
+      ],
+      [
+        "vector_nearest_reverse_connect8",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse_connect8\\source_aware_hybrid_rows.csv"
+      ]
+    ],
+    "output_root": [
+      [
+        "m2_71",
+        "results\\public_benchmark_v1_ext33_m2_71_guarded_candidate_selector"
+      ],
+      [
+        "vector_original",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_original"
+      ],
+      [
+        "vector_nearest",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest"
+      ],
+      [
+        "vector_nearest_reverse",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse"
+      ],
+      [
+        "vector_nearest_reverse_connect8",
+        "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse_connect8"
+      ]
+    ],
+    "output_dir": "results\\m2_72_quickdraw_vector_skeleton_audit",
+    "source_filter": "QuickDraw",
+    "target_width_mm": 90.0,
+    "line_radius_px": 1,
+    "adaptive_precision_radius_px": 1,
+    "skeleton_coverage_threshold": 0.95,
+    "adaptive_skeleton_coverage_threshold": 0.95
+  }
+}

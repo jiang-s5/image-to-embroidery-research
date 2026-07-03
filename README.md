@@ -42,13 +42,13 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-configs/best_current_model_m2_71_guarded_candidate_selector.json
-results/public_benchmark_v1_ext33_m2_71_guarded_candidate_selector/
+configs/best_current_model_m2_72_line_skeleton_profile.json
+results/public_benchmark_v1_ext33_m2_72_line_skeleton_profile/
 ```
 
-M2.71 is a guarded no-regression selector on top of M2.70. It keeps the M2.70 production output because no newer route/segment candidate passes the execution, visual-risk, coverage, and adaptive-precision gate. The current public benchmark metrics are `0.055581` mean unified loss, `5.757576` mean jump count, `0` hard_fail, and `0` low-adaptive-precision samples across 33 public benchmark images.
+M2.72 adds a line-art skeleton-fidelity profile on top of M2.71. For selected QuickDraw samples, it uses the original vector strokes instead of inferring arbitrary mask connections. The current public benchmark metrics are `0.055067` mean unified loss, `5.696970` mean jump count, `0` hard_fail, `0` low-adaptive-precision samples, and 3 safe QuickDraw line-art promotions across 33 public benchmark images.
 
-M2.70 remains the last version that changed a production stitch output: it added a QuickDraw line-art jump-relief profile for `qd_002 / dog`, reducing jumps from `15` to `8` while preserving zero visible/off-mask regression. M2.71 documents why the next candidate pool is not yet safe enough to promote.
+M2.71 remains as the no-regression guard that blocks unsafe route/segment candidates. M2.70 remains the earlier jump-relief profile for `qd_002 / dog`. M2.72 is the first profile in this line that explicitly evaluates and improves centerline/skeleton fidelity for line-art designs.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 

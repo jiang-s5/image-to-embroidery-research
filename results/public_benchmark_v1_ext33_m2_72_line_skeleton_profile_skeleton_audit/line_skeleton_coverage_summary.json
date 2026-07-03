@@ -1,0 +1,152 @@
+{
+  "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+  "source_filter": [
+    "QuickDraw"
+  ],
+  "samples": 16,
+  "review_samples": 5,
+  "by_selection": [
+    {
+      "selection": "m2_71",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.97261538,
+      "mean_skeleton_precision_ratio": 0.14839162,
+      "mean_adaptive_skeleton_coverage_ratio": 0.96616825,
+      "mean_adaptive_skeleton_precision_ratio": 0.37492287,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.62507713,
+      "low_skeleton_coverage_samples": 2,
+      "low_adaptive_skeleton_coverage_samples": 3
+    },
+    {
+      "selection": "m2_72",
+      "samples": 8,
+      "mean_skeleton_coverage_ratio": 0.98145837,
+      "mean_skeleton_precision_ratio": 0.1547035,
+      "mean_adaptive_skeleton_coverage_ratio": 0.97697013,
+      "mean_adaptive_skeleton_precision_ratio": 0.39161612,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.60838388,
+      "low_skeleton_coverage_samples": 2,
+      "low_adaptive_skeleton_coverage_samples": 2
+    }
+  ],
+  "by_category": [
+    {
+      "category": "bicycle",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.99674,
+      "mean_skeleton_precision_ratio": 0.133326,
+      "mean_adaptive_skeleton_coverage_ratio": 0.993758,
+      "mean_adaptive_skeleton_precision_ratio": 0.347106,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.652894,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "bird",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.940114,
+      "mean_skeleton_precision_ratio": 0.153691,
+      "mean_adaptive_skeleton_coverage_ratio": 0.928872,
+      "mean_adaptive_skeleton_precision_ratio": 0.377467,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.622533,
+      "low_skeleton_coverage_samples": 2,
+      "low_adaptive_skeleton_coverage_samples": 2
+    },
+    {
+      "category": "cat",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.933077,
+      "mean_skeleton_precision_ratio": 0.142304,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9278,
+      "mean_adaptive_skeleton_precision_ratio": 0.352769,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.647231,
+      "low_skeleton_coverage_samples": 2,
+      "low_adaptive_skeleton_coverage_samples": 2
+    },
+    {
+      "category": "dog",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.988827,
+      "mean_skeleton_precision_ratio": 0.13444,
+      "mean_adaptive_skeleton_coverage_ratio": 0.98393,
+      "mean_adaptive_skeleton_precision_ratio": 0.352105,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.647895,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "fish",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.991839,
+      "mean_skeleton_precision_ratio": 0.1646525,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9885815,
+      "mean_adaptive_skeleton_precision_ratio": 0.4066825,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5933175,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "flower",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.9759665,
+      "mean_skeleton_precision_ratio": 0.154469,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9686025,
+      "mean_adaptive_skeleton_precision_ratio": 0.408204,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.591796,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 1
+    },
+    {
+      "category": "moon",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.9936875,
+      "mean_skeleton_precision_ratio": 0.170112,
+      "mean_adaptive_skeleton_coverage_ratio": 0.9924085,
+      "mean_adaptive_skeleton_precision_ratio": 0.4237535,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.5762465,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    },
+    {
+      "category": "star",
+      "samples": 2,
+      "mean_skeleton_coverage_ratio": 0.996044,
+      "mean_skeleton_precision_ratio": 0.159386,
+      "mean_adaptive_skeleton_coverage_ratio": 0.988601,
+      "mean_adaptive_skeleton_precision_ratio": 0.398069,
+      "mean_skeleton_overfill_outside_adaptive_ratio": 0.601931,
+      "low_skeleton_coverage_samples": 0,
+      "low_adaptive_skeleton_coverage_samples": 0
+    }
+  ],
+  "args": {
+    "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+    "selection": [
+      [
+        "m2_71",
+        "results\\public_benchmark_v1_ext33_m2_71_guarded_candidate_selector\\guarded_selected_rows.csv"
+      ],
+      [
+        "m2_72",
+        "results\\public_benchmark_v1_ext33_m2_72_line_skeleton_profile\\line_skeleton_selected_rows.csv"
+      ]
+    ],
+    "output_root": [
+      [
+        "m2_71",
+        "results\\public_benchmark_v1_ext33_m2_71_guarded_candidate_selector"
+      ],
+      [
+        "m2_72",
+        "results\\public_benchmark_v1_ext33_m2_72_line_skeleton_profile"
+      ]
+    ],
+    "output_dir": "results\\public_benchmark_v1_ext33_m2_72_line_skeleton_profile_skeleton_audit",
+    "source_filter": "QuickDraw",
+    "target_width_mm": 90.0,
+    "line_radius_px": 1,
+    "adaptive_precision_radius_px": 1,
+    "skeleton_coverage_threshold": 0.95,
+    "adaptive_skeleton_coverage_threshold": 0.95
+  }
+}

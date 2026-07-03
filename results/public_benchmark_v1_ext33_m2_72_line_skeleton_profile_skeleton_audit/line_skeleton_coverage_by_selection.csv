@@ -1,0 +1,3 @@
+﻿selection,samples,mean_skeleton_coverage_ratio,mean_skeleton_precision_ratio,mean_adaptive_skeleton_coverage_ratio,mean_adaptive_skeleton_precision_ratio,mean_skeleton_overfill_outside_adaptive_ratio,low_skeleton_coverage_samples,low_adaptive_skeleton_coverage_samples
+m2_71,8,0.97261538,0.14839162,0.96616825,0.37492287,0.62507713,2,3
+m2_72,8,0.98145837,0.1547035,0.97697013,0.39161612,0.60838388,2,2

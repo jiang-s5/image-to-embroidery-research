@@ -1,0 +1,6 @@
+﻿selection,samples,mean_skeleton_coverage_ratio,mean_skeleton_precision_ratio,mean_adaptive_skeleton_coverage_ratio,mean_adaptive_skeleton_precision_ratio,mean_skeleton_overfill_outside_adaptive_ratio,low_skeleton_coverage_samples,low_adaptive_skeleton_coverage_samples
+m2_71,8,0.97261538,0.14839162,0.96616825,0.37492287,0.62507713,2,3
+vector_nearest,8,0.9904255,0.16570737,0.99182863,0.42206312,0.57793688,0,0
+vector_nearest_reverse,8,0.9904255,0.16570737,0.99182863,0.42206312,0.57793688,0,0
+vector_nearest_reverse_connect8,8,0.99093487,0.16576113,0.99202375,0.42207025,0.57792975,0,0
+vector_original,8,0.9904255,0.16570737,0.99182863,0.42206312,0.57793688,0,0

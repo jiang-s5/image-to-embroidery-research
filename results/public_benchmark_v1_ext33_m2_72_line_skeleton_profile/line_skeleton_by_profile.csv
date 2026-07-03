@@ -1,0 +1,7 @@
+﻿active_profile,samples,profile_switches,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio,mean_adaptive_coverage_ratio,mean_adaptive_stitch_precision_ratio,mean_overfill_outside_adaptive_ratio,mean_skeleton_coverage_ratio,mean_skeleton_precision_ratio,mean_adaptive_skeleton_coverage_ratio,mean_adaptive_skeleton_precision_ratio,mean_skeleton_overfill_outside_adaptive_ratio
+line_art_jump_relief,1,0,0,0.07256709,8.0,1.0,0.0,0.0,0.99175,0.723491,0.88561,0.964153,0.035847,0.988827,0.13444,0.98393,0.352105,0.647895
+line_skeleton_fidelity,3,3,0,0.08909758,10.0,1.0,0.0,0.0,0.99905267,0.75695367,0.83434933,0.99626633,0.00373367,0.998955,0.17149367,0.9976,0.43513767,0.56486233
+safe_low_cost,26,0,0,0.04663114,4.65384615,0.76923077,0.15383846,0.0,0.97595708,0.85451985,0.93858242,0.96556742,0.03443258,0.14869135,0.02264258,0.14765504,0.05674658,0.09709958
+shape_fill_precision,1,0,0,0.08927397,10.0,1.0,0.0,0.0,0.988461,0.833711,0.963214,0.961113,0.038887,0.0,0.0,0.0,0.0,0.0
+text_legibility,1,0,0,0.14271031,15.0,3.0,0.0,0.0,0.985405,0.821273,0.913036,0.95827,0.04173,0.0,0.0,0.0,0.0,0.0
+text_wku_precision,1,0,0,0.03294437,4.0,0.0,0.0,0.0,0.992627,0.753064,0.975194,0.911903,0.088097,0.0,0.0,0.0,0.0,0.0

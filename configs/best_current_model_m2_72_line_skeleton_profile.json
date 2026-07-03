@@ -1,0 +1,118 @@
+{
+  "model_id": "m2_72_line_skeleton_fidelity_profile",
+  "date": "2026-07-03",
+  "status": "promoted_line_art_skeleton_fidelity_profile",
+  "base_profile_system": "m2_71_guarded_candidate_selector",
+  "selection_csv": "results/public_benchmark_v1_ext33_m2_72_line_skeleton_profile/line_skeleton_selected_rows.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_72_line_skeleton_profile",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "purpose": "Use original QuickDraw vector strokes for line-art samples when they improve skeleton/centerline fidelity without increasing execution or visual risk.",
+  "profile_stack": [
+    "safe_low_cost",
+    "text_legibility",
+    "line_art_precision",
+    "shape_fill_precision",
+    "text_wku_precision",
+    "line_art_jump_relief",
+    "m2_71_guarded_candidate_selector",
+    "line_skeleton_fidelity"
+  ],
+  "new_tools": [
+    "tools/run_quickdraw_vector_stroke_candidate.py",
+    "tools/audit_line_skeleton_coverage.py",
+    "tools/apply_m2_line_skeleton_profile.py"
+  ],
+  "candidate": {
+    "name": "public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse_connect8",
+    "method": "QuickDraw raw vector stroke order with nearest-stroke ordering, reversible stroke direction, and conservative in-mask stroke connection.",
+    "source_csv": "results/public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse_connect8/source_aware_hybrid_rows.csv"
+  },
+  "promotion_gate": {
+    "source_name": "QuickDraw",
+    "max_off_mask_increase": 0.0,
+    "max_visible_increase": 0.0,
+    "max_jump_increase": 0.0,
+    "max_trim_increase": 0.0,
+    "max_loss_increase": 0.0,
+    "min_adaptive_precision": 0.95,
+    "min_adaptive_skeleton_coverage": 0.95,
+    "min_skeleton_coverage_gain": 0.005,
+    "min_adaptive_skeleton_coverage_gain": 0.005
+  },
+  "switched_samples": [
+    {
+      "sample_id": "qd_003",
+      "category": "fish",
+      "loss_delta": -0.00912909,
+      "jump_delta": -1.0,
+      "coverage_delta": 0.011692,
+      "strict_precision_delta": 0.081947,
+      "skeleton_coverage_delta": 0.016322,
+      "adaptive_skeleton_coverage_delta": 0.021081
+    },
+    {
+      "sample_id": "qd_004",
+      "category": "flower",
+      "loss_delta": -0.00029207,
+      "jump_delta": 0.0,
+      "coverage_delta": 0.071889,
+      "strict_precision_delta": 0.074691,
+      "skeleton_coverage_delta": 0.041797,
+      "adaptive_skeleton_coverage_delta": 0.054945
+    },
+    {
+      "sample_id": "qd_007",
+      "category": "moon",
+      "loss_delta": -0.00756218,
+      "jump_delta": -1.0,
+      "coverage_delta": 0.011519,
+      "strict_precision_delta": 0.080449,
+      "skeleton_coverage_delta": 0.012625,
+      "adaptive_skeleton_coverage_delta": 0.010389
+    }
+  ],
+  "mean_metrics": {
+    "samples": 33,
+    "profile_switches": 3,
+    "hard_fail": 0,
+    "unified_loss": 0.05506661,
+    "jump_count": 5.6969697,
+    "trim_count": 0.84848485,
+    "off_mask_stitch_length_mm": 0.12120606,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.97970561,
+    "stitch_precision_ratio": 0.83696715,
+    "adaptive_coverage_ratio": 0.92858318,
+    "adaptive_stitch_precision_ratio": 0.96633306,
+    "overfill_outside_adaptive_ratio": 0.03366694
+  },
+  "delta_vs_m2_71": {
+    "unified_loss": -0.00051465,
+    "jump_count": -0.06060606,
+    "trim_count": 0.0,
+    "off_mask_stitch_length_mm": 0.0,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.00288182,
+    "stitch_precision_ratio": 0.00718445,
+    "adaptive_coverage_ratio": -0.00345052,
+    "adaptive_stitch_precision_ratio": 0.00300424,
+    "low_strict_precision_samples": -2,
+    "low_adaptive_precision_samples": 0,
+    "mean_risk_score": -0.00550317,
+    "worst_risk_score": -0.02458656,
+    "review_samples": -2
+  },
+  "quickdraw_skeleton_delta_vs_m2_71": {
+    "mean_skeleton_coverage_ratio": 0.00884299,
+    "mean_skeleton_precision_ratio": 0.00631188,
+    "mean_adaptive_skeleton_coverage_ratio": 0.01080188,
+    "mean_adaptive_skeleton_precision_ratio": 0.01669325,
+    "low_adaptive_skeleton_coverage_samples": -1
+  },
+  "interpretation": "M2.72 is the first production profile that explicitly treats line art as stroke/centerline data rather than generic filled masks. It safely promotes three QuickDraw samples using original vector strokes, improving line fidelity and reducing risk without adding hard failures, visible connectors, or off-mask stitches.",
+  "remaining_bottlenecks": [
+    "Some QuickDraw samples still prefer the M2.71/M2.70 outputs because vector strokes increase jump or loss.",
+    "The system still lacks true satin/fill/running stitch type rendering comparable to professional digitizing software.",
+    "Future work should learn when to use centerline running stitch versus filled row stitching instead of relying on source-specific rules."
+  ]
+}

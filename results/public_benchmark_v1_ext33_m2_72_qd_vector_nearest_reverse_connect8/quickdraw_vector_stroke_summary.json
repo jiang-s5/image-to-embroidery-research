@@ -1,0 +1,87 @@
+{
+  "samples": 33,
+  "hard_fail": 0,
+  "mean_unified_loss": 0.062594,
+  "mean_jump_count": 6.515152,
+  "mean_trim_count": 0.969697,
+  "mean_off_mask_stitch_length_mm": 0.121206,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.984548,
+  "mean_stitch_precision_ratio": 0.849788,
+  "mean_adaptive_coverage_ratio": 0.923854,
+  "mean_adaptive_stitch_precision_ratio": 0.973079,
+  "by_source": {
+    "OpenMoji": {
+      "samples": 10,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.056466,
+      "mean_jump_count": 5.3,
+      "mean_trim_count": 1.5,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.993624,
+      "mean_stitch_precision_ratio": 0.888093,
+      "mean_adaptive_coverage_ratio": 0.978583,
+      "mean_adaptive_stitch_precision_ratio": 0.96898
+    },
+    "Openclipart": {
+      "samples": 10,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.040597,
+      "mean_jump_count": 4.1,
+      "mean_trim_count": 0.2,
+      "mean_off_mask_stitch_length_mm": 0.24293,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.962914,
+      "mean_stitch_precision_ratio": 0.891062,
+      "mean_adaptive_coverage_ratio": 0.939539,
+      "mean_adaptive_stitch_precision_ratio": 0.968242
+    },
+    "QuickDraw": {
+      "samples": 8,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.099984,
+      "mean_jump_count": 11.125,
+      "mean_trim_count": 1.25,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.998228,
+      "mean_stitch_precision_ratio": 0.770354,
+      "mean_adaptive_coverage_ratio": 0.833887,
+      "mean_adaptive_stitch_precision_ratio": 0.995454
+    },
+    "Rendered text": {
+      "samples": 5,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.05902,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.817721,
+      "mean_adaptive_coverage_ratio": 0.926974,
+      "mean_adaptive_stitch_precision_ratio": 0.95515
+    }
+  },
+  "line_sources": [
+    "QuickDraw"
+  ],
+  "candidate_args": {
+    "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+    "output_dir": "results\\public_benchmark_v1_ext33_m2_72_qd_vector_nearest_reverse_connect8",
+    "fallback_selection": "results\\public_benchmark_v1_ext33_m2_71_guarded_candidate_selector\\guarded_selected_rows.csv",
+    "fallback_output_dir": "results\\public_benchmark_v1_ext33_m2_71_guarded_candidate_selector",
+    "line_sources": "QuickDraw",
+    "target_width_mm": 90.0,
+    "max_stitch_mm": 3.2,
+    "stroke_order": "nearest",
+    "allow_reverse": true,
+    "connect_strokes": true,
+    "max_connect_mm": 8.0,
+    "min_connect_inside_fraction": 0.95,
+    "min_points_per_stroke": 2,
+    "line_radius_px": 2,
+    "adaptive_precision_radius_px": 2
+  }
+}
