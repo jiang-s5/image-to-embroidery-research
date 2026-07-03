@@ -1,0 +1,115 @@
+{
+  "model_id": "m2_68_shape_aware_profile",
+  "date": "2026-07-03",
+  "status": "promoted_shape_fill_precision_profile",
+  "description": "Adds a shape/fill precision profile on top of M2.67. The profile targets Openclipart-style filled vector shapes, using off-mask reduction and adaptive precision as first-class production criteria.",
+  "base_profile_system": "m2_67_line_art_profile",
+  "generation_default": "m2_68_profile_system",
+  "recommended_default_profile": "profile_based_balanced",
+  "available_profiles": {
+    "safe_low_cost": "m2_64_text_precision_rescue",
+    "text_legibility": "m2_65_text_legibility_rescue",
+    "line_art_precision": "m2_67_line_art_profile",
+    "shape_fill_precision": "m2_68_shape_aware_profile"
+  },
+  "dataset": "datasets/public_benchmark_v1_ext33",
+  "decision_gate": {
+    "shape_source_name": "Openclipart",
+    "min_off_mask_reduction": 1.0,
+    "min_adaptive_precision_gain": 0.03,
+    "min_strict_precision_gain": 0.03,
+    "min_coverage": 0.96,
+    "min_adaptive_coverage": 0.90,
+    "max_loss_increase": 0.05,
+    "max_jump_increase": 6.0,
+    "max_trim_increase": 2.0,
+    "max_visible_increase": 0.0
+  },
+  "shape_candidate_roots": [
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_rows16_p40",
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_t2m5_r035_a32_rows16_p40",
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_qpath090_rows16_p40",
+    "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_quantvalid_rows16_p40"
+  ],
+  "summary": {
+    "samples": 33,
+    "profile_switches": 1,
+    "switched_samples": [
+      "ocp_001"
+    ],
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05752351,
+    "mean_jump_count": 5.96969697,
+    "mean_trim_count": 0.87878788,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.97544161,
+    "mean_stitch_precision_ratio": 0.83082488,
+    "mean_adaptive_coverage_ratio": 0.92970985,
+    "mean_adaptive_stitch_precision_ratio": 0.96358718,
+    "mean_overfill_outside_adaptive_ratio": 0.03641282,
+    "low_strict_precision_samples": 7,
+    "low_adaptive_precision_samples": 1,
+    "review_samples": 12
+  },
+  "delta_from_m2_67": {
+    "mean_unified_loss": -0.00023224,
+    "mean_jump_count": 0.12121212,
+    "mean_trim_count": 0.03030303,
+    "mean_off_mask_stitch_length_mm": -0.06358485,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": -0.00029539,
+    "mean_stitch_precision_ratio": 0.00244718,
+    "mean_adaptive_coverage_ratio": -0.00098351,
+    "mean_adaptive_stitch_precision_ratio": 0.00220036,
+    "mean_overfill_outside_adaptive_ratio": -0.00220036,
+    "low_strict_precision_samples": 0,
+    "low_adaptive_precision_samples": -1,
+    "mean_risk_score": -0.00280645,
+    "review_samples": -1
+  },
+  "switched_sample_details": {
+    "sample_id": "ocp_001",
+    "category": "flower",
+    "active_profile": "shape_fill_precision",
+    "base_candidate": "m2_60",
+    "chosen_candidate": "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_rows16_p40",
+    "off_mask_reduction_mm": 2.0983,
+    "adaptive_precision_gain": 0.072612,
+    "strict_precision_gain": 0.080757,
+    "coverage_delta": -0.009748,
+    "adaptive_coverage_delta": -0.032456,
+    "loss_delta": -0.00766382,
+    "jump_delta": 4.0,
+    "trim_delta": 1.0,
+    "visible_delta": 0.0
+  },
+  "tools": [
+    "tools/apply_m2_shape_profile.py",
+    "tools/apply_m2_line_art_profile.py",
+    "tools/apply_m2_profile_switcher.py",
+    "tools/audit_adaptive_line_precision.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "artifacts": {
+    "documentation": "docs/m2_68_shape_aware_profile.md",
+    "candidate_scan": "results/m2_68_shape_candidate_scan/",
+    "probe_summary": "results/m2_68_shape_aware_profile_probe/probe_summary.json",
+    "selector": "results/public_benchmark_v1_ext33_m2_68_shape_aware_profile/",
+    "adaptive_audit": "results/public_benchmark_v1_ext33_m2_68_shape_aware_profile_adaptive_audit/",
+    "component_audit": "results/public_benchmark_v1_ext33_m2_68_shape_aware_profile_component_audit/"
+  },
+  "limitations": [
+    "M2.68 still uses rule-based profile selection, not a learned profile policy.",
+    "txt_003/WKU remains below the adaptive precision threshold.",
+    "qd_002 still carries high_jump_excess from the line-art precision profile.",
+    "Professional realism still needs satin/fill texture and layered color sequencing beyond command-level metrics."
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_69_text_wku_or_balanced_profile",
+    "reason": "After M2.68, the remaining adaptive-precision review queue is dominated by txt_003/WKU, while qd_002 needs jump-aware line-art refinement."
+  }
+}

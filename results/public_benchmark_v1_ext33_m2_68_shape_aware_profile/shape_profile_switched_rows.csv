@@ -1,0 +1,2 @@
+﻿sample_id,source_name,category,base_profile,active_profile,profile_reason,profile_switched,base_candidate,chosen_candidate,off_mask_reduction,adaptive_precision_gain,strict_precision_gain,adaptive_coverage_delta,coverage_delta,loss_delta,jump_delta,trim_delta,visible_delta
+ocp_001,Openclipart,flower,safe_low_cost,shape_fill_precision,shape_offmask_precision_gain,True,m2_60,public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_rows16_p40,2.0983,0.072612,0.080757,-0.032456,-0.009748,-0.00766382,4.0,1.0,0.0
