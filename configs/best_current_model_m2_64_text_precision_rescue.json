@@ -1,0 +1,125 @@
+{
+  "model_id": "m2_64_text_precision_rescue",
+  "date": "2026-07-03",
+  "status": "promoted_text_domain_tradeoff",
+  "description": "Adds a conservative rendered-text adaptive precision rescue on top of M2.62/M2.63. It switches only safe text samples to higher-precision candidates while preserving zero hard failures and zero visible connectors.",
+  "base_generation_model": "m2_62_precision_rescue",
+  "base_evaluation_model": "m2_63_line_domain_adaptive_precision",
+  "generation_default": "m2_64_text_precision_rescue",
+  "evaluation_default": "m2_63_line_domain_adaptive_precision",
+  "tools": [
+    "tools/apply_m2_text_precision_rescue.py",
+    "tools/audit_adaptive_line_precision.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "dataset": "datasets/public_benchmark_v1_ext33",
+  "selector": {
+    "result_dir": "results/public_benchmark_v1_ext33_m2_64_text_precision_rescue_selector",
+    "baseline_selection": "results/public_benchmark_v1_ext33_m2_62_precision_rescue_selector/line_guard_selected_rows.csv",
+    "candidate_adaptive_rows": "results/m2_64_text_precision_rescue_probe/text_candidate_adaptive_rows.csv",
+    "text_source_name": "Rendered text",
+    "changed_samples": [
+      "txt_002",
+      "txt_004"
+    ],
+    "gate": {
+      "min_adaptive_precision": 0.95,
+      "min_adaptive_precision_gain": 0.02,
+      "min_adaptive_coverage": 0.88,
+      "min_coverage": 0.95,
+      "max_loss_slack": 0.04,
+      "max_jump_increase": 4.0,
+      "max_trim_increase": 2.0,
+      "max_off_mask_increase_mm": 0.25,
+      "max_visible_increase": 0.0
+    }
+  },
+  "comparison_m2_62_to_m2_64": {
+    "unified_loss": {
+      "m2_62": 0.04916026,
+      "m2_64": 0.05129930,
+      "delta": 0.00213930
+    },
+    "jump_count": {
+      "m2_62": 4.96969697,
+      "m2_64": 5.18181818,
+      "delta": 0.21212118
+    },
+    "strict_precision": {
+      "m2_62": 0.80950997,
+      "m2_64": 0.81689582,
+      "delta": 0.00738585
+    },
+    "adaptive_stitch_precision": {
+      "m2_62": 0.94587239,
+      "m2_64": 0.95116848,
+      "delta": 0.00529609
+    },
+    "overfill_outside_adaptive": {
+      "m2_62": 0.05412761,
+      "m2_64": 0.04883152,
+      "delta": -0.00529609
+    },
+    "low_strict_precision_samples": {
+      "m2_62": 11,
+      "m2_64": 9,
+      "delta": -2
+    },
+    "low_adaptive_precision_samples": {
+      "m2_62": 6,
+      "m2_64": 4,
+      "delta": -2
+    },
+    "component_aware_risk_score": {
+      "m2_62": 0.09653159,
+      "m2_64": 0.09592804,
+      "delta": -0.00060355
+    },
+    "review_samples": {
+      "m2_62": 15,
+      "m2_64": 13,
+      "delta": -2
+    },
+    "hard_fail": {
+      "m2_62": 0,
+      "m2_64": 0,
+      "delta": 0
+    },
+    "visible_connector_count": {
+      "m2_62": 0.0,
+      "m2_64": 0.0,
+      "delta": 0.0
+    }
+  },
+  "rendered_text_delta": {
+    "coverage_ratio": -0.00717420,
+    "stitch_precision_ratio": 0.04874660,
+    "adaptive_coverage_ratio": -0.03063040,
+    "adaptive_stitch_precision_ratio": 0.03495420,
+    "overfill_outside_adaptive_ratio": -0.03495420
+  },
+  "limitations": [
+    "M2.64 is a text-domain precision tradeoff, not a universal loss improvement.",
+    "Mean unified loss and jump count increase slightly.",
+    "txt_005/HELLO remains unresolved because existing high-precision candidates add too much jump/loss.",
+    "QuickDraw strict precision remains outside the scope of this text-only rescue."
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_65_text_hello_legibility_rescue",
+    "reason": "txt_005/HELLO needs a dedicated legibility-preserving text planner rather than selecting from existing fill candidates.",
+    "components": [
+      "letter/component-aware routing",
+      "counter/hole preservation",
+      "per-letter local fill",
+      "overfill penalty across letter gaps",
+      "joint legibility and adaptive precision evaluation"
+    ]
+  },
+  "artifacts": {
+    "documentation": "docs/m2_64_text_precision_rescue.md",
+    "probe": "results/m2_64_text_precision_rescue_probe/",
+    "selector": "results/public_benchmark_v1_ext33_m2_64_text_precision_rescue_selector/",
+    "adaptive_audit": "results/public_benchmark_v1_ext33_m2_64_text_precision_rescue_adaptive_audit/",
+    "component_risk_audit": "results/public_benchmark_v1_ext33_m2_64_text_precision_rescue_component_audit/"
+  }
+}
