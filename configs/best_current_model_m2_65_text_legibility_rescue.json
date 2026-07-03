@@ -1,0 +1,98 @@
+{
+  "model_id": "m2_65_text_legibility_rescue",
+  "date": "2026-07-03",
+  "status": "promoted_text_legibility_profile",
+  "description": "Professional text-legibility profile that accepts extra execution cost for rendered text when adaptive precision improves strongly and visible/off-mask safety remains clean.",
+  "base_generation_model": "m2_64_text_precision_rescue",
+  "generation_default": "profile_based_selector",
+  "recommended_profile_default": "m2_64_text_precision_rescue",
+  "available_profiles": {
+    "safe_low_cost": "m2_64_text_precision_rescue",
+    "text_legibility": "m2_65_text_legibility_rescue"
+  },
+  "evaluation_default": "m2_63_line_domain_adaptive_precision",
+  "selector_gate": {
+    "max_loss_slack": 0.12,
+    "max_jump_increase": 12,
+    "max_trim_increase": 4,
+    "min_adaptive_precision": 0.95,
+    "min_adaptive_precision_gain": 0.02,
+    "min_adaptive_coverage": 0.88,
+    "min_coverage": 0.95,
+    "max_visible_connector_increase": 0,
+    "max_off_mask_increase_mm": 0.25
+  },
+  "summary": {
+    "samples": 33,
+    "changed_samples": 3,
+    "changed_text_samples": [
+      "txt_002",
+      "txt_004",
+      "txt_005"
+    ],
+    "mean_unified_loss": 0.05462533,
+    "mean_jump_count": 5.51515152,
+    "mean_trim_count": 0.78787879,
+    "mean_visible_connector_count": 0.0,
+    "mean_off_mask_stitch_length_mm": 0.18479091,
+    "mean_adaptive_stitch_precision_ratio": 0.95757112,
+    "mean_overfill_outside_adaptive_ratio": 0.04242888,
+    "low_adaptive_precision_samples": 3,
+    "hard_fail": 0
+  },
+  "delta_from_m2_64": {
+    "mean_unified_loss": 0.00332603,
+    "mean_jump_count": 0.33333334,
+    "mean_trim_count": 0.09090909,
+    "mean_visible_connector_count": 0.0,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_stitch_precision_ratio": 0.00691206,
+    "mean_adaptive_stitch_precision_ratio": 0.00640264,
+    "mean_overfill_outside_adaptive_ratio": -0.00640264,
+    "low_strict_precision_samples": -1,
+    "low_adaptive_precision_samples": -1,
+    "mean_risk_score": 0.00341068,
+    "hard_fail": 0
+  },
+  "rendered_text_delta_from_m2_64": {
+    "coverage_ratio": -0.002919,
+    "stitch_precision_ratio": 0.0456196,
+    "adaptive_coverage_ratio": -0.0173928,
+    "adaptive_stitch_precision_ratio": 0.0422574,
+    "overfill_outside_adaptive_ratio": -0.0422574
+  },
+  "txt_005_hello_delta": {
+    "selected_candidate": "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+    "adaptive_precision": 0.211287,
+    "unified_loss": 0.10975887,
+    "jump_count": 11,
+    "adaptive_coverage": -0.086964,
+    "visible_connector": 0,
+    "off_mask_length": 0
+  },
+  "tools": [
+    "tools/apply_m2_text_precision_rescue.py",
+    "tools/audit_adaptive_line_precision.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "artifacts": {
+    "documentation": "docs/m2_65_text_legibility_rescue.md",
+    "probe_summary": "results/m2_65_text_legibility_rescue_probe/probe_summary.json",
+    "selector": "results/public_benchmark_v1_ext33_m2_65_text_legibility_rescue_selector/",
+    "adaptive_audit": "results/public_benchmark_v1_ext33_m2_65_text_legibility_rescue_adaptive_audit/",
+    "component_audit": "results/public_benchmark_v1_ext33_m2_65_text_legibility_rescue_component_audit/"
+  },
+  "limitations": [
+    "M2.65 is not a universal low-cost default.",
+    "It raises unified loss, jump count, trim count, and component-aware risk slightly to improve text legibility.",
+    "M2.64 should remain the safer general-purpose profile until a profile switcher is implemented."
+  ],
+  "remaining_bottlenecks": [
+    "txt_003/WKU remains the only rendered-text low-adaptive-precision sample.",
+    "qd_002/dog and ocp_001/flower remain non-text adaptive-precision review samples."
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_66_profile_switcher",
+    "reason": "Professional digitizing workflows need selectable production profiles: low-cost, text-legibility, line-art precision, and balanced default."
+  }
+}

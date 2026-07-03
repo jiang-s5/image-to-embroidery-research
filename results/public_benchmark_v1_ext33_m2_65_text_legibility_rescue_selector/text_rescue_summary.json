@@ -1,0 +1,159 @@
+{
+  "samples": 33,
+  "text_source_name": "Rendered text",
+  "text_samples": 5,
+  "changed_samples": 3,
+  "hard_fail": 0,
+  "mean_unified_loss": 0.05462533,
+  "mean_jump_count": 5.51515152,
+  "mean_trim_count": 0.78787879,
+  "mean_off_mask_stitch_length_mm": 0.18479091,
+  "mean_visible_connector_count": 0.0,
+  "mean_coverage_ratio": 0.97742458,
+  "mean_stitch_precision_ratio": 0.82380788,
+  "mean_adaptive_coverage_ratio": 0.9346377,
+  "mean_adaptive_stitch_precision_ratio": 0.95757112,
+  "mean_overfill_outside_adaptive_ratio": 0.04242888,
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 10,
+      "changed_samples": 0,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.05646639,
+      "mean_jump_count": 5.3,
+      "mean_trim_count": 1.5,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9936241,
+      "mean_stitch_precision_ratio": 0.8880927,
+      "mean_adaptive_coverage_ratio": 0.9785832,
+      "mean_adaptive_stitch_precision_ratio": 0.9689798,
+      "mean_overfill_outside_adaptive_ratio": 0.0310202
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 10,
+      "changed_samples": 0,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.04136302,
+      "mean_jump_count": 3.7,
+      "mean_trim_count": 0.1,
+      "mean_off_mask_stitch_length_mm": 0.45276,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9638887,
+      "mean_stitch_precision_ratio": 0.8829867,
+      "mean_adaptive_coverage_ratio": 0.9427844,
+      "mean_adaptive_stitch_precision_ratio": 0.960981,
+      "mean_overfill_outside_adaptive_ratio": 0.039019
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 8,
+      "changed_samples": 0,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.06615634,
+      "mean_jump_count": 7.5,
+      "mean_trim_count": 0.625,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.96712513,
+      "mean_stitch_precision_ratio": 0.67247275,
+      "mean_adaptive_coverage_ratio": 0.87716012,
+      "mean_adaptive_stitch_precision_ratio": 0.94271825,
+      "mean_overfill_outside_adaptive_ratio": 0.05728175
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 5,
+      "changed_samples": 3,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.0590182,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9885764,
+      "mean_stitch_precision_ratio": 0.8190168,
+      "mean_adaptive_coverage_ratio": 0.9224174,
+      "mean_adaptive_stitch_precision_ratio": 0.9516986,
+      "mean_overfill_outside_adaptive_ratio": 0.0483014
+    }
+  ],
+  "changed_rows": [
+    {
+      "sample_id": "txt_002",
+      "category": "DST",
+      "base_candidate": "m2_60",
+      "chosen_candidate": "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+      "precision_gain": 0.087582,
+      "loss_delta": 0.03107427,
+      "jump_delta": 3.0,
+      "adaptive_coverage_delta": -0.082458
+    },
+    {
+      "sample_id": "txt_004",
+      "category": "2026",
+      "base_candidate": "m2_60",
+      "chosen_candidate": "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+      "precision_gain": 0.087189,
+      "loss_delta": 0.03951396,
+      "jump_delta": 4.0,
+      "adaptive_coverage_delta": -0.070694
+    },
+    {
+      "sample_id": "txt_005",
+      "category": "HELLO",
+      "base_candidate": "m2_60",
+      "chosen_candidate": "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+      "precision_gain": 0.211287,
+      "loss_delta": 0.10975887,
+      "jump_delta": 11.0,
+      "adaptive_coverage_delta": -0.086964
+    }
+  ],
+  "args": {
+    "baseline_selection": "results\\public_benchmark_v1_ext33_m2_62_precision_rescue_selector\\line_guard_selected_rows.csv",
+    "baseline_output_dir": "results\\public_benchmark_v1_ext33_m2_62_precision_rescue_selector",
+    "baseline_adaptive_rows": "results\\public_benchmark_v1_ext33_m2_63_adaptive_precision_audit_r2\\adaptive_precision_rows.csv",
+    "candidate_adaptive_rows": "results\\m2_64_text_precision_rescue_probe\\text_candidate_adaptive_rows.csv",
+    "output_dir": "results\\public_benchmark_v1_ext33_m2_65_text_legibility_rescue_selector",
+    "candidate_results_root": "results",
+    "baseline_candidate_root": [
+      [
+        "m2_60",
+        "results\\public_benchmark_v1_ext33_m2_60_maskpath_rescue_selector"
+      ],
+      [
+        "inset2",
+        "results\\public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset2_rows16_p40"
+      ],
+      [
+        "adapt_t2m5",
+        "results\\public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40"
+      ],
+      [
+        "line_stroke_d0_c8",
+        "results\\public_benchmark_v1_ext33_m2_56_line_stroke_d0_c8_i095"
+      ]
+    ],
+    "candidate_prefix": "public_benchmark_v1_ext33_",
+    "text_source_name": "Rendered text",
+    "min_adaptive_precision": 0.95,
+    "min_adaptive_precision_gain": 0.02,
+    "min_adaptive_coverage": 0.88,
+    "min_coverage": 0.95,
+    "max_loss_slack": 0.12,
+    "max_jump_increase": 12.0,
+    "max_trim_increase": 4.0,
+    "max_off_mask_increase": 0.25,
+    "max_visible_increase": 0.0,
+    "target_adaptive_coverage": 0.9,
+    "target_coverage": 0.98,
+    "jump_weight": 0.004,
+    "trim_weight": 0.002,
+    "adaptive_coverage_deficit_weight": 0.15,
+    "coverage_deficit_weight": 0.05,
+    "precision_gain_weight": 0.06
+  }
+}

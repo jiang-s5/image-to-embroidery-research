@@ -1,0 +1,87 @@
+{
+  "model_id": "m2_65_text_legibility_rescue",
+  "status": "positive_legibility_tradeoff",
+  "baseline": "m2_64_text_precision_rescue",
+  "samples": 33,
+  "changed_samples": 3,
+  "changed_text_samples": [
+    "txt_002",
+    "txt_004",
+    "txt_005"
+  ],
+  "overall": {
+    "m2_64": {
+      "model": "m2_64",
+      "mean_unified_loss": 0.0512993,
+      "mean_jump_count": 5.18181818,
+      "mean_trim_count": 0.6969697,
+      "mean_off_mask_stitch_length_mm": 0.18479091,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97786685,
+      "mean_stitch_precision_ratio": 0.81689582,
+      "mean_adaptive_coverage_ratio": 0.93727297,
+      "mean_adaptive_stitch_precision_ratio": 0.95116848,
+      "mean_overfill_outside_adaptive_ratio": 0.04883152,
+      "low_strict_precision_samples": 9.0,
+      "low_adaptive_precision_samples": 4.0,
+      "mean_risk_score": 0.09592804,
+      "review_samples": 13.0,
+      "review_rate": 0.393939,
+      "hard_fail": 0.0
+    },
+    "m2_65": {
+      "model": "m2_65",
+      "mean_unified_loss": 0.05462533,
+      "mean_jump_count": 5.51515152,
+      "mean_trim_count": 0.78787879,
+      "mean_off_mask_stitch_length_mm": 0.18479091,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97742458,
+      "mean_stitch_precision_ratio": 0.82380788,
+      "mean_adaptive_coverage_ratio": 0.9346377,
+      "mean_adaptive_stitch_precision_ratio": 0.95757112,
+      "mean_overfill_outside_adaptive_ratio": 0.04242888,
+      "low_strict_precision_samples": 8.0,
+      "low_adaptive_precision_samples": 3.0,
+      "mean_risk_score": 0.09933872,
+      "review_samples": 13.0,
+      "review_rate": 0.393939,
+      "hard_fail": 0.0
+    },
+    "delta": {
+      "mean_unified_loss": 0.00332603,
+      "mean_jump_count": 0.33333334,
+      "mean_trim_count": 0.09090909,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": -0.00044227,
+      "mean_stitch_precision_ratio": 0.00691206,
+      "mean_adaptive_coverage_ratio": -0.00263527,
+      "mean_adaptive_stitch_precision_ratio": 0.00640264,
+      "mean_overfill_outside_adaptive_ratio": -0.00640264,
+      "low_strict_precision_samples": -1.0,
+      "low_adaptive_precision_samples": -1.0,
+      "mean_risk_score": 0.00341068,
+      "review_samples": 0.0,
+      "review_rate": 0.0,
+      "hard_fail": 0.0
+    }
+  },
+  "rendered_text_delta": {
+    "coverage_ratio": -0.002919,
+    "stitch_precision_ratio": 0.0456196,
+    "adaptive_coverage_ratio": -0.0173928,
+    "adaptive_stitch_precision_ratio": 0.0422574,
+    "overfill_outside_adaptive_ratio": -0.0422574
+  },
+  "interpretation": "M2.65 promotes a professional text-legibility profile. It accepts extra jump/trim/loss for text when adaptive precision improves strongly and visible/off-mask remain zero. It fixes the HELLO overfill bottleneck at the cost of higher execution cost.",
+  "remaining_bottlenecks": [
+    "txt_003/WKU is now the only rendered-text low-adaptive-precision sample.",
+    "QuickDraw qd_002 and Openclipart ocp_001 remain non-text adaptive-precision review samples.",
+    "M2.65 should be offered as a legibility profile, while M2.64 remains the safer low-cost text profile."
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_66_profile_switcher",
+    "reason": "Professional software needs selectable production profiles: low-cost, text-legibility, and line-art precision, rather than one universal selector."
+  }
+}

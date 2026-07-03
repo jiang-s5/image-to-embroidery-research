@@ -1,0 +1,23 @@
+{
+  "trim_cap": {
+    "input": "results\\public_benchmark_v1_ext33_auto_hybrid_evalrepair_r10_c20_trimcap20\\ocp_010\\prediction_pre_trimcap.dst",
+    "output": "results\\public_benchmark_v1_ext33_auto_hybrid_evalrepair_r10_c20_trimcap20\\ocp_010\\prediction.dst",
+    "trim_commands_before": 0,
+    "trim_commands_converted_to_jump": 0,
+    "max_trim_commands": 20
+  },
+  "branch_selection": {
+    "branch": "flat_icon_fill",
+    "confidence": 1.0,
+    "line_score": 0.0,
+    "reasons": [],
+    "features": {
+      "mask_area_ratio": 0.3345184326171875,
+      "skeleton_area_ratio": 0.00445556640625,
+      "skeleton_to_mask_ratio": 0.013319344980157825,
+      "skeleton_components": 77,
+      "large_skeleton_components": 15,
+      "largest_skeleton_component": 66
+    }
+  }
+}
