@@ -1,0 +1,2 @@
+﻿sample_id,source_name,category,active_profile,profile_reason,profile_switched,safe_candidate,chosen_candidate,adaptive_precision_gain,overfill_reduction,loss_delta,jump_delta,trim_delta,visible_delta,off_mask_delta
+txt_005,Rendered text,HELLO,text_legibility,text_legibility_gain,True,m2_60,mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40,0.211287,0.211287,0.10975887,11.0,3.0,0.0,0.0

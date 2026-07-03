@@ -1,0 +1,102 @@
+{
+  "model_id": "m2_66_profile_switcher",
+  "date": "2026-07-03",
+  "status": "promoted_profile_system_step",
+  "description": "Professional-style generation profile switcher. It keeps the safe low-cost profile for general artwork and switches to the text-legibility profile only when rendered text gains enough adaptive precision without increasing visible connector or off-mask risk.",
+  "profile_inputs": {
+    "safe_low_cost": "m2_64_text_precision_rescue",
+    "text_legibility": "m2_65_text_legibility_rescue"
+  },
+  "generation_default": "m2_66_profile_switcher",
+  "evaluation_default": "m2_63_line_domain_adaptive_precision",
+  "dataset": "datasets/public_benchmark_v1_ext33",
+  "decision_gate": {
+    "text_source_name": "Rendered text",
+    "min_text_precision_gain": 0.015,
+    "min_text_overfill_reduction": 0.015,
+    "min_text_adaptive_precision": 0.95,
+    "min_text_adaptive_coverage": 0.88,
+    "max_loss_increase": 0.12,
+    "max_jump_increase": 12.0,
+    "max_trim_increase": 4.0,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.25
+  },
+  "summary": {
+    "samples": 33,
+    "profile_switches": 1,
+    "switched_samples": [
+      "txt_005"
+    ],
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05462533,
+    "mean_jump_count": 5.51515152,
+    "mean_trim_count": 0.78787879,
+    "mean_off_mask_stitch_length_mm": 0.18479091,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.97742458,
+    "mean_stitch_precision_ratio": 0.82380788,
+    "mean_adaptive_coverage_ratio": 0.9346377,
+    "mean_adaptive_stitch_precision_ratio": 0.95757112,
+    "mean_overfill_outside_adaptive_ratio": 0.04242888,
+    "low_strict_precision_samples": 8,
+    "low_adaptive_precision_samples": 3
+  },
+  "delta_from_m2_64": {
+    "mean_unified_loss": 0.00332603,
+    "mean_jump_count": 0.33333334,
+    "mean_trim_count": 0.09090909,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": -0.00044227,
+    "mean_stitch_precision_ratio": 0.00691206,
+    "mean_adaptive_coverage_ratio": -0.00263527,
+    "mean_adaptive_stitch_precision_ratio": 0.00640264,
+    "mean_overfill_outside_adaptive_ratio": -0.00640264,
+    "low_strict_precision_samples": -1,
+    "low_adaptive_precision_samples": -1,
+    "mean_risk_score": 0.00341068,
+    "review_samples": 0
+  },
+  "switched_sample_details": {
+    "sample_id": "txt_005",
+    "category": "HELLO",
+    "active_profile": "text_legibility",
+    "safe_candidate": "m2_60",
+    "chosen_candidate": "mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+    "adaptive_precision_gain": 0.211287,
+    "overfill_reduction": 0.211287,
+    "loss_delta": 0.10975887,
+    "jump_delta": 11.0,
+    "trim_delta": 3.0,
+    "visible_delta": 0.0,
+    "off_mask_delta": 0.0
+  },
+  "tools": [
+    "tools/apply_m2_profile_switcher.py",
+    "tools/audit_adaptive_line_precision.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "artifacts": {
+    "documentation": "docs/m2_66_profile_switcher.md",
+    "probe_summary": "results/m2_66_profile_switcher_probe/probe_summary.json",
+    "selector": "results/public_benchmark_v1_ext33_m2_66_profile_switcher/",
+    "adaptive_audit": "results/public_benchmark_v1_ext33_m2_66_profile_switcher_adaptive_audit/",
+    "component_audit": "results/public_benchmark_v1_ext33_m2_66_profile_switcher_component_audit/"
+  },
+  "professional_digitizing_relevance": [
+    "Separates production intent from one universal selector.",
+    "Keeps low-cost behavior for non-text artwork.",
+    "Allows text-specific cost spending when letter clarity improves.",
+    "Records auditable profile decisions for each sample."
+  ],
+  "limitations": [
+    "M2.66 currently switches between two profiles only.",
+    "QuickDraw line-art still needs a dedicated line-art/running-stitch profile.",
+    "The profile switcher is rule-based; a learned profile selector can be trained once more profile labels are available."
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_67_line_art_profile",
+    "reason": "QuickDraw remains the clearest bottleneck and needs a line-art precision profile rather than a text-specific rescue."
+  }
+}
