@@ -1,0 +1,44 @@
+{
+  "model_id": "m2_76_learned_stitch_type_selector_gate",
+  "candidate_rows": 165,
+  "samples": 33,
+  "feature_count": 44,
+  "include_gate_features": true,
+  "use_professional_gate_at_inference": true,
+  "alpha": 1.0,
+  "texture_choice_weight": 4.0,
+  "loo": {
+    "samples": 33,
+    "exact_teacher_match": 33,
+    "exact_teacher_match_rate": 1.0,
+    "teacher_texture_switches": 4,
+    "predicted_texture_switches": 4,
+    "texture_switch_recall": 1.0,
+    "texture_switch_precision": 1.0,
+    "predicted_kinds": {
+      "base_keep": 29,
+      "dt_satin": 4
+    },
+    "teacher_kinds": {
+      "base_keep": 29,
+      "dt_satin": 4
+    },
+    "predicted_mean_unified_loss": 0.05639949,
+    "predicted_mean_jump_count": 6.03030303,
+    "predicted_mean_trim_count": 0.60606061,
+    "predicted_mean_off_mask_stitch_length_mm": 0.12120606,
+    "predicted_mean_visible_connector_count": 0.0,
+    "predicted_mean_coverage_ratio": 0.98103933,
+    "predicted_mean_stitch_precision_ratio": 0.83779552,
+    "predicted_mean_texture_score": 0.20860606,
+    "teacher_mean_unified_loss": 0.05639949,
+    "teacher_mean_jump_count": 6.03030303,
+    "teacher_mean_trim_count": 0.60606061,
+    "teacher_mean_off_mask_stitch_length_mm": 0.12120606,
+    "teacher_mean_visible_connector_count": 0.0,
+    "teacher_mean_coverage_ratio": 0.98103933,
+    "teacher_mean_stitch_precision_ratio": 0.83779552,
+    "teacher_mean_texture_score": 0.20860606
+  },
+  "interpretation": "This is a constrained learned selector prototype. It should not replace M2.74 unless leave-one-out texture recall and exact-match quality are strong enough."
+}

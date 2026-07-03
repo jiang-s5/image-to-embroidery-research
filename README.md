@@ -52,6 +52,8 @@ M2.73 remains the strict no-regression texture gate when jump/loss must not incr
 
 M2.75 adds the first stitch-type teacher dataset for the next learned planner. It expands the M2.74 texture decision into 165 `(sample, candidate)` rows with geometry features, command metrics, texture deltas, professional gate labels, utility scores, and teacher choices. M2.75 is a training substrate, not a new DST output profile; see [docs/m2_75_stitch_type_teacher_dataset.md](docs/m2_75_stitch_type_teacher_dataset.md).
 
+M2.76 adds the first learned stitch-type selector prototype on top of M2.75. The gate-assisted leave-one-out selector reproduces M2.74 choices exactly on 33 public benchmark images, but metric-only variants recover only one of four texture promotions. This means M2.76 is a useful learned-selector bridge and diagnostic result, while M2.74 remains the promoted DST output profile. See [docs/m2_76_learned_stitch_type_selector.md](docs/m2_76_learned_stitch_type_selector.md).
+
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
 ## Research Contributions
