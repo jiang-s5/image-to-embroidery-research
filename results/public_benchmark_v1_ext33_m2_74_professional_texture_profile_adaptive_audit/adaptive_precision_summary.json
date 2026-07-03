@@ -1,0 +1,81 @@
+{
+  "dataset_dir": "datasets\\public_benchmark_v1_ext33",
+  "target_width_mm": 90.0,
+  "line_radius_px": 2,
+  "adaptive_precision_radius_px": 2,
+  "strict_precision_threshold": 0.75,
+  "adaptive_precision_threshold": 0.9,
+  "samples": 66,
+  "review_samples": 0,
+  "by_selection": [
+    {
+      "selection": "m2_73",
+      "samples": 33,
+      "mean_coverage_ratio": 0.97972955,
+      "mean_stitch_precision_ratio": 0.83654112,
+      "mean_adaptive_coverage_ratio": 0.92859709,
+      "mean_adaptive_stitch_precision_ratio": 0.96587603,
+      "mean_overfill_outside_adaptive_ratio": 0.03412397,
+      "low_strict_precision_samples": 6,
+      "low_adaptive_precision_samples": 0
+    },
+    {
+      "selection": "m2_74",
+      "samples": 33,
+      "mean_coverage_ratio": 0.98103933,
+      "mean_stitch_precision_ratio": 0.83779552,
+      "mean_adaptive_coverage_ratio": 0.92973376,
+      "mean_adaptive_stitch_precision_ratio": 0.96704606,
+      "mean_overfill_outside_adaptive_ratio": 0.03295394,
+      "low_strict_precision_samples": 6,
+      "low_adaptive_precision_samples": 0
+    }
+  ],
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 20,
+      "mean_coverage_ratio": 0.99586425,
+      "mean_stitch_precision_ratio": 0.8900859,
+      "mean_adaptive_coverage_ratio": 0.980392,
+      "mean_adaptive_stitch_precision_ratio": 0.97067005,
+      "mean_overfill_outside_adaptive_ratio": 0.02932995,
+      "low_strict_precision_samples": 0,
+      "low_adaptive_precision_samples": 0
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 20,
+      "mean_coverage_ratio": 0.9629139,
+      "mean_stitch_precision_ratio": 0.88973305,
+      "mean_adaptive_coverage_ratio": 0.9396514,
+      "mean_adaptive_stitch_precision_ratio": 0.9669743,
+      "mean_overfill_outside_adaptive_ratio": 0.0330257,
+      "low_strict_precision_samples": 0,
+      "low_adaptive_precision_samples": 0
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 16,
+      "mean_coverage_ratio": 0.97825438,
+      "mean_stitch_precision_ratio": 0.71747012,
+      "mean_adaptive_coverage_ratio": 0.85339425,
+      "mean_adaptive_stitch_precision_ratio": 0.96762762,
+      "mean_overfill_outside_adaptive_ratio": 0.03237238,
+      "low_strict_precision_samples": 12,
+      "low_adaptive_precision_samples": 0
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 10,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.8177208,
+      "mean_adaptive_coverage_ratio": 0.9269742,
+      "mean_adaptive_stitch_precision_ratio": 0.95515,
+      "mean_overfill_outside_adaptive_ratio": 0.04485,
+      "low_strict_precision_samples": 0,
+      "low_adaptive_precision_samples": 0
+    }
+  ],
+  "top_review_samples": []
+}

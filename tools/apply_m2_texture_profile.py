@@ -209,6 +209,8 @@ def main() -> int:
     parser.add_argument("--base-output-dir", required=True)
     parser.add_argument("--candidate", action="append", nargs=2, metavar=("NAME", "OUTPUT_DIR"), required=True)
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--model-id", default="m2_73_stitch_type_texture_profile")
+    parser.add_argument("--active-profile", default="stitch_type_texture")
     parser.add_argument("--exclude-sources", nargs="*", default=["QuickDraw", "TextRender"])
     parser.add_argument("--max-off-mask-increase", type=float, default=0.0)
     parser.add_argument("--max-visible-increase", type=float, default=0.0)
@@ -276,7 +278,7 @@ def main() -> int:
         rank, name, root, candidate, candidate_coverage, candidate_texture, reason = best
         row = dict(base)
         row["texture_profile_switched"] = True
-        row["active_profile"] = "stitch_type_texture"
+        row["active_profile"] = args.active_profile
         row["texture_profile_reason"] = reason
         row["texture_candidate"] = name
         row["base_candidate"] = base.get("chosen_candidate", "")
@@ -312,7 +314,7 @@ def main() -> int:
         copy_outputs(root, sample_id, output_dir)
 
     summary = {
-        "model_id": "m2_73_stitch_type_texture_profile",
+        "model_id": args.model_id,
         "base_profile_system": "m2_72_line_skeleton_fidelity_profile",
         "samples": len(selected),
         "texture_switches": len(switched),

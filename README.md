@@ -42,13 +42,13 @@ Model14B is kept as a later geometry-continuity experiment, but it was not promo
 The current best planner selector package is:
 
 ```text
-configs/best_current_model_m2_73_stitch_type_texture_profile.json
-results/public_benchmark_v1_ext33_m2_73_stitch_type_texture_profile/
+configs/best_current_model_m2_74_professional_texture_profile.json
+results/public_benchmark_v1_ext33_m2_74_professional_texture_profile/
 ```
 
-M2.73 adds a conservative stitch-type texture profile on top of M2.72. It safely promotes two shape/icon samples to satin-like outputs while preserving `0` hard_fail, `0` visible connectors, no jump/trim/off-mask increases, and `0` low-adaptive-precision samples. The current public benchmark metrics are `0.055067` mean unified loss, `5.696970` mean jump count, `0.979730` coverage, and `0.965876` adaptive stitch precision across 33 public benchmark images.
+M2.74 is the current professional-texture profile. It promotes four shape/icon samples to satin-like outputs while keeping `0` hard_fail, `0` visible connectors, no off-mask increase, and `0` low-adaptive-precision samples. The current public benchmark metrics are `0.056399` mean unified loss, `6.030303` mean jump count, `0.981039` coverage, `0.837796` strict precision, `0.967046` adaptive stitch precision, and `0.208606` mean texture score across 33 public benchmark images.
 
-M2.72 remains the line-art skeleton-fidelity layer for selected QuickDraw samples. M2.71 remains as the no-regression guard that blocks unsafe route/segment candidates. M2.70 remains the earlier jump-relief profile for `qd_002 / dog`. M2.73 is the first profile in this line that admits satin-like stitch texture into production outputs through a strict safety gate.
+M2.73 remains the strict no-regression texture gate when jump/loss must not increase. M2.72 remains the line-art skeleton-fidelity layer for selected QuickDraw samples. M2.71 remains as the no-regression guard that blocks unsafe route/segment candidates. M2.70 remains the earlier jump-relief profile for `qd_002 / dog`. M2.74 is the first profile in this line that intentionally accepts a small jump/loss cost for higher stitch-type texture, better coverage, and better precision.
 
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
@@ -318,7 +318,7 @@ Current paired-holdout command-level result:
 
 Interpretation: this table records the earlier 4-sample paired-holdout stage, where M2.1 global safe-connect repair20 was the best M2 decoding result. It reduced mean unified loss by 4.53% relative to M2 top4 and cut mean jumps from 192.75 to 83.00 while keeping visible connector count unchanged. M2.2 retraining on hard-mined traces was tested, but it did not beat the deterministic repair20 decode, so it is kept as an artifact rather than the promoted setting.
 
-Historical note: at the earlier fill-inset stage, M2.34 superseded M2.1 on the 33-sample public benchmark. The current promoted planner selector has since advanced through M2.70/M2.71/M2.72 to M2.73. M2.34 and M2.1 are retained as historical baselines; see [docs/public_benchmark_ext33_validation.md](docs/public_benchmark_ext33_validation.md), [docs/m2_34_fill_inset_notes.md](docs/m2_34_fill_inset_notes.md), [docs/m2_72_line_skeleton_profile.md](docs/m2_72_line_skeleton_profile.md), and [docs/m2_73_stitch_type_texture_profile.md](docs/m2_73_stitch_type_texture_profile.md).
+Historical note: at the earlier fill-inset stage, M2.34 superseded M2.1 on the 33-sample public benchmark. The current promoted planner selector has since advanced through M2.70/M2.71/M2.72/M2.73 to M2.74. M2.34 and M2.1 are retained as historical baselines; see [docs/public_benchmark_ext33_validation.md](docs/public_benchmark_ext33_validation.md), [docs/m2_34_fill_inset_notes.md](docs/m2_34_fill_inset_notes.md), [docs/m2_72_line_skeleton_profile.md](docs/m2_72_line_skeleton_profile.md), [docs/m2_73_stitch_type_texture_profile.md](docs/m2_73_stitch_type_texture_profile.md), and [docs/m2_74_professional_texture_profile.md](docs/m2_74_professional_texture_profile.md).
 
 Run command-level executability evaluation after export:
 

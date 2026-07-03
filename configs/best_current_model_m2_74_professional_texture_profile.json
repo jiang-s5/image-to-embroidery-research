@@ -1,0 +1,172 @@
+{
+  "model_id": "m2_74_professional_texture_profile",
+  "date": "2026-07-03",
+  "status": "promoted_professional_texture_profile",
+  "base_profile_system": "m2_72_line_skeleton_fidelity_profile",
+  "previous_texture_profile": "m2_73_stitch_type_texture_profile",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "selection_csv": "results/public_benchmark_v1_ext33_m2_74_professional_texture_profile/texture_selected_rows.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_74_professional_texture_profile",
+  "purpose": "Promote a professional-texture branch that accepts safe satin-like texture layers when they improve stitch coverage, precision, and texture variety without introducing hard failures, visible connectors, or additional off-mask stitch length.",
+  "positioning": {
+    "m2_73": "strict no-regression texture gate; best when jump/loss must not increase at all",
+    "m2_74": "professional texture profile; accepts small jump/loss cost for more satin-like stitch structure and better coverage/precision"
+  },
+  "profile_stack": [
+    "safe_low_cost",
+    "text_legibility",
+    "line_art_precision",
+    "shape_fill_precision",
+    "text_wku_precision",
+    "line_art_jump_relief",
+    "m2_71_guarded_candidate_selector",
+    "line_skeleton_fidelity",
+    "professional_texture"
+  ],
+  "new_or_updated_tools": [
+    "tools/apply_m2_texture_profile.py"
+  ],
+  "tool_updates": {
+    "tools/apply_m2_texture_profile.py": [
+      "Added --model-id so derived profiles do not inherit the M2.73 label.",
+      "Added --active-profile so promoted texture rows can be marked as professional_texture."
+    ]
+  },
+  "candidate_generation": {
+    "base_safe_fill": "safe_dt adaptive fill-inset with eval-mask fill/connectors, nearest endpoint row ordering, mask-path connectors, and quantized segment validation",
+    "candidate_pool": [
+      {
+        "name": "satinrail_safeadt_light",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_73_texture_satinrail_safeadt_light"
+      },
+      {
+        "name": "dtsatin_safeadt_light",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_73_texture_dtsatin_safeadt_light"
+      },
+      {
+        "name": "satinrail_w4_s18_i4_cap40",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_74_texture_satinrail_w4_s18_i4_cap40"
+      },
+      {
+        "name": "satinrail_w5_s16_i5_cap45",
+        "result_dir": "results/public_benchmark_v1_ext33_m2_74_texture_satinrail_w5_s16_i5_cap45"
+      }
+    ]
+  },
+  "promotion_gate": {
+    "excluded_sources": [
+      "QuickDraw",
+      "TextRender"
+    ],
+    "max_off_mask_increase": 0.0,
+    "max_visible_increase": 0.0,
+    "max_jump_increase": 8.0,
+    "max_trim_increase": 3.0,
+    "max_loss_increase": 0.03,
+    "min_coverage_gain": -0.015,
+    "max_precision_drop": 0.04,
+    "min_texture_score_gain": 0.35,
+    "min_satin_like_segments": 35.0
+  },
+  "switched_samples": [
+    {
+      "sample_id": "ocp_005",
+      "source_name": "Openclipart",
+      "category": "public_domain_logo",
+      "texture_candidate": "dtsatin_safeadt_light",
+      "loss_delta": 0.00000289,
+      "jump_delta": 0.0,
+      "trim_delta": 0.0,
+      "coverage_delta": 0.0,
+      "precision_delta": -0.017393,
+      "texture_score_delta": 1.0,
+      "dt_satin_segments": 100
+    },
+    {
+      "sample_id": "omj_001",
+      "source_name": "OpenMoji",
+      "category": "heart",
+      "texture_candidate": "dtsatin_safeadt_light",
+      "loss_delta": 0.01842164,
+      "jump_delta": 8.0,
+      "trim_delta": -8.0,
+      "coverage_delta": 0.044481,
+      "precision_delta": 0.015922,
+      "texture_score_delta": 0.806,
+      "dt_satin_segments": 73
+    },
+    {
+      "sample_id": "omj_003",
+      "source_name": "OpenMoji",
+      "category": "butterfly",
+      "texture_candidate": "dtsatin_safeadt_light",
+      "loss_delta": 0.02556037,
+      "jump_delta": 3.0,
+      "trim_delta": 0.0,
+      "coverage_delta": -0.001258,
+      "precision_delta": 0.033672,
+      "texture_score_delta": 1.142,
+      "dt_satin_segments": 105
+    },
+    {
+      "sample_id": "omj_005",
+      "source_name": "OpenMoji",
+      "category": "sun",
+      "texture_candidate": "dtsatin_safeadt_light",
+      "loss_delta": 0.0,
+      "jump_delta": 0.0,
+      "trim_delta": 0.0,
+      "coverage_delta": 0.00079,
+      "precision_delta": -0.004865,
+      "texture_score_delta": 1.276,
+      "dt_satin_segments": 115
+    }
+  ],
+  "mean_metrics": {
+    "samples": 33,
+    "texture_switches": 4,
+    "hard_fail": 0,
+    "unified_loss": 0.05639949,
+    "jump_count": 6.03030303,
+    "trim_count": 0.60606061,
+    "off_mask_stitch_length_mm": 0.12120606,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.98103933,
+    "stitch_precision_ratio": 0.83779552,
+    "adaptive_coverage_ratio": 0.92973376,
+    "adaptive_stitch_precision_ratio": 0.96704606,
+    "low_strict_precision_samples": 6,
+    "low_adaptive_precision_samples": 0,
+    "texture_score": 0.20860606,
+    "dt_satin_segments": 11.90909091,
+    "satin_rail_segments": 0.0
+  },
+  "delta_vs_m2_73": {
+    "texture_switches": 2,
+    "unified_loss": 0.00133279,
+    "jump_count": 0.33333333,
+    "trim_count": -0.24242424,
+    "off_mask_stitch_length_mm": 0.0,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.00130978,
+    "stitch_precision_ratio": 0.0012544,
+    "adaptive_coverage_ratio": 0.00113667,
+    "adaptive_stitch_precision_ratio": 0.00117003,
+    "overfill_outside_adaptive_ratio": -0.00117003,
+    "texture_score": 0.05993939,
+    "dt_satin_segments": 8.42424243,
+    "component_risk_score": 0.00315097,
+    "review_samples": 0,
+    "low_adaptive_precision_samples": 0
+  },
+  "interpretation": "M2.74 is a texture-quality promotion rather than a pure unified-loss promotion. It doubles the number of satin-like texture switches, improves coverage, strict precision, adaptive coverage, and adaptive precision, keeps hard_fail and visible connectors at zero, and does not increase off-mask stitch length. The cost is a small increase in unified loss and jump count, which is expected when adding separate satin-like texture layers.",
+  "remaining_bottlenecks": [
+    "M2.74 still uses deterministic candidate gating, not a learned stitch-type planner.",
+    "The system still lacks true underlay, pull compensation, thread-density optimization, and 3D thread render-back scoring.",
+    "Text and QuickDraw are excluded from texture promotion because they need dedicated running/satin planners rather than generic border texture candidates."
+  ],
+  "audits": {
+    "component_risk": "results/public_benchmark_v1_ext33_m2_74_professional_texture_profile_component_audit/",
+    "adaptive_precision": "results/public_benchmark_v1_ext33_m2_74_professional_texture_profile_adaptive_audit/"
+  }
+}

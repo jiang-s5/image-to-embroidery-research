@@ -1,0 +1,5 @@
+﻿source_name,samples,texture_switches,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio,mean_fill_rows,mean_outline_points,mean_satin_columns,mean_satin_rail_segments,mean_dt_satin_segments,mean_style_running_points,mean_texture_score
+OpenMoji,10,3,0,0.06086459,6.4,0.7,0.15705,0.0,0.9980254,0.8925656,42.0,0.0,0.0,0.0,29.3,0.0,0.377
+Openclipart,10,1,0,0.04059693,4.1,0.2,0.24293,0.0,0.9629139,0.8893231,39.8,0.0,0.0,0.0,10.0,0.0,0.1796
+QuickDraw,8,0,0,0.06893349,7.75,0.75,0.0,0.0,0.97825438,0.71747012,46.0,0.0,0.0,0.0,0.0,0.0,0.092
+Rendered text,5,0,0,0.05901998,6.4,1.0,0.0,0.0,0.987774,0.8177208,58.2,0.0,0.0,0.0,0.0,0.0,0.1164
