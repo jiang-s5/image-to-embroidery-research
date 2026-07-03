@@ -1,0 +1,5 @@
+﻿source_name,samples,profile_switches,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio,mean_adaptive_coverage_ratio,mean_adaptive_stitch_precision_ratio,mean_overfill_outside_adaptive_ratio
+OpenMoji,10,0,0,0.05646639,5.3,1.5,0.15705,0.0,0.9936241,0.8880927,0.9785832,0.9689798,0.0310202
+Openclipart,10,0,0,0.04059664,4.1,0.2,0.24293,0.0,0.9629139,0.8910624,0.9395388,0.9682422,0.0317578
+QuickDraw,8,1,0,0.07105641,8.0,0.75,0.0,0.0,0.96636688,0.68783425,0.86762763,0.95523512,0.04476488
+Rendered text,5,0,0,0.05901998,6.4,1.0,0.0,0.0,0.987774,0.8177208,0.9269742,0.95515,0.04485

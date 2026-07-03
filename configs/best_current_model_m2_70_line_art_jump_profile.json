@@ -1,0 +1,93 @@
+{
+  "model_id": "m2_70_line_art_jump_profile",
+  "date": "2026-07-03",
+  "status": "jump_aware_line_art_tradeoff_profile",
+  "base_profile_system": "m2_69_text_wku_precision_profile",
+  "selection_csv": "results/public_benchmark_v1_ext33_m2_70_line_art_jump_profile/line_jump_profile_selected_rows.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_70_line_art_jump_profile",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "profile_stack": [
+    "safe_low_cost",
+    "text_legibility",
+    "line_art_precision",
+    "shape_fill_precision",
+    "text_wku_precision",
+    "line_art_jump_relief"
+  ],
+  "new_profile": {
+    "name": "line_art_jump_relief",
+    "purpose": "Reduce excessive jumps in QuickDraw line-art samples while keeping adaptive precision high and preventing visible/off-mask regressions.",
+    "trigger": "source_name == QuickDraw and jump_count >= 12",
+    "gate": {
+      "min_jump_reduction": 4.0,
+      "max_candidate_jump": 10.0,
+      "min_adaptive_precision": 0.94,
+      "min_adaptive_coverage": 0.85,
+      "min_coverage": 0.94,
+      "min_strict_precision": 0.70,
+      "max_adaptive_precision_drop": 0.04,
+      "max_strict_precision_drop": 0.06,
+      "max_loss_increase": 0.0,
+      "max_trim_increase": 0.0,
+      "max_visible_increase": 0.0,
+      "max_off_mask_increase": 0.0
+    }
+  },
+  "switched_samples": [
+    {
+      "sample_id": "qd_002",
+      "source_name": "QuickDraw",
+      "category": "dog",
+      "base_profile": "line_art_precision",
+      "base_candidate": "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12",
+      "active_profile": "line_art_jump_relief",
+      "chosen_candidate": "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40",
+      "jump_reduction": 7.0,
+      "loss_delta": -0.06410333,
+      "trim_delta": -1.0,
+      "coverage_delta": 0.049624,
+      "adaptive_coverage_delta": 0.053903,
+      "adaptive_precision_delta": -0.025783,
+      "strict_precision_delta": -0.027912,
+      "visible_delta": 0.0,
+      "off_mask_delta": 0.0
+    }
+  ],
+  "mean_metrics": {
+    "samples": 33,
+    "hard_fail": 0,
+    "unified_loss": 0.05558126,
+    "jump_count": 5.75757576,
+    "trim_count": 0.84848485,
+    "off_mask_stitch_length_mm": 0.12120606,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.97682379,
+    "stitch_precision_ratio": 0.8297827,
+    "adaptive_coverage_ratio": 0.9320337,
+    "adaptive_stitch_precision_ratio": 0.96332882,
+    "overfill_outside_adaptive_ratio": 0.03667118
+  },
+  "delta_vs_m2_69": {
+    "unified_loss": -0.00194252,
+    "jump_count": -0.21212121,
+    "trim_count": -0.03030303,
+    "off_mask_stitch_length_mm": 0.0,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.00150376,
+    "stitch_precision_ratio": -0.00084582,
+    "adaptive_coverage_ratio": 0.00163343,
+    "adaptive_stitch_precision_ratio": -0.0007813,
+    "overfill_outside_adaptive_ratio": 0.0007813,
+    "low_adaptive_precision_samples": 0,
+    "low_strict_precision_samples": 1,
+    "mean_risk_score": -0.00465079,
+    "worst_risk_score": -0.05137355,
+    "high_jump_excess_removed": true
+  },
+  "interpretation": "M2.70 is a jump-aware production tradeoff. It lowers execution risk and removes qd_002 high_jump_excess, but it intentionally accepts a small strict-precision drop on qd_002. Use M2.70 when lower jump count is preferred over maximum line tightness.",
+  "remaining_bottlenecks": [
+    "qd_007 / moon is now the worst risk sample because it still has high loss and low strict precision.",
+    "QuickDraw strict precision count increases from 7 to 8 after the qd_002 jump-relief tradeoff.",
+    "Professional stitch realism still needs explicit satin/fill/running texture generation and stitch-type-aware preview metrics."
+  ]
+}
