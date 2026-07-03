@@ -1,0 +1,36 @@
+{
+  "pred": {
+    "path": "results\\public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_rows16_p40\\ocp_001\\prediction.dst",
+    "round_trip_parse_success": true,
+    "error": "",
+    "commands": 718,
+    "command_counts": {
+      "jump": 10,
+      "stitch": 706,
+      "trim": 1,
+      "end": 1
+    },
+    "stitch_count": 706,
+    "jump_count": 10,
+    "trim_count": 1,
+    "color_change_count": 0,
+    "unsupported_command_count": 0,
+    "illegal_long_stitch_count": 0,
+    "high_risk_jump_count": 9,
+    "max_stitch_mm": 3.2,
+    "max_jump_mm": 11.4543,
+    "stitch_path_mm": 1607.6092,
+    "jump_path_mm": 102.3116,
+    "lock_tack_like_count": 10,
+    "off_mask_stitch_length_mm": 0.0,
+    "off_mask_stitch_count": 0,
+    "visible_connector_count": 0,
+    "visible_connector_length_mm": 0.0,
+    "mask_path": "results\\public_benchmark_v1_ext33_eval_masks\\eval_masks\\ocp_001_eval_mask_r1.png",
+    "target_width_mm": 90.0,
+    "max_stitch_threshold_mm": 4.0,
+    "high_risk_jump_threshold_mm": 8.0,
+    "visible_connector_min_mm": 1.5,
+    "visible_connector_off_mask_ratio": 0.65
+  }
+}

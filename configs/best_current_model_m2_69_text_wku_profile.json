@@ -1,0 +1,84 @@
+{
+  "model_id": "m2_69_text_wku_precision_profile",
+  "date": "2026-07-03",
+  "status": "best_current_profile_stack",
+  "base_profile_system": "m2_68_shape_aware_profile",
+  "selection_csv": "results/public_benchmark_v1_ext33_m2_69_text_wku_profile/text_wku_profile_selected_rows.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_69_text_wku_profile",
+  "dataset_dir": "datasets/public_benchmark_v1_ext33",
+  "profile_stack": [
+    "safe_low_cost",
+    "text_legibility",
+    "line_art_precision",
+    "shape_fill_precision",
+    "text_wku_precision"
+  ],
+  "new_profile": {
+    "name": "text_wku_precision",
+    "purpose": "Rescue rendered-text samples whose adaptive stitch precision falls below 0.90 while preserving high coverage and execution safety.",
+    "trigger": "source_name == Rendered text and adaptive_stitch_precision_ratio < 0.90",
+    "gate": {
+      "min_adaptive_precision": 0.90,
+      "min_adaptive_precision_gain": 0.01,
+      "min_strict_precision": 0.75,
+      "min_coverage": 0.98,
+      "min_adaptive_coverage": 0.94,
+      "max_loss_increase": 0.01,
+      "max_jump_increase": 1.0,
+      "max_trim_increase": 1.0,
+      "max_visible_increase": 0.0,
+      "max_off_mask_increase": 0.0
+    }
+  },
+  "switched_samples": [
+    {
+      "sample_id": "txt_003",
+      "source_name": "Rendered text",
+      "category": "WKU",
+      "base_profile": "safe_low_cost",
+      "base_candidate": "inset2",
+      "active_profile": "text_wku_precision",
+      "chosen_candidate": "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+      "adaptive_precision_gain": 0.017257,
+      "strict_precision_gain": -0.00648,
+      "adaptive_coverage_delta": 0.022784,
+      "coverage_delta": -0.004012,
+      "loss_delta": 0.00000892,
+      "jump_delta": 0.0,
+      "trim_delta": 0.0
+    }
+  ],
+  "mean_metrics": {
+    "samples": 33,
+    "hard_fail": 0,
+    "unified_loss": 0.05752378,
+    "jump_count": 5.96969697,
+    "trim_count": 0.87878788,
+    "off_mask_stitch_length_mm": 0.12120606,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": 0.97532003,
+    "stitch_precision_ratio": 0.83062852,
+    "adaptive_coverage_ratio": 0.93040027,
+    "adaptive_stitch_precision_ratio": 0.96411012,
+    "overfill_outside_adaptive_ratio": 0.03588988
+  },
+  "delta_vs_m2_68": {
+    "unified_loss": 0.00000027,
+    "jump_count": 0.0,
+    "trim_count": 0.0,
+    "off_mask_stitch_length_mm": 0.0,
+    "visible_connector_count": 0.0,
+    "coverage_ratio": -0.00012158,
+    "stitch_precision_ratio": -0.00019636,
+    "adaptive_coverage_ratio": 0.00069042,
+    "adaptive_stitch_precision_ratio": 0.00052294,
+    "overfill_outside_adaptive_ratio": -0.00052294,
+    "low_adaptive_precision_samples": -1,
+    "low_strict_precision_samples": 0
+  },
+  "remaining_bottlenecks": [
+    "qd_002 / dog remains the worst execution-risk sample because the line-art precision profile has high jump excess.",
+    "QuickDraw strict precision remains low on several line-art samples even though adaptive precision is now clean.",
+    "Professional digitizing realism still needs explicit satin/fill/running stitch texture modeling and better stitch-type layering."
+  ]
+}

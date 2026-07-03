@@ -1,0 +1,16 @@
+metric,m2_68,m2_69,delta
+mean_unified_loss,0.05752351,0.05752378,0.00000027
+mean_jump_count,5.96969697,5.96969697,0.0
+mean_trim_count,0.87878788,0.87878788,0.0
+mean_off_mask_stitch_length_mm,0.12120606,0.12120606,0.0
+mean_visible_connector_count,0.0,0.0,0.0
+mean_coverage_ratio,0.97544161,0.97532003,-0.00012158
+mean_stitch_precision_ratio,0.83082488,0.83062852,-0.00019636
+mean_adaptive_coverage_ratio,0.92970985,0.93040027,0.00069042
+mean_adaptive_stitch_precision_ratio,0.96358718,0.96411012,0.00052294
+mean_overfill_outside_adaptive_ratio,0.03641282,0.03588988,-0.00052294
+low_strict_precision_samples,7,7,0
+low_adaptive_precision_samples,1,0,-1
+mean_risk_score,0.10228844,0.10228871,0.00000027
+review_samples,12,12,0
+hard_fail,0,0,0

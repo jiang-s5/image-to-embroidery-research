@@ -1,0 +1,61 @@
+{
+  "model_id": "m2_69_text_wku_precision_profile",
+  "status": "last_text_adaptive_precision_failure_removed",
+  "baseline": "m2_68_shape_aware_profile",
+  "samples": 33,
+  "profile_switches": 1,
+  "switched_samples": [
+    {
+      "sample_id": "txt_003",
+      "source_name": "Rendered text",
+      "category": "WKU",
+      "base_profile": "safe_low_cost",
+      "base_candidate": "inset2",
+      "active_profile": "text_wku_precision",
+      "chosen_candidate": "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset1_rows16_p40",
+      "adaptive_precision_gain": 0.017257,
+      "strict_precision_gain": -0.00648,
+      "adaptive_coverage_delta": 0.022784,
+      "coverage_delta": -0.004012,
+      "loss_delta": 0.00000892,
+      "jump_delta": 0.0,
+      "trim_delta": 0.0,
+      "off_mask_delta": 0.0,
+      "visible_delta": 0.0
+    }
+  ],
+  "overall_delta_from_m2_68": {
+    "mean_unified_loss": 0.00000027,
+    "mean_jump_count": 0.0,
+    "mean_trim_count": 0.0,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": -0.00012158,
+    "mean_stitch_precision_ratio": -0.00019636,
+    "mean_adaptive_coverage_ratio": 0.00069042,
+    "mean_adaptive_stitch_precision_ratio": 0.00052294,
+    "mean_overfill_outside_adaptive_ratio": -0.00052294,
+    "low_strict_precision_samples": 0,
+    "low_adaptive_precision_samples": -1,
+    "mean_risk_score": 0.00000027,
+    "review_samples": 0,
+    "hard_fail": 0
+  },
+  "interpretation": "M2.69 adds a narrow text profile that rescues txt_003/WKU, the final low-adaptive-precision sample left after M2.68. It improves text adaptive precision without increasing jump, trim, visible connector, or off-mask risk.",
+  "professional_digitizing_relevance": [
+    "adds low-precision text as a separate production failure mode",
+    "uses a conservative profile gate instead of globally changing all rendered text",
+    "removes the last adaptive precision failure from the public benchmark",
+    "preserves execution safety while improving text boundary cleanliness"
+  ],
+  "tradeoff": "M2.69 slightly lowers mean strict precision and coverage because the WKU candidate is marginally more inset, but the adaptive precision and adaptive coverage improve and no execution-risk metric gets worse.",
+  "remaining_bottlenecks": [
+    "qd_002/dog remains the worst high-jump line-art sample",
+    "QuickDraw strict precision remains weak on several sparse line drawings",
+    "professional realism still requires explicit satin/fill/running texture and stitch-type layering beyond current command-level metrics"
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_70_jump_aware_line_art_profile",
+    "reason": "After M2.69, adaptive precision no longer has failing samples; the most important remaining measurable issue is qd_002 high_jump_excess."
+  }
+}

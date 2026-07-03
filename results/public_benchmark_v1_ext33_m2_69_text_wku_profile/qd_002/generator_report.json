@@ -1,0 +1,18 @@
+{
+  "mode": "line_domain_topology_open_trail",
+  "skeleton_path": "datasets\\public_benchmark_v1_ext33\\priors\\qd_002\\skeleton.png",
+  "mask_path": "datasets\\public_benchmark_v1_ext33\\quickdraw_10\\qd_002_mask.png",
+  "output_dst": "results\\public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12\\qd_002\\prediction.dst",
+  "components": 16,
+  "open_components": 11,
+  "jump_commands_added": 6,
+  "safe_component_connects": 10,
+  "rejected_component_connects": 5,
+  "stitch_segments_added": 2845,
+  "target_width_mm": 90.0,
+  "max_stitch_mm": 3.2,
+  "max_connect_mm": 12.0,
+  "min_connect_inside_fraction": 0.9,
+  "connector_dilation_px": 0,
+  "min_component_pixels": 12
+}

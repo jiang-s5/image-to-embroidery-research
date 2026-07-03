@@ -1,0 +1,36 @@
+{
+  "pred": {
+    "path": "results\\public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40\\txt_005\\prediction.dst",
+    "round_trip_parse_success": true,
+    "error": "",
+    "commands": 357,
+    "command_counts": {
+      "jump": 15,
+      "stitch": 338,
+      "trim": 3,
+      "end": 1
+    },
+    "stitch_count": 338,
+    "jump_count": 15,
+    "trim_count": 3,
+    "color_change_count": 0,
+    "unsupported_command_count": 0,
+    "illegal_long_stitch_count": 0,
+    "high_risk_jump_count": 14,
+    "max_stitch_mm": 3.2,
+    "max_jump_mm": 11.1005,
+    "stitch_path_mm": 682.5321,
+    "jump_path_mm": 147.1972,
+    "lock_tack_like_count": 8,
+    "off_mask_stitch_length_mm": 0.0,
+    "off_mask_stitch_count": 0,
+    "visible_connector_count": 0,
+    "visible_connector_length_mm": 0.0,
+    "mask_path": "results\\public_benchmark_v1_ext33_eval_masks\\eval_masks\\txt_005_eval_mask_r5.png",
+    "target_width_mm": 90.0,
+    "max_stitch_threshold_mm": 4.0,
+    "high_risk_jump_threshold_mm": 8.0,
+    "visible_connector_min_mm": 1.5,
+    "visible_connector_off_mask_ratio": 0.65
+  }
+}
