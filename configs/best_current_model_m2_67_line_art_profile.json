@@ -1,0 +1,108 @@
+{
+  "model_id": "m2_67_line_art_profile",
+  "date": "2026-07-03",
+  "status": "promoted_line_art_precision_profile",
+  "description": "Adds a selectable line-art precision profile on top of M2.66. The profile uses a candidate pool of line-stroke and topology-open outputs and switches only QuickDraw/sketch samples with strong strict and adaptive precision gains and zero visible/off-mask increase.",
+  "base_profile_system": "m2_66_profile_switcher",
+  "generation_default": "m2_67_profile_system",
+  "recommended_default_profile": "safe_low_cost",
+  "available_profiles": {
+    "safe_low_cost": "m2_64_text_precision_rescue",
+    "text_legibility": "m2_65_text_legibility_rescue",
+    "line_art_precision": "m2_67_line_art_profile"
+  },
+  "dataset": "datasets/public_benchmark_v1_ext33",
+  "decision_gate": {
+    "line_source_name": "QuickDraw",
+    "min_adaptive_precision_gain": 0.10,
+    "min_strict_precision_gain": 0.03,
+    "min_overfill_reduction": 0.05,
+    "min_adaptive_precision": 0.95,
+    "min_adaptive_coverage": 0.80,
+    "max_loss_increase": 0.18,
+    "max_jump_increase": 22.0,
+    "max_trim_increase": 4.0,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.25
+  },
+  "line_art_candidate_roots": [
+    "public_benchmark_v1_ext33_m2_56_line_stroke_d0_c8_i095",
+    "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12",
+    "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min20",
+    "public_benchmark_v1_ext33_m2_57_topology_open_d0_c20_i080_min30"
+  ],
+  "summary": {
+    "samples": 33,
+    "profile_switches": 1,
+    "switched_samples": [
+      "qd_002"
+    ],
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05775575,
+    "mean_jump_count": 5.84848485,
+    "mean_trim_count": 0.84848485,
+    "mean_off_mask_stitch_length_mm": 0.18479091,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.975737,
+    "mean_stitch_precision_ratio": 0.8283777,
+    "mean_adaptive_coverage_ratio": 0.93069336,
+    "mean_adaptive_stitch_precision_ratio": 0.96138682,
+    "mean_overfill_outside_adaptive_ratio": 0.03861318,
+    "low_strict_precision_samples": 7,
+    "low_adaptive_precision_samples": 2
+  },
+  "delta_from_m2_66": {
+    "mean_unified_loss": 0.00313042,
+    "mean_jump_count": 0.33333333,
+    "mean_trim_count": 0.06060606,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": -0.00168758,
+    "mean_stitch_precision_ratio": 0.00456982,
+    "mean_adaptive_coverage_ratio": -0.00394434,
+    "mean_adaptive_stitch_precision_ratio": 0.0038157,
+    "mean_overfill_outside_adaptive_ratio": -0.0038157,
+    "low_strict_precision_samples": -1,
+    "low_adaptive_precision_samples": -1,
+    "mean_risk_score": 0.00575617,
+    "review_samples": 0
+  },
+  "switched_sample_details": {
+    "sample_id": "qd_002",
+    "category": "dog",
+    "active_profile": "line_art_precision",
+    "base_candidate": "m2_60",
+    "chosen_candidate": "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12",
+    "adaptive_precision_gain": 0.125918,
+    "strict_precision_gain": 0.150804,
+    "overfill_reduction": 0.125918,
+    "loss_delta": 0.10330388,
+    "jump_delta": 11.0,
+    "trim_delta": 2.0,
+    "visible_delta": 0.0,
+    "off_mask_delta": 0.0
+  },
+  "tools": [
+    "tools/apply_m2_line_art_profile.py",
+    "tools/apply_m2_profile_switcher.py",
+    "tools/audit_adaptive_line_precision.py",
+    "tools/audit_m2_policy_risk.py"
+  ],
+  "artifacts": {
+    "documentation": "docs/m2_67_line_art_profile.md",
+    "candidate_scan": "results/m2_67_line_art_candidate_scan/",
+    "probe_summary": "results/m2_67_line_art_profile_probe/probe_summary.json",
+    "selector": "results/public_benchmark_v1_ext33_m2_67_line_art_profile/",
+    "adaptive_audit": "results/public_benchmark_v1_ext33_m2_67_line_art_profile_adaptive_audit/",
+    "component_audit": "results/public_benchmark_v1_ext33_m2_67_line_art_profile_component_audit/"
+  },
+  "limitations": [
+    "M2.67 improves line-art precision but increases jump/loss risk.",
+    "It should be used as a selectable precision profile, not as a universal low-cost default.",
+    "Seven QuickDraw samples still remain below the strict precision threshold, so a better continuous stroke tracer is still needed."
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_68_openclipart_shape_profile",
+    "reason": "Openclipart ocp_001/flower remains a shape/off-mask review case and needs a shape-aware fill/outline profile."
+  }
+}

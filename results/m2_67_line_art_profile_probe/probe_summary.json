@@ -1,0 +1,145 @@
+{
+  "model_id": "m2_67_line_art_profile",
+  "status": "line_art_precision_profile_step_forward",
+  "baseline": "m2_66_profile_switcher",
+  "samples": 33,
+  "profile_switches": 1,
+  "line_art_candidate_roots": [
+    "public_benchmark_v1_ext33_m2_56_line_stroke_d0_c8_i095",
+    "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12",
+    "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min20",
+    "public_benchmark_v1_ext33_m2_57_topology_open_d0_c20_i080_min30"
+  ],
+  "switched_samples": [
+    {
+      "sample_id": "qd_002",
+      "source_name": "QuickDraw",
+      "category": "dog",
+      "base_profile": "safe_low_cost",
+      "active_profile": "line_art_precision",
+      "profile_reason": "line_art_precision_gain",
+      "profile_switched": true,
+      "base_candidate": "m2_60",
+      "chosen_candidate": "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12",
+      "adaptive_precision_gain": 0.125918,
+      "strict_precision_gain": 0.150804,
+      "overfill_reduction": 0.125918,
+      "loss_delta": 0.10330388,
+      "jump_delta": 11.0,
+      "trim_delta": 2.0,
+      "visible_delta": 0.0,
+      "off_mask_delta": 0.0
+    }
+  ],
+  "overall_delta_from_m2_66": {
+    "mean_unified_loss": 0.00313042,
+    "mean_jump_count": 0.33333333,
+    "mean_trim_count": 0.06060606,
+    "mean_off_mask_stitch_length_mm": 0.0,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": -0.00168758,
+    "mean_stitch_precision_ratio": 0.00456982,
+    "mean_adaptive_coverage_ratio": -0.00394434,
+    "mean_adaptive_stitch_precision_ratio": 0.0038157,
+    "mean_overfill_outside_adaptive_ratio": -0.0038157,
+    "low_strict_precision_samples": -1.0,
+    "low_adaptive_precision_samples": -1.0,
+    "mean_risk_score": 0.00575617,
+    "review_samples": 0.0
+  },
+  "best_quickdraw_candidate_scan_top5": [
+    {
+      "candidate": "public_benchmark_v1_ext33_m2_56_line_stroke_d0_c8_i095",
+      "samples": "8",
+      "mean_unified_loss": "0.0",
+      "mean_jump_count": "0.0",
+      "mean_trim_count": "0.0",
+      "mean_off_mask_stitch_length_mm": "0.0",
+      "mean_visible_connector_count": "0.0",
+      "mean_coverage_ratio": "0.97213125",
+      "mean_stitch_precision_ratio": "0.69968487",
+      "mean_adaptive_coverage_ratio": "0.887162",
+      "mean_adaptive_stitch_precision_ratio": "0.98714587",
+      "low_strict_precision": "8",
+      "low_adaptive_precision": "0"
+    },
+    {
+      "candidate": "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset2_rows16_p40",
+      "samples": "8",
+      "mean_unified_loss": "0.0",
+      "mean_jump_count": "0.0",
+      "mean_trim_count": "0.0",
+      "mean_off_mask_stitch_length_mm": "0.0",
+      "mean_visible_connector_count": "0.0",
+      "mean_coverage_ratio": "0.96041062",
+      "mean_stitch_precision_ratio": "0.69961063",
+      "mean_adaptive_coverage_ratio": "0.83927625",
+      "mean_adaptive_stitch_precision_ratio": "0.945657",
+      "low_strict_precision": "8",
+      "low_adaptive_precision": "0"
+    },
+    {
+      "candidate": "public_benchmark_v1_ext33_m2_56_line_stroke_d1_c10_i090",
+      "samples": "8",
+      "mean_unified_loss": "0.0",
+      "mean_jump_count": "0.0",
+      "mean_trim_count": "0.0",
+      "mean_off_mask_stitch_length_mm": "0.0",
+      "mean_visible_connector_count": "0.0",
+      "mean_coverage_ratio": "0.97251888",
+      "mean_stitch_precision_ratio": "0.69791313",
+      "mean_adaptive_coverage_ratio": "0.88860525",
+      "mean_adaptive_stitch_precision_ratio": "0.98589563",
+      "low_strict_precision": "8",
+      "low_adaptive_precision": "0"
+    },
+    {
+      "candidate": "public_benchmark_v1_ext33_m2_56_line_stroke_d1_c6_i095",
+      "samples": "8",
+      "mean_unified_loss": "0.0",
+      "mean_jump_count": "0.0",
+      "mean_trim_count": "0.0",
+      "mean_off_mask_stitch_length_mm": "0.0",
+      "mean_visible_connector_count": "0.0",
+      "mean_coverage_ratio": "0.94504575",
+      "mean_stitch_precision_ratio": "0.69781437",
+      "mean_adaptive_coverage_ratio": "0.86499512",
+      "mean_adaptive_stitch_precision_ratio": "0.987274",
+      "low_strict_precision": "7",
+      "low_adaptive_precision": "0"
+    },
+    {
+      "candidate": "public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12",
+      "samples": "8",
+      "mean_unified_loss": "0.0",
+      "mean_jump_count": "0.0",
+      "mean_trim_count": "0.0",
+      "mean_off_mask_stitch_length_mm": "0.0",
+      "mean_visible_connector_count": "0.0",
+      "mean_coverage_ratio": "0.93341175",
+      "mean_stitch_precision_ratio": "0.69665738",
+      "mean_adaptive_coverage_ratio": "0.85558825",
+      "mean_adaptive_stitch_precision_ratio": "0.98707762",
+      "low_strict_precision": "7",
+      "low_adaptive_precision": "0"
+    }
+  ],
+  "interpretation": "M2.67 adds a third professional production profile: line_art_precision. It resolves qd_002/dog as a low-adaptive-precision line-art case by selecting a topology-open candidate with strong precision gain and zero visible/off-mask increase, while documenting the extra jump/loss cost.",
+  "professional_digitizing_relevance": [
+    "introduces separate line-art/running-stitch intent instead of forcing sketches through fill/text profiles",
+    "uses a candidate pool rather than a fixed line-art algorithm",
+    "requires both adaptive and strict precision gain before switching",
+    "keeps every profile decision auditable at sample level"
+  ],
+  "tradeoff": "M2.67 improves precision metrics but raises mean unified loss, jump count, and component-aware risk. It should be treated as a selectable precision profile, not a universal low-cost default.",
+  "remaining_bottlenecks": [
+    "QuickDraw strict precision remains low on 7 samples, so a better continuous stroke tracer is still needed",
+    "Openclipart ocp_001 remains an adaptive-precision/off-mask review case",
+    "Rendered text txt_003/WKU remains below adaptive precision threshold",
+    "Future profiles should include satin/fill texture and photo/object simplification profiles"
+  ],
+  "next_recommended_stage": {
+    "model_id": "m2_68_openclipart_shape_profile",
+    "reason": "After text and line-art profiles, the next persistent review case is Openclipart ocp_001/flower, which needs a shape-aware fill/outline profile with lower off-mask risk."
+  }
+}

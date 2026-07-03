@@ -1,0 +1,35 @@
+{
+  "pred": {
+    "path": "results\\public_benchmark_v1_ext33_all_skeleton_connect30_trimcap20\\qd_005\\prediction.dst",
+    "round_trip_parse_success": true,
+    "error": "",
+    "commands": 3757,
+    "command_counts": {
+      "jump": 2,
+      "stitch": 3754,
+      "end": 1
+    },
+    "stitch_count": 3754,
+    "jump_count": 2,
+    "trim_count": 0,
+    "color_change_count": 0,
+    "unsupported_command_count": 0,
+    "illegal_long_stitch_count": 0,
+    "high_risk_jump_count": 1,
+    "max_stitch_mm": 3.2249,
+    "max_jump_mm": 12.3879,
+    "stitch_path_mm": 1727.3682,
+    "jump_path_mm": 12.3879,
+    "lock_tack_like_count": 31,
+    "off_mask_stitch_length_mm": 0.0,
+    "off_mask_stitch_count": 0,
+    "visible_connector_count": 0,
+    "visible_connector_length_mm": 0.0,
+    "mask_path": "results\\public_benchmark_v1_ext33_eval_masks\\eval_masks\\qd_005_eval_mask_r7.png",
+    "target_width_mm": 90.0,
+    "max_stitch_threshold_mm": 4.0,
+    "high_risk_jump_threshold_mm": 8.0,
+    "visible_connector_min_mm": 1.5,
+    "visible_connector_off_mask_ratio": 0.65
+  }
+}

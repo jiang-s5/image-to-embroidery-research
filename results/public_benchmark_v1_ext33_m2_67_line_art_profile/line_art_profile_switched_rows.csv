@@ -1,0 +1,2 @@
+﻿sample_id,source_name,category,base_profile,active_profile,profile_reason,profile_switched,base_candidate,chosen_candidate,adaptive_precision_gain,strict_precision_gain,overfill_reduction,loss_delta,jump_delta,trim_delta,visible_delta,off_mask_delta
+qd_002,QuickDraw,dog,safe_low_cost,line_art_precision,line_art_precision_gain,True,m2_60,public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12,0.125918,0.150804,0.125918,0.10330388,11.0,2.0,0.0,0.0

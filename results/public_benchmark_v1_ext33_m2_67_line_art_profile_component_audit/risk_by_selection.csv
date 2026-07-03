@@ -1,0 +1,3 @@
+﻿selection,samples,review_samples,review_rate,mean_risk_score,worst_risk_score,worst_sample_id,worst_flags,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio
+m2_66,33,13,0.393939,0.09933872,0.25929687,qd_007,high_loss|low_precision,0.05462533,5.51515152,0.78787879,0.18479091,0.0,0.97742458,0.82380788
+m2_67,33,13,0.393939,0.10509489,0.31067042,qd_002,high_loss|high_jump_excess,0.05775575,5.84848485,0.84848485,0.18479091,0.0,0.975737,0.8283777

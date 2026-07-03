@@ -1,0 +1,12 @@
+{
+  "dst_path": "results\\public_benchmark_v1_ext33_m2_57_topology_open_d0_c12_i090_min12\\qd_002\\prediction.dst",
+  "target_mask_path": "datasets\\public_benchmark_v1_ext33\\quickdraw_10\\qd_002_mask.png",
+  "target_pixels": 8242,
+  "stitch_pixels": 10334,
+  "overlap_pixels": 7765,
+  "off_target_pixels": 2569,
+  "coverage_ratio": 0.942126,
+  "stitch_precision_ratio": 0.751403,
+  "line_radius_px": 2,
+  "target_width_mm": 90.0
+}

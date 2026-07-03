@@ -1,0 +1,4 @@
+﻿active_profile,samples,profile_switches,hard_fail,mean_unified_loss,mean_jump_count,mean_trim_count,mean_off_mask_stitch_length_mm,mean_visible_connector_count,mean_coverage_ratio,mean_stitch_precision_ratio,mean_adaptive_coverage_ratio,mean_adaptive_stitch_precision_ratio,mean_overfill_outside_adaptive_ratio
+line_art_precision,1,1,0,0.13667042,15.0,2.0,0.0,0.0,0.942126,0.751403,0.831707,0.989936,0.010064
+safe_low_cost,31,0,0,0.05246964,5.25806452,0.74193548,0.1967129,0.0,0.97650935,0.83108994,0.93445606,0.96056642,0.03943358
+text_legibility,1,0,0,0.14271031,15.0,3.0,0.0,0.0,0.985405,0.821273,0.913036,0.95827,0.04173
