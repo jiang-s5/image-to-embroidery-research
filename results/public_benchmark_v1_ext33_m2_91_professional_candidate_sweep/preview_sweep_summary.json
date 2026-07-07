@@ -1,0 +1,359 @@
+{
+  "model_id": "m2_91_professional_candidate_sweep",
+  "baseline_rows": "results\\public_benchmark_v1_ext33_m2_81_family_policy_texture_profile\\family_policy_selected_rows.csv",
+  "policy": {
+    "include_regex": "(m2_91|satin|dtsatin|edgewalk|outline|styleaware|mask_fill|nearestrow)",
+    "exclude_regex": "(selector|m2_81|m2_82|m2_83|m2_84|m2_85|eval_masks|repair_veto|geometry_priors)",
+    "min_preview_gain": 0.001,
+    "min_texture_gain": -0.05,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0,
+    "max_loss_increase": 0.01,
+    "max_jump_increase": 2.0,
+    "max_trim_increase": 2.0,
+    "max_coverage_drop": 0.015,
+    "max_precision_drop": 0.03
+  },
+  "candidate_audit": {
+    "candidate_roots": 54,
+    "candidate_sample_dirs": 1782,
+    "audited_candidate_rows": 1782,
+    "gate_pass_rows": 37,
+    "positive_preview_rows": 1114,
+    "gate_reasons": {
+      "loss_increase": 555,
+      "off_mask_increase": 358,
+      "preview_gain_too_small": 683,
+      "visible_connector_increase": 63,
+      "preview_sweep_candidate_pass": 37,
+      "texture_regression_too_large": 1,
+      "precision_drop": 85
+    },
+    "gate_pass_by_family": {
+      "satin_like": 2,
+      "edgewalk_fill": 33,
+      "dt_satin": 2
+    },
+    "gate_pass_by_root": {
+      "public_benchmark_v1_ext33_m2_73_texture_satinrail_safeadt_light": 1,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_rows16_p40": 1,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_t2m5_r035_a32_rows16_p40": 2,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_safeadt_t2m5_r055_a64_rows16_p40": 2,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_qdirect_rows16_p40": 2,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_rows16_p40": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_segvalid_rows16_p40": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_strict_p40_rows16": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset1_rows16_p40": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t2_m5_rows16_p40": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t3_m6_rows16_p40": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_adapt_t4_m8_rows16_p40": 3,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_inset2_rows16_p40": 2,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_qpath090_rows16_p40": 1,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_qpath095_rows16_p40": 1,
+      "public_benchmark_v1_ext33_mask_fill_edgewalk_nearestrow_quantvalid_rows16_p40": 1,
+      "public_benchmark_v1_ext33_m2_91_safe_dtsatin_balanced": 1,
+      "public_benchmark_v1_ext33_m2_91_safe_dtsatin_dense": 1,
+      "public_benchmark_v1_ext33_m2_91_safe_satinrail_dense": 1
+    }
+  },
+  "selected_summary": {
+    "samples": 33,
+    "preview_sweep_switches": 8,
+    "hard_fail": 0,
+    "selected_candidate_counts": {
+      "m2_81_current_profile": 25,
+      "mask_fill_edgewalk_satin_rail": 1,
+      "mask_fill_edgewalk": 6,
+      "mask_fill_edgewalk_dt_satin": 1
+    },
+    "selected_family_counts": {
+      "base_keep": 25,
+      "satin_like": 1,
+      "edgewalk_fill": 6,
+      "dt_satin": 1
+    },
+    "mean_unified_loss": 0.05614614,
+    "mean_jump_count": 6.06060606,
+    "mean_trim_count": 0.57575758,
+    "mean_off_mask_stitch_length_mm": 0.10619091,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98208582,
+    "mean_stitch_precision_ratio": 0.83906009,
+    "mean_professional_preview_score": 0.73754405,
+    "mean_generator_texture_score": 0.33957576,
+    "mean_angle_entropy": 0.50291335,
+    "mean_dominant_angle_mass": 0.61020344,
+    "mean_stitch_density_per_100mm2": 18.20752852,
+    "mean_rhythm_score": 0.6155093,
+    "mean_coverage_score": 0.92263613,
+    "mean_density_score": 0.94710502,
+    "mean_directional_score": 0.64368927,
+    "mean_family_texture_score_norm": 0.2770101,
+    "mean_safety_score": 0.96757315
+  },
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 10,
+      "preview_sweep_switches": 2,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 8,
+        "mask_fill_edgewalk": 2
+      },
+      "selected_family_counts": {
+        "base_keep": 8,
+        "edgewalk_fill": 2
+      },
+      "mean_unified_loss": 0.06253279,
+      "mean_jump_count": 6.6,
+      "mean_trim_count": 0.7,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9978091,
+      "mean_stitch_precision_ratio": 0.8962393,
+      "mean_professional_preview_score": 0.80340729,
+      "mean_generator_texture_score": 0.399,
+      "mean_angle_entropy": 0.4227267,
+      "mean_dominant_angle_mass": 0.72257942,
+      "mean_stitch_density_per_100mm2": 14.2127145,
+      "mean_rhythm_score": 0.65893593,
+      "mean_coverage_score": 0.9596275,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.7579092,
+      "mean_family_texture_score_norm": 0.40213333,
+      "mean_safety_score": 0.996859
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 10,
+      "preview_sweep_switches": 4,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 6,
+        "mask_fill_edgewalk_satin_rail": 1,
+        "mask_fill_edgewalk": 3
+      },
+      "selected_family_counts": {
+        "base_keep": 6,
+        "satin_like": 1,
+        "edgewalk_fill": 3
+      },
+      "mean_unified_loss": 0.04113991,
+      "mean_jump_count": 4.3,
+      "mean_trim_count": 0.2,
+      "mean_off_mask_stitch_length_mm": 0.19338,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.96279,
+      "mean_stitch_precision_ratio": 0.8930069,
+      "mean_professional_preview_score": 0.76555813,
+      "mean_generator_texture_score": 0.2148,
+      "mean_angle_entropy": 0.4036852,
+      "mean_dominant_angle_mass": 0.7238172,
+      "mean_stitch_density_per_100mm2": 17.89852139,
+      "mean_rhythm_score": 0.63007747,
+      "mean_coverage_score": 0.93288646,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.77552926,
+      "mean_family_texture_score_norm": 0.2528,
+      "mean_safety_score": 0.8961324
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 8,
+      "preview_sweep_switches": 1,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "mask_fill_edgewalk": 1,
+        "m2_81_current_profile": 7
+      },
+      "selected_family_counts": {
+        "edgewalk_fill": 1,
+        "base_keep": 7
+      },
+      "mean_unified_loss": 0.06893029,
+      "mean_jump_count": 7.75,
+      "mean_trim_count": 0.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9813185,
+      "mean_stitch_precision_ratio": 0.71399587,
+      "mean_professional_preview_score": 0.60047118,
+      "mean_generator_texture_score": 0.09275,
+      "mean_angle_entropy": 0.7122732,
+      "mean_dominant_angle_mass": 0.33352975,
+      "mean_stitch_density_per_100mm2": 18.38411703,
+      "mean_rhythm_score": 0.49989971,
+      "mean_coverage_score": 0.86102332,
+      "mean_density_score": 0.78180819,
+      "mean_directional_score": 0.33643882,
+      "mean_family_texture_score_norm": 0.12366667,
+      "mean_safety_score": 1.0
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 5,
+      "preview_sweep_switches": 1,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 4,
+        "mask_fill_edgewalk_dt_satin": 1
+      },
+      "selected_family_counts": {
+        "base_keep": 4,
+        "dt_satin": 1
+      },
+      "mean_unified_loss": 0.05293065,
+      "mean_jump_count": 5.8,
+      "mean_trim_count": 0.8,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9904586,
+      "mean_stitch_precision_ratio": 0.8169108,
+      "mean_professional_preview_score": 0.76910601,
+      "mean_generator_texture_score": 0.8652,
+      "mean_angle_entropy": 0.52676718,
+      "mean_dominant_angle_mass": 0.60090188,
+      "mean_stitch_density_per_100mm2": 26.53262924,
+      "mean_rhythm_score": 0.68449505,
+      "mean_coverage_score": 0.9267332,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.64317019,
+      "mean_family_texture_score_norm": 0.32053333,
+      "mean_safety_score": 1.0
+    }
+  ],
+  "by_family": [
+    {
+      "deployed_family": "base_keep",
+      "samples": 25,
+      "preview_sweep_switches": 0,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 25
+      },
+      "selected_family_counts": {
+        "base_keep": 25
+      },
+      "mean_unified_loss": 0.05298341,
+      "mean_jump_count": 5.76,
+      "mean_trim_count": 0.56,
+      "mean_off_mask_stitch_length_mm": 0.08264,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97811328,
+      "mean_stitch_precision_ratio": 0.83784328,
+      "mean_professional_preview_score": 0.72353544,
+      "mean_generator_texture_score": 0.21896,
+      "mean_angle_entropy": 0.5158264,
+      "mean_dominant_angle_mass": 0.59211328,
+      "mean_stitch_density_per_100mm2": 18.35638187,
+      "mean_rhythm_score": 0.60863334,
+      "mean_coverage_score": 0.9180017,
+      "mean_density_score": 0.93017862,
+      "mean_directional_score": 0.62812403,
+      "mean_family_texture_score_norm": 0.24,
+      "mean_safety_score": 0.9583472
+    },
+    {
+      "deployed_family": "dt_satin",
+      "samples": 1,
+      "preview_sweep_switches": 1,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "mask_fill_edgewalk_dt_satin": 1
+      },
+      "selected_family_counts": {
+        "dt_satin": 1
+      },
+      "mean_unified_loss": 0.11226365,
+      "mean_jump_count": 12.0,
+      "mean_trim_count": 2.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.998828,
+      "mean_stitch_precision_ratio": 0.817223,
+      "mean_professional_preview_score": 0.82517624,
+      "mean_generator_texture_score": 3.874,
+      "mean_angle_entropy": 0.7523936,
+      "mean_dominant_angle_mass": 0.39520334,
+      "mean_stitch_density_per_100mm2": 47.56944444,
+      "mean_rhythm_score": 0.69459733,
+      "mean_coverage_score": 0.9889613,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.31122584,
+      "mean_family_texture_score_norm": 1.0,
+      "mean_safety_score": 1.0
+    },
+    {
+      "deployed_family": "edgewalk_fill",
+      "samples": 6,
+      "preview_sweep_switches": 6,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "mask_fill_edgewalk": 6
+      },
+      "selected_family_counts": {
+        "edgewalk_fill": 6
+      },
+      "mean_unified_loss": 0.06380973,
+      "mean_jump_count": 6.66666667,
+      "mean_trim_count": 0.5,
+      "mean_off_mask_stitch_length_mm": 0.23971667,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.992862,
+      "mean_stitch_precision_ratio": 0.82846317,
+      "mean_professional_preview_score": 0.7523684,
+      "mean_generator_texture_score": 0.14266667,
+      "mean_angle_entropy": 0.42237331,
+      "mean_dominant_angle_mass": 0.6989015,
+      "mean_stitch_density_per_100mm2": 11.01273696,
+      "mean_rhythm_score": 0.62481653,
+      "mean_coverage_score": 0.91888253,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.72901897,
+      "mean_family_texture_score_norm": 0.19022222,
+      "mean_safety_score": 0.99520567
+    },
+    {
+      "deployed_family": "satin_like",
+      "samples": 1,
+      "preview_sweep_switches": 1,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "mask_fill_edgewalk_satin_rail": 1
+      },
+      "selected_family_counts": {
+        "satin_like": 1
+      },
+      "mean_unified_loss": 0.03311525,
+      "mean_jump_count": 4.0,
+      "mean_trim_count": 0.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 1.0,
+      "mean_stitch_precision_ratio": 0.954899,
+      "mean_professional_preview_score": 0.9111811,
+      "mean_generator_texture_score": 1.002,
+      "mean_angle_entropy": 0.41384701,
+      "mean_dominant_angle_mass": 0.74526929,
+      "mean_stitch_density_per_100mm2": 28.29302847,
+      "mean_rhythm_score": 0.65247696,
+      "mean_coverage_score": 0.99469315,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.85330562,
+      "mean_family_texture_score_norm": 1.0,
+      "mean_safety_score": 1.0
+    }
+  ],
+  "switch_sample_ids": [
+    "ocp_005",
+    "ocp_006",
+    "ocp_007",
+    "ocp_008",
+    "omj_007",
+    "omj_010",
+    "qd_001",
+    "txt_005"
+  ],
+  "interpretation": "M2.86 expands M2.85 from the M2.82 candidate table to all existing ext33 generator roots with command/coverage rows, while preserving strict command-safety and positive preview-texture gates."
+}

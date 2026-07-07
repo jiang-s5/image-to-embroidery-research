@@ -1,0 +1,34 @@
+﻿sample_id,source_name,category,mode,fill_mask_source,unified_loss,exec_score,visual_risk,quality_level,jump_count,trim_count,jump_path_mm,off_mask_stitch_length_mm,visible_connector_count,visible_connector_length_mm,fill_rows,safe_connects,mask_path_connects,rejected_connects,rejected_mask_paths,outline_paths,outline_points,satin_columns,satin_skipped,satin_rail_pairs,satin_rail_segments,satin_rail_rejected,dt_satin_pairs,dt_satin_segments,dt_satin_rejected,style_running_components,style_fill_components,style_running_paths,style_running_points,style_fallback_fill_components
+ocp_001,Openclipart,flower,mask_fill_style_aware,eval_mask,0.2123031,0.1788546,0.0334485,warning,20,2,214.2063,1.4866,0,0.0,190,177,9,4,4,1,450,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_002,Openclipart,butterfly,mask_fill_style_aware,eval_mask,0.33880313,0.05551793,0.2832852,hard_fail,6,1,47.4353,20.2609,5,11.6426,75,69,6,2,2,1,421,0,0,0,0,0,0,0,0,1,1,2,184,0
+ocp_003,Openclipart,cat,mask_fill_style_aware,eval_mask,0.39598256,0.10582916,0.2901534,hard_fail,12,1,119.6611,22.3527,6,15.0767,91,87,1,3,3,1,390,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_004,Openclipart,koi_fish,mask_fill_style_aware,eval_mask,0.27169939,0.10328914,0.16841025,warning,11,2,102.7855,7.4849,0,0.0,99,94,2,3,3,1,430,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_005,Openclipart,public_domain_logo,mask_fill_style_aware,eval_mask,0.10607454,0.10607454,0.0,pass,12,1,127.3295,0.0,0,0.0,27,26,0,1,1,1,334,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_006,Openclipart,butterfly_2,mask_fill_style_aware,eval_mask,0.44241416,0.14241416,0.3,hard_fail,15,3,137.9424,32.315,10,24.8358,73,64,5,4,4,1,446,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_007,Openclipart,sitting_cat,mask_fill_style_aware,eval_mask,0.44931925,0.16301925,0.2863,hard_fail,18,2,219.3517,22.2286,5,13.15,114,108,3,3,3,1,498,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_008,Openclipart,fish,mask_fill_style_aware,eval_mask,0.4015301,0.1120455,0.2894846,hard_fail,12,2,126.4218,22.3192,6,14.7423,122,112,7,3,3,1,442,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_009,Openclipart,flower_2,mask_fill_style_aware,eval_mask,0.15585794,0.14470919,0.01114875,warning,16,2,147.1623,0.4955,0,0.0,186,168,12,6,6,1,478,0,0,0,0,0,0,0,0,0,1,0,0,0
+ocp_010,Openclipart,thought_bubble,mask_fill_style_aware,eval_mask,0.10686441,0.05580291,0.0510615,pass,6,1,56.3409,2.2694,0,0.0,46,41,4,1,1,1,304,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_001,OpenMoji,heart,mask_fill_style_aware,eval_mask,0.31425221,0.10333354,0.21091867,hard_fail,11,2,104.1732,8.414,1,2.126,63,61,0,2,2,1,240,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_002,OpenMoji,star,mask_fill_style_aware,eval_mask,0.37377859,0.09759599,0.2761826,hard_fail,11,1,112.3747,13.5694,3,8.0913,71,67,2,2,2,1,307,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_003,OpenMoji,butterfly,mask_fill_style_aware,eval_mask,0.1313243,0.12017555,0.01114875,pass,13,2,130.4859,0.4955,0,0.0,81,76,2,3,3,1,357,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_004,OpenMoji,fish,mask_fill_style_aware,eval_mask,0.11332086,0.07218636,0.0411345,excellent,8,1,68.3236,1.8282,0,0.0,64,61,2,1,1,1,281,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_005,OpenMoji,sun,mask_fill_style_aware,eval_mask,0.37043345,0.14553346,0.22489998,warning,16,2,172.9207,7.2529,2,4.1882,104,96,3,5,5,1,445,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_006,OpenMoji,cherry_blossom,mask_fill_style_aware,eval_mask,0.22167697,0.08043875,0.14123822,warning,9,1,76.211,4.8947,1,2.2204,88,82,3,3,3,1,358,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_007,OpenMoji,ribbon,mask_fill_style_aware,eval_mask,0.23589282,0.1446989,0.09119392,warning,16,2,146.8406,2.6901,1,2.0,107,96,6,5,5,1,427,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_008,OpenMoji,paw_prints,mask_fill_style_aware,eval_mask,0.12054057,0.08056482,0.03997575,excellent,9,1,80.1507,1.7767,0,0.0,137,122,13,5,5,4,558,0,0,0,0,0,0,0,0,0,4,0,0,0
+omj_009,OpenMoji,lady_beetle,mask_fill_style_aware,eval_mask,0.28230878,0.08050301,0.20180577,warning,9,1,78.2192,7.5954,1,2.1213,92,86,3,3,3,1,362,0,0,0,0,0,0,0,0,0,1,0,0,0
+omj_010,OpenMoji,seedling,mask_fill_style_aware,eval_mask,0.05856766,0.05856766,0.0,excellent,7,0,80.2393,0.0,0,0.0,75,69,5,3,3,3,295,0,0,0,0,0,0,0,0,0,2,0,0,0
+qd_001,QuickDraw,cat,mask_fill_style_aware,eval_mask,0.29481386,0.17950225,0.11531162,warning,20,2,234.4452,3.7135,1,2.5456,216,200,14,5,5,4,720,0,0,0,0,0,0,0,0,0,3,0,0,0
+qd_002,QuickDraw,dog,mask_fill_style_aware,eval_mask,0.20216722,0.20216722,0.0,warning,22,3,255.2255,0.0,0,0.0,201,194,3,4,4,1,409,0,0,0,0,0,0,0,0,0,1,0,0,0
+qd_003,QuickDraw,fish,mask_fill_style_aware,eval_mask,0.10459808,0.10459808,0.0,pass,11,2,143.6899,0.0,0,0.0,107,99,6,2,2,1,312,0,0,0,0,0,0,0,0,0,1,0,0,0
+qd_004,QuickDraw,flower,mask_fill_style_aware,eval_mask,0.18696277,0.14758552,0.03937725,warning,17,1,174.5474,1.7501,0,0.0,152,138,11,4,4,2,428,0,0,0,0,0,0,0,0,0,2,0,0,0
+qd_005,QuickDraw,bicycle,mask_fill_style_aware,eval_mask,0.27589426,0.12907694,0.14681732,warning,14,2,158.6544,5.1385,1,2.2672,172,160,9,3,3,1,504,0,0,0,0,0,0,0,0,0,1,0,0,0
+qd_006,QuickDraw,bird,mask_fill_style_aware,eval_mask,0.40980838,0.16521445,0.24459393,hard_fail,17,4,162.9515,13.9558,2,5.6303,123,109,10,5,5,2,447,0,0,0,0,0,0,0,0,0,2,0,0,0
+qd_007,QuickDraw,moon,mask_fill_style_aware,eval_mask,0.22101885,0.21041235,0.0106065,warning,23,3,262.886,0.4714,0,0.0,209,196,11,5,5,4,635,0,0,0,0,0,0,0,0,0,4,0,0,0
+qd_008,QuickDraw,star,mask_fill_style_aware,eval_mask,0.21346563,0.19931538,0.01415025,warning,21,4,228.6057,0.6289,0,0.0,182,174,4,4,4,1,405,0,0,0,0,0,0,0,0,0,1,0,0,0
+txt_001,Rendered text,AI,mask_fill_style_aware,eval_mask,0.05916092,0.04730342,0.0118575,excellent,5,1,40.732,0.527,0,0.0,47,44,2,1,1,1,190,0,0,0,0,0,0,0,0,0,1,0,0,0
+txt_002,Rendered text,DST,mask_fill_style_aware,eval_mask,0.09489877,0.09489877,0.0,excellent,10,2,90.5866,0.0,0,0.0,68,59,6,3,3,1,296,0,0,0,0,0,0,0,0,0,1,0,0,0
+txt_003,Rendered text,WKU,mask_fill_style_aware,eval_mask,0.08060563,0.08060563,0.0,excellent,9,1,81.4258,0.0,0,0.0,105,95,8,2,2,1,391,0,0,0,0,0,0,0,0,0,1,0,0,0
+txt_004,Rendered text,2026,mask_fill_style_aware,eval_mask,0.05760393,0.05760393,0.0,excellent,7,0,50.1229,0.0,0,0.0,70,60,7,3,3,1,273,0,0,0,0,0,0,0,0,0,1,0,0,0
+txt_005,Rendered text,HELLO,mask_fill_style_aware,eval_mask,0.13024227,0.05787552,0.07236675,pass,7,0,58.6101,3.2163,0,0.0,78,68,8,2,2,1,437,0,0,0,0,0,0,0,0,0,1,0,0,0

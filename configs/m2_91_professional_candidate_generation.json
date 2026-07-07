@@ -1,0 +1,130 @@
+{
+  "model_id": "m2_91_professional_candidate_generation",
+  "date": "2026-07-07",
+  "status": "experimental_professional_candidate_generation_audit",
+  "purpose": "Move beyond selecting existing generator roots by generating new professional stitch-family candidates, then auditing them with the preview-texture and hard-safety gates.",
+  "baseline": {
+    "safety_profile": "m2_89_hard_failure_aware_selector",
+    "professional_texture_profile": "m2_90_professional_texture_objective"
+  },
+  "generated_candidate_roots": {
+    "negative_underlay_profiles": [
+      {
+        "output_dir": "results/public_benchmark_v1_ext33_m2_91_layered_dtsatin_underlay",
+        "hard_fail": 11,
+        "mean_unified_loss": 0.233557,
+        "mean_jump_count": 13.69697,
+        "mean_off_mask_stitch_length_mm": 6.401085,
+        "mean_visible_connector_count": 1.363636,
+        "interpretation": "Direct outline underlay plus fill-style evaluation is unsafe; it leaks off mask and creates visible connectors."
+      },
+      {
+        "output_dir": "results/public_benchmark_v1_ext33_m2_91_layered_satinrail_underlay",
+        "hard_fail": 10,
+        "mean_unified_loss": 0.232518,
+        "mean_jump_count": 13.606061,
+        "mean_off_mask_stitch_length_mm": 6.468291,
+        "mean_visible_connector_count": 1.363636,
+        "interpretation": "Satin-rail underlay has the same failure mode as DT-satin underlay when applied as a hard layer."
+      },
+      {
+        "output_dir": "results/public_benchmark_v1_ext33_m2_91_layered_styleaware_underlay",
+        "hard_fail": 8,
+        "mean_unified_loss": 0.225278,
+        "mean_jump_count": 12.727273,
+        "mean_off_mask_stitch_length_mm": 6.337309,
+        "mean_visible_connector_count": 1.363636,
+        "interpretation": "Style-aware underlay is less bad but still fails hard safety gates."
+      }
+    ],
+    "safe_profiles": [
+      {
+        "output_dir": "results/public_benchmark_v1_ext33_m2_91_safe_dtsatin_dense",
+        "hard_fail": 0,
+        "mean_unified_loss": 0.123009,
+        "mean_jump_count": 13.030303,
+        "mean_trim_count": 1.878788,
+        "mean_off_mask_stitch_length_mm": 0.143667,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.997599,
+        "mean_stitch_precision_ratio": 0.816691,
+        "interpretation": "Usable generated DT-satin candidate family; safe enough for gated professional-texture selection."
+      },
+      {
+        "output_dir": "results/public_benchmark_v1_ext33_m2_91_safe_satinrail_dense",
+        "hard_fail": 5,
+        "mean_unified_loss": 0.13737,
+        "mean_jump_count": 15.030303,
+        "mean_trim_count": 2.181818,
+        "mean_off_mask_stitch_length_mm": 0.213239,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.997777,
+        "mean_stitch_precision_ratio": 0.811736,
+        "interpretation": "Useful for some samples but not safe as a standalone profile because hard_fail remains nonzero."
+      },
+      {
+        "output_dir": "results/public_benchmark_v1_ext33_m2_91_safe_dtsatin_balanced",
+        "hard_fail": 0,
+        "mean_unified_loss": 0.119693,
+        "mean_jump_count": 12.878788,
+        "mean_trim_count": 1.818182,
+        "mean_off_mask_stitch_length_mm": 0.068055,
+        "mean_visible_connector_count": 0.0,
+        "mean_coverage_ratio": 0.997618,
+        "mean_stitch_precision_ratio": 0.816886,
+        "interpretation": "Best safe generated profile among the new M2.91 roots."
+      }
+    ]
+  },
+  "candidate_sweep": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_91_professional_candidate_sweep",
+    "candidate_roots": 54,
+    "candidate_rows": 1782,
+    "gate_pass_rows": 37,
+    "selected_samples": 33,
+    "preview_sweep_switches": 8,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05614614,
+    "mean_jump_count": 6.06060606,
+    "mean_visible_connector_count": 0.0,
+    "mean_professional_preview_score": 0.73754405,
+    "mean_generator_texture_score": 0.33957576,
+    "m2_91_roots_selected": [
+      "results/public_benchmark_v1_ext33_m2_91_safe_dtsatin_dense",
+      "results/public_benchmark_v1_ext33_m2_91_safe_dtsatin_balanced",
+      "results/public_benchmark_v1_ext33_m2_91_safe_satinrail_dense"
+    ],
+    "interpretation": "Strict preview sweep confirms the new M2.91 generated roots are not empty: at least one generated DT-satin candidate is selected under tight safety/preview gates."
+  },
+  "professional_texture_objective": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_91_professional_texture_objective",
+    "candidate_rows": "results/public_benchmark_v1_ext33_m2_91_professional_candidate_sweep/preview_sweep_candidate_rows.csv",
+    "baseline_rows": "results/public_benchmark_v1_ext33_m2_89_hard_failure_deployment_strict/preview_learned_selected_rows.csv",
+    "result": {
+      "samples": 33,
+      "professional_texture_switches": 25,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.10187967,
+      "mean_jump_count": 11.15151515,
+      "mean_trim_count": 1.45454545,
+      "mean_off_mask_stitch_length_mm": 0.01501515,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.99249652,
+      "mean_stitch_precision_ratio": 0.84118715,
+      "mean_professional_preview_score": 0.81147022,
+      "mean_generator_texture_score": 1.77945455,
+      "mean_family_texture_score_norm": 0.77317172,
+      "delta_mean_professional_preview_score_vs_m2_89": 0.07602911,
+      "delta_mean_generator_texture_score_vs_m2_89": 1.55333334,
+      "delta_mean_family_texture_score_norm_vs_m2_89": 0.52121212,
+      "delta_mean_unified_loss_vs_m2_89": 0.04481091,
+      "delta_mean_jump_count_vs_m2_89": 5.0,
+      "delta_mean_stitch_precision_ratio_vs_m2_89": 0.00200433
+    }
+  },
+  "promotion_guidance": {
+    "m2_89": "conservative safety baseline",
+    "m2_90": "strong professional-texture selector over existing candidate roots",
+    "m2_91": "experimental professional candidate-generation audit; strongest texture signal so far, but execution cost is higher and underlay failures show it should not be the default production profile yet"
+  }
+}
