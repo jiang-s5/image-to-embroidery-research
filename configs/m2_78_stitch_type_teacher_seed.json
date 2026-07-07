@@ -1,0 +1,65 @@
+{
+  "model_id": "m2_78_stitch_type_teacher_seed",
+  "date": "2026-07-07",
+  "status": "broader_teacher_seed_for_professional_stitch_type_planning",
+  "promoted_output_profile": "m2_74_professional_texture_profile",
+  "tool": "tools/build_stitch_type_teacher_seed.py",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed",
+  "purpose": "Expand stitch-type supervision beyond M2.75 satin-only choices by merging earlier multi-candidate planner oracle data with M2.75 professional texture teacher choices.",
+  "inputs": {
+    "candidate_selector_csv": [
+      "results/public_benchmark_v1_ext33_m2_18_styleaware_selector_v2/candidate_selector_dataset.csv"
+    ],
+    "stitch_type_csv": [
+      "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_candidate_rows.csv"
+    ]
+  },
+  "thresholds": {
+    "max_off_mask_mm": 0.5,
+    "max_visible_connectors": 0.0
+  },
+  "artifacts": {
+    "seed_rows": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_teacher_seed_rows.csv",
+    "positive_teacher_rows": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_positive_teacher_rows.csv",
+    "by_candidate_family": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_seed_by_candidate_family.csv",
+    "by_teacher_family": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_seed_by_teacher_family.csv",
+    "by_source": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_seed_by_source.csv",
+    "summary": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_teacher_seed_summary.json"
+  },
+  "summary": {
+    "candidate_rows": 660,
+    "samples": 33,
+    "positive_teacher_rows": 66,
+    "hard_negative_rows": 274,
+    "candidate_family_counts": {
+      "auto_fill": 95,
+      "running_line": 198,
+      "fill_tatami_like": 66,
+      "outline_border": 33,
+      "style_aware_mixed": 33,
+      "auto_running": 70,
+      "base_keep": 33,
+      "satin_like": 132
+    },
+    "positive_teacher_family_counts": {
+      "running_line": 11,
+      "auto_fill": 10,
+      "fill_tatami_like": 6,
+      "outline_border": 1,
+      "auto_running": 5,
+      "base_keep": 29,
+      "satin_like": 4
+    },
+    "positive_seed_source_counts": {
+      "candidate_selector": 33,
+      "stitch_type_teacher": 33
+    },
+    "mean_positive_unified_loss": 0.0795439,
+    "mean_positive_jump_count": 7.77272727,
+    "mean_positive_trim_count": 2.09090909,
+    "mean_positive_coverage_ratio": 0.92298092,
+    "mean_positive_stitch_precision_ratio": 0.83955482
+  },
+  "interpretation": "M2.78 does not replace M2.74 for DST generation. It creates a broader supervision substrate for a future multi-class stitch-type planner, addressing the M2.77 finding that metric-only texture selection lacks enough independent teacher signal.",
+  "next_step": "Train a source-held-out multi-family stitch-type selector on this seed table and add more real DST/PES-derived satin, fill/tatami, and running segment labels."
+}

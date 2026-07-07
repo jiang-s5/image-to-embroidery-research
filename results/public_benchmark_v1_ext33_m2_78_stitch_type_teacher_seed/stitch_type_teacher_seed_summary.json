@@ -1,0 +1,68 @@
+{
+  "model_id": "m2_78_stitch_type_teacher_seed",
+  "status": "broader_teacher_seed_for_professional_stitch_type_planning",
+  "inputs": {
+    "candidate_selector_csv": [
+      "results\\public_benchmark_v1_ext33_m2_18_styleaware_selector_v2\\candidate_selector_dataset.csv"
+    ],
+    "stitch_type_csv": [
+      "results\\public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset\\stitch_type_candidate_rows.csv"
+    ]
+  },
+  "thresholds": {
+    "max_off_mask_mm": 0.5,
+    "max_visible_connectors": 0.0
+  },
+  "summary": {
+    "candidate_rows": 660,
+    "samples": 33,
+    "source_names": [
+      "OpenMoji",
+      "Openclipart",
+      "QuickDraw",
+      "Rendered text"
+    ],
+    "positive_teacher_rows": 66,
+    "hard_negative_rows": 274,
+    "candidate_family_counts": {
+      "auto_fill": 95,
+      "running_line": 198,
+      "fill_tatami_like": 66,
+      "outline_border": 33,
+      "style_aware_mixed": 33,
+      "auto_running": 70,
+      "base_keep": 33,
+      "satin_like": 132
+    },
+    "teacher_family_counts": {
+      "reject": 270,
+      "running_line": 11,
+      "candidate_non_teacher": 324,
+      "auto_fill": 10,
+      "fill_tatami_like": 6,
+      "outline_border": 1,
+      "auto_running": 5,
+      "base_keep": 29,
+      "satin_like": 4
+    },
+    "positive_teacher_family_counts": {
+      "running_line": 11,
+      "auto_fill": 10,
+      "fill_tatami_like": 6,
+      "outline_border": 1,
+      "auto_running": 5,
+      "base_keep": 29,
+      "satin_like": 4
+    },
+    "positive_seed_source_counts": {
+      "candidate_selector": 33,
+      "stitch_type_teacher": 33
+    },
+    "mean_positive_unified_loss": 0.0795439,
+    "mean_positive_jump_count": 7.77272727,
+    "mean_positive_trim_count": 2.09090909,
+    "mean_positive_coverage_ratio": 0.92298092,
+    "mean_positive_stitch_precision_ratio": 0.83955482
+  },
+  "interpretation": "This seed table expands stitch-type supervision beyond M2.75 satin-only choices. It includes running-line, fill/tatami-like, satin-like, outline, mixed-style, reject, and non-teacher candidate rows so the next selector can learn richer style decisions."
+}

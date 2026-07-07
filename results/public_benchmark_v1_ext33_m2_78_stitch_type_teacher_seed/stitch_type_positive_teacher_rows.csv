@@ -1,0 +1,67 @@
+﻿sample_id,source_name,category,seed_source,candidate,teacher_family,teacher_weight,unified_loss,jump_count,trim_count,coverage_ratio,stitch_precision_ratio,teacher_reason
+ocp_001,Openclipart,flower,candidate_selector,skeleton_c20_m4,running_line,1.0,0.13966756,16.0,1.0,0.488909,0.921707,oracle_choice
+ocp_001,Openclipart,flower,stitch_type_teacher,base_keep,base_keep,1.0,0.08927397,10.0,1.0,0.988461,0.833711,m2_74_teacher_choice
+ocp_002,Openclipart,butterfly,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.09501301,5.0,9.0,0.951705,0.951285,oracle_choice
+ocp_002,Openclipart,butterfly,stitch_type_teacher,base_keep,base_keep,1.0,0.01645384,2.0,0.0,0.971346,0.943255,m2_74_teacher_choice
+ocp_003,Openclipart,cat,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.15668438,14.0,7.0,0.996377,0.935782,oracle_choice
+ocp_003,Openclipart,cat,stitch_type_teacher,base_keep,base_keep,1.0,0.03313396,4.0,0.0,0.995802,0.933175,m2_74_teacher_choice
+ocp_004,Openclipart,koi_fish,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.16071794,13.0,9.0,0.974832,0.947877,oracle_choice
+ocp_004,Openclipart,koi_fish,stitch_type_teacher,base_keep,base_keep,1.0,0.06662868,6.0,1.0,0.998581,0.870697,m2_74_teacher_choice
+ocp_005,Openclipart,public_domain_logo,candidate_selector,mask_fill_rows16_c6,fill_tatami_like,1.0,0.0331172,4.0,0.0,1.0,0.910081,oracle_choice
+ocp_005,Openclipart,public_domain_logo,stitch_type_teacher,dtsatin_safeadt_light,satin_like,1.25,0.03311525,4.0,0.0,1.0,0.9467,m2_74_teacher_choice
+ocp_006,Openclipart,butterfly_2,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.14899964,5.0,18.0,0.966139,0.978372,oracle_choice
+ocp_006,Openclipart,butterfly_2,stitch_type_teacher,base_keep,base_keep,1.0,0.0459051,3.0,0.0,0.988768,0.92991,m2_74_teacher_choice
+ocp_007,Openclipart,sitting_cat,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.08902364,5.0,8.0,0.989164,0.945665,oracle_choice
+ocp_007,Openclipart,sitting_cat,stitch_type_teacher,base_keep,base_keep,1.0,0.0445497,4.0,0.0,1.0,0.874258,m2_74_teacher_choice
+ocp_008,Openclipart,fish,candidate_selector,skeleton_c20_m4,running_line,1.0,0.14736437,17.0,1.0,0.436303,0.907355,oracle_choice
+ocp_008,Openclipart,fish,stitch_type_teacher,base_keep,base_keep,1.0,0.04416606,4.0,0.0,1.0,0.807752,m2_74_teacher_choice
+ocp_009,Openclipart,flower_2,candidate_selector,skeleton_c30_m12,running_line,1.0,0.1547081,18.0,1.0,0.468803,0.873245,oracle_choice
+ocp_009,Openclipart,flower_2,stitch_type_teacher,base_keep,base_keep,1.0,0.02474275,3.0,0.0,0.99727,0.765745,m2_74_teacher_choice
+ocp_010,Openclipart,thought_bubble,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.008,1.0,0.0,0.688911,0.988028,oracle_choice
+ocp_010,Openclipart,thought_bubble,stitch_type_teacher,base_keep,base_keep,1.0,0.008,1.0,0.0,0.688911,0.988028,m2_74_teacher_choice
+omj_001,OpenMoji,heart,candidate_selector,mask_fill_edgewalk_rows16_p40,fill_tatami_like,1.0,0.03952851,3.0,0.0,1.0,0.903244,oracle_choice
+omj_001,OpenMoji,heart,stitch_type_teacher,dtsatin_safeadt_light,satin_like,1.25,0.07242164,8.0,1.0,1.0,0.933213,m2_74_teacher_choice
+omj_002,OpenMoji,star,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.0770139,5.0,6.0,0.998848,0.888211,oracle_choice
+omj_002,OpenMoji,star,stitch_type_teacher,base_keep,base_keep,1.0,0.02469779,3.0,0.0,0.999481,0.897558,m2_74_teacher_choice
+omj_003,OpenMoji,butterfly,candidate_selector,mask_fill_edgewalk_rows16_p40,fill_tatami_like,1.0,0.08646574,9.0,2.0,1.0,0.896875,oracle_choice
+omj_003,OpenMoji,butterfly,stitch_type_teacher,dtsatin_safeadt_light,satin_like,1.25,0.11202611,12.0,2.0,0.998742,0.930547,m2_74_teacher_choice
+omj_004,OpenMoji,fish,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.20026304,12.0,17.0,0.916534,0.890823,oracle_choice
+omj_004,OpenMoji,fish,stitch_type_teacher,base_keep,base_keep,1.0,0.04876926,3.0,0.0,0.997043,0.950702,m2_74_teacher_choice
+omj_005,OpenMoji,sun,candidate_selector,mask_fill_edgewalk_rows16_p40,fill_tatami_like,1.0,0.11168015,12.0,2.0,1.0,0.883462,oracle_choice
+omj_005,OpenMoji,sun,stitch_type_teacher,dtsatin_safeadt_light,satin_like,1.25,0.08080196,9.0,1.0,0.999425,0.911596,m2_74_teacher_choice
+omj_006,OpenMoji,cherry_blossom,candidate_selector,mask_fill_edgewalk_rows16_p40,fill_tatami_like,1.0,0.12026157,7.0,1.0,0.999929,0.848658,oracle_choice
+omj_006,OpenMoji,cherry_blossom,stitch_type_teacher,base_keep,base_keep,1.0,0.0246882,3.0,0.0,0.992683,0.916022,m2_74_teacher_choice
+omj_007,OpenMoji,ribbon,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.25005031,21.0,13.0,0.973955,0.90412,oracle_choice
+omj_007,OpenMoji,ribbon,stitch_type_teacher,base_keep,base_keep,1.0,0.08082922,9.0,1.0,1.0,0.891565,m2_74_teacher_choice
+omj_008,OpenMoji,paw_prints,candidate_selector,mask_fill_edgewalk_outline_ext_in3_rows16_p40,outline_border,1.0,0.12918458,12.0,3.0,1.0,0.771793,oracle_choice
+omj_008,OpenMoji,paw_prints,stitch_type_teacher,base_keep,base_keep,1.0,0.06088992,6.0,0.0,0.99951,0.814631,m2_74_teacher_choice
+omj_009,OpenMoji,lady_beetle,candidate_selector,auto_evalrepair_r10_c20,auto_fill,1.0,0.14656692,12.0,8.0,0.988936,0.89792,oracle_choice
+omj_009,OpenMoji,lady_beetle,stitch_type_teacher,base_keep,base_keep,1.0,0.05602895,6.0,1.0,0.994021,0.927864,m2_74_teacher_choice
+omj_010,OpenMoji,seedling,candidate_selector,auto_evalrepair_r10_c20,auto_running,1.0,0.06401391,7.0,1.0,0.45283,0.889646,oracle_choice
+omj_010,OpenMoji,seedling,stitch_type_teacher,base_keep,base_keep,1.0,0.04749282,5.0,1.0,0.999349,0.751958,m2_74_teacher_choice
+qd_001,QuickDraw,cat,candidate_selector,skeleton_c30_m12,running_line,1.0,0.13687547,15.0,2.0,0.893516,0.661463,oracle_choice
+qd_001,QuickDraw,cat,stitch_type_teacher,base_keep,base_keep,1.0,0.09782929,11.0,1.0,0.947944,0.677754,m2_74_teacher_choice
+qd_002,QuickDraw,dog,candidate_selector,skeleton_c30_m4,running_line,1.0,0.08928397,10.0,1.0,0.968333,0.712526,oracle_choice
+qd_002,QuickDraw,dog,stitch_type_teacher,base_keep,base_keep,1.0,0.07256709,8.0,1.0,0.99175,0.723491,m2_74_teacher_choice
+qd_003,QuickDraw,fish,candidate_selector,auto_evalrepair_r10_c20,auto_running,1.0,0.10351225,11.0,2.0,0.993857,0.643031,oracle_choice
+qd_003,QuickDraw,fish,stitch_type_teacher,base_keep,base_keep,1.0,0.08072917,9.0,1.0,0.999009,0.753738,m2_74_teacher_choice
+qd_004,QuickDraw,flower,candidate_selector,skeleton_c30_m20,running_line,1.0,0.07485846,9.0,0.0,0.885724,0.668972,oracle_choice
+qd_004,QuickDraw,flower,stitch_type_teacher,base_keep,base_keep,1.0,0.07237638,8.0,1.0,0.998644,0.772864,m2_74_teacher_choice
+qd_005,QuickDraw,bicycle,candidate_selector,skeleton_c30_m4,running_line,1.0,0.01639641,2.0,0.0,0.989125,0.661522,oracle_choice
+qd_005,QuickDraw,bicycle,stitch_type_teacher,base_keep,base_keep,1.0,0.01639641,2.0,0.0,0.989125,0.661522,m2_74_teacher_choice
+qd_006,QuickDraw,bird,candidate_selector,skeleton_c30_m8,running_line,1.0,0.08144543,9.0,1.0,0.957422,0.692345,oracle_choice
+qd_006,QuickDraw,bird,stitch_type_teacher,base_keep,base_keep,1.0,0.06429324,7.0,1.0,0.909377,0.672507,m2_74_teacher_choice
+qd_007,QuickDraw,moon,candidate_selector,skeleton_c30_m20,running_line,1.0,0.18653714,21.0,2.0,0.919866,0.661118,oracle_choice
+qd_007,QuickDraw,moon,stitch_type_teacher,base_keep,base_keep,1.0,0.11418719,13.0,1.0,0.999505,0.744259,m2_74_teacher_choice
+qd_008,QuickDraw,star,candidate_selector,auto_evalrepair_r10_c20,auto_running,1.0,0.11241589,12.0,2.0,0.995764,0.67335,oracle_choice
+qd_008,QuickDraw,star,stitch_type_teacher,base_keep,base_keep,1.0,0.03308916,4.0,0.0,0.990681,0.733626,m2_74_teacher_choice
+txt_001,Rendered text,AI,candidate_selector,mask_fill_edgewalk_rows16_p40,fill_tatami_like,1.0,0.008,1.0,0.0,1.0,0.646225,oracle_choice
+txt_001,Rendered text,AI,stitch_type_teacher,base_keep,base_keep,1.0,0.008,1.0,0.0,0.996709,0.836556,m2_74_teacher_choice
+txt_002,Rendered text,DST,candidate_selector,auto_evalrepair_r10_c20,auto_running,1.0,0.04130528,5.0,0.0,0.674542,0.912433,oracle_choice
+txt_002,Rendered text,DST,stitch_type_teacher,base_keep,base_keep,1.0,0.04727158,5.0,1.0,0.972412,0.845305,m2_74_teacher_choice
+txt_003,Rendered text,WKU,candidate_selector,skeleton_c30_m4,running_line,1.0,0.03285763,4.0,0.0,0.609455,0.923899,oracle_choice
+txt_003,Rendered text,WKU,stitch_type_teacher,base_keep,base_keep,1.0,0.03294437,4.0,0.0,0.992627,0.753064,m2_74_teacher_choice
+txt_004,Rendered text,2026,candidate_selector,auto_evalrepair_r10_c20,auto_running,1.0,0.08885311,10.0,1.0,0.651574,0.912042,oracle_choice
+txt_004,Rendered text,2026,stitch_type_teacher,base_keep,base_keep,1.0,0.06417366,7.0,1.0,0.991717,0.832406,m2_74_teacher_choice
+txt_005,Rendered text,HELLO,candidate_selector,skeleton_c30_m4,running_line,1.0,0.05804891,7.0,0.0,0.71109,0.860291,oracle_choice
+txt_005,Rendered text,HELLO,stitch_type_teacher,base_keep,base_keep,1.0,0.14271031,15.0,3.0,0.985405,0.821273,m2_74_teacher_choice

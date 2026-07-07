@@ -1,0 +1,9 @@
+﻿candidate_family,candidate_rows,positive_teacher_rows,hard_negative_rows,positive_teacher_families,mean_positive_unified_loss,mean_positive_coverage_ratio,mean_positive_stitch_precision_ratio
+auto_fill,95,10,25,"{""auto_fill"": 10}",0.13323328,0.9445401,0.9328083
+auto_running,70,5,10,"{""auto_running"": 5}",0.08202009,0.7537134,0.8061004
+base_keep,33,29,2,"{""base_keep"": 29}",0.05389028,0.97848728,0.82500676
+fill_tatami_like,66,6,54,"{""fill_tatami_like"": 6}",0.06650886,0.99998817,0.84809083
+outline_border,33,1,23,"{""outline_border"": 1}",0.12918458,1.0,0.771793
+running_line,198,11,19,"{""running_line"": 11}",0.10164031,0.75714055,0.77676755
+satin_like,132,4,118,"{""satin_like"": 4}",0.07459124,0.99954175,0.930514
+style_aware_mixed,33,0,23,{},0.0,0.0,0.0
