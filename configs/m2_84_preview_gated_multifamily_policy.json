@@ -1,0 +1,47 @@
+{
+  "model_id": "m2_84_preview_gated_multifamily_policy",
+  "date": "2026-07-07",
+  "status": "preview_texture_gated_multifamily_policy",
+  "base_policy": "m2_82_multifamily_candidate_policy",
+  "preview_audit": "m2_83_dst_preview_texture_audit",
+  "baseline_profile": "m2_81_family_policy_texture_profile",
+  "new_tools": [
+    "tools/apply_preview_gated_multifamily_policy.py"
+  ],
+  "inputs": {
+    "baseline_rows": "results/public_benchmark_v1_ext33_m2_81_family_policy_texture_profile/family_policy_selected_rows.csv",
+    "multifamily_rows": "results/public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy/multifamily_selected_rows.csv",
+    "preview_delta_rows": "results/public_benchmark_v1_ext33_m2_83_dst_preview_texture_audit/dst_preview_texture_delta_rows.csv"
+  },
+  "output_dir": "results/public_benchmark_v1_ext33_m2_84_preview_gated_multifamily_policy",
+  "policy": {
+    "min_preview_gain": 0.0,
+    "min_texture_gain": -0.005,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0
+  },
+  "result": {
+    "samples": 33,
+    "preview_gate_switches": 3,
+    "rejected_nonbaseline_sample_ids": [
+      "ocp_005",
+      "omj_003"
+    ],
+    "switch_sample_ids": [
+      "ocp_010",
+      "omj_001",
+      "omj_005"
+    ],
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05639949,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98103933,
+    "mean_stitch_precision_ratio": 0.83779552,
+    "mean_professional_preview_score": 0.73007454,
+    "mean_generator_texture_score": 0.20860606
+  },
+  "interpretation": "M2.84 is a conservative quality-gated policy. It prevents M2.82's command-safe but preview-worse substitutions from replacing the baseline. It does not improve aggregate metrics beyond M2.81, but it adds the correct non-regression gate for professional-looking stitch previews."
+}

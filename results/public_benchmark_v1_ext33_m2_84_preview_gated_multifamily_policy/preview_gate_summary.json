@@ -1,0 +1,141 @@
+{
+  "model_id": "m2_84_preview_gated_multifamily_policy",
+  "baseline_rows": "results\\public_benchmark_v1_ext33_m2_81_family_policy_texture_profile\\family_policy_selected_rows.csv",
+  "multifamily_rows": "results\\public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy\\multifamily_selected_rows.csv",
+  "preview_delta_rows": "results\\public_benchmark_v1_ext33_m2_83_dst_preview_texture_audit\\dst_preview_texture_delta_rows.csv",
+  "policy": {
+    "min_preview_gain": 0.0,
+    "min_texture_gain": -0.005,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0
+  },
+  "selected_summary": {
+    "samples": 33,
+    "preview_gate_switches": 3,
+    "hard_fail": 0,
+    "selected_candidate_counts": {
+      "m2_81_current_profile": 30,
+      "auto_evalrepair_r10_c20": 1,
+      "dtsatin_safeadt_light": 2
+    },
+    "selected_family_counts": {
+      "base_keep": 30,
+      "auto_fill": 1,
+      "satin_like": 2
+    },
+    "mean_unified_loss": 0.05639949,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98103933,
+    "mean_stitch_precision_ratio": 0.83779552,
+    "mean_professional_preview_score": 0.73007454,
+    "mean_generator_texture_score": 0.20860606
+  },
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 10,
+      "preview_gate_switches": 2,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "dtsatin_safeadt_light": 2,
+        "m2_81_current_profile": 8
+      },
+      "selected_family_counts": {
+        "satin_like": 2,
+        "base_keep": 8
+      },
+      "mean_unified_loss": 0.06086459,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 0.7,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9980254,
+      "mean_stitch_precision_ratio": 0.8925656,
+      "mean_professional_preview_score": 0.79495717,
+      "mean_generator_texture_score": 0.377
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 10,
+      "preview_gate_switches": 1,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 9,
+        "auto_evalrepair_r10_c20": 1
+      },
+      "selected_family_counts": {
+        "base_keep": 9,
+        "auto_fill": 1
+      },
+      "mean_unified_loss": 0.04059693,
+      "mean_jump_count": 4.1,
+      "mean_trim_count": 0.2,
+      "mean_off_mask_stitch_length_mm": 0.24293,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9629139,
+      "mean_stitch_precision_ratio": 0.8893231,
+      "mean_professional_preview_score": 0.75655693,
+      "mean_generator_texture_score": 0.1796
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 8,
+      "preview_gate_switches": 0,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 8
+      },
+      "selected_family_counts": {
+        "base_keep": 8
+      },
+      "mean_unified_loss": 0.06893349,
+      "mean_jump_count": 7.75,
+      "mean_trim_count": 0.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97825438,
+      "mean_stitch_precision_ratio": 0.71747012,
+      "mean_professional_preview_score": 0.60014823,
+      "mean_generator_texture_score": 0.092
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 5,
+      "preview_gate_switches": 0,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 5
+      },
+      "selected_family_counts": {
+        "base_keep": 5
+      },
+      "mean_unified_loss": 0.05901998,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.8177208,
+      "mean_professional_preview_score": 0.75522658,
+      "mean_generator_texture_score": 0.1164
+    }
+  ],
+  "switch_sample_ids": [
+    "ocp_010",
+    "omj_001",
+    "omj_005"
+  ],
+  "rejected_nonbaseline_sample_ids": [
+    "ocp_005",
+    "omj_003"
+  ],
+  "rejection_reasons": {
+    "baseline_or_empty_candidate": 28,
+    "preview_score_regression": 2,
+    "preview_gate_pass": 3
+  },
+  "interpretation": "M2.84 keeps M2.82's command-safety path, but adds the M2.83 preview-texture gate so command-safe candidates cannot replace the baseline when their DST-derived preview score or texture-family score regresses."
+}
