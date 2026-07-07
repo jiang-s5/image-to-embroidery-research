@@ -1,0 +1,85 @@
+{
+  "model_id": "m2_86_preview_candidate_sweep_selector",
+  "date": "2026-07-07",
+  "status": "preview_positive_sweep_selector",
+  "base_profile": "m2_81_family_policy_texture_profile",
+  "candidate_pool": "all_existing_ext33_generator_roots_with_command_and_coverage_rows",
+  "preview_metric": "m2_83_dst_preview_texture_audit",
+  "prior_step": "m2_85_preview_aware_candidate_reranker",
+  "new_tools": [
+    "tools/apply_preview_candidate_sweep_selector.py"
+  ],
+  "inputs": {
+    "baseline_rows": "results/public_benchmark_v1_ext33_m2_81_family_policy_texture_profile/family_policy_selected_rows.csv",
+    "results_dir": "results",
+    "include_regex": "(satin|dtsatin|edgewalk|outline|styleaware|mask_fill|nearestrow)",
+    "exclude_regex": "(selector|m2_81|m2_82|m2_83|m2_84|m2_85|eval_masks|repair_veto|geometry_priors)"
+  },
+  "output_dir": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector",
+  "policy": {
+    "min_preview_gain": 0.001,
+    "min_texture_gain": -0.05,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0,
+    "max_loss_increase": 0.01,
+    "max_jump_increase": 2.0,
+    "max_trim_increase": 2.0,
+    "max_coverage_drop": 0.015,
+    "max_precision_drop": 0.03
+  },
+  "candidate_audit": {
+    "candidate_roots": 48,
+    "candidate_sample_dirs": 1584,
+    "audited_candidate_rows": 1584,
+    "positive_preview_rows": 924,
+    "gate_pass_rows": 34,
+    "gate_pass_by_family": {
+      "satin_like": 1,
+      "edgewalk_fill": 33
+    },
+    "gate_reasons": {
+      "loss_increase": 456,
+      "off_mask_increase": 309,
+      "preview_gain_too_small": 675,
+      "preview_sweep_candidate_pass": 34,
+      "texture_regression_too_large": 1,
+      "visible_connector_increase": 27,
+      "precision_drop": 82
+    }
+  },
+  "selected_result": {
+    "samples": 33,
+    "preview_sweep_switches": 7,
+    "switch_sample_ids": [
+      "ocp_005",
+      "ocp_006",
+      "ocp_007",
+      "ocp_008",
+      "omj_007",
+      "omj_010",
+      "qd_001"
+    ],
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05706876,
+    "mean_jump_count": 6.15151515,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.10619091,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98167906,
+    "mean_stitch_precision_ratio": 0.83918282,
+    "mean_professional_preview_score": 0.73544111,
+    "mean_generator_texture_score": 0.22612121
+  },
+  "comparison_to_m2_85": {
+    "mean_professional_preview_score_delta": 0.00496694,
+    "mean_generator_texture_score_delta": 0.01842424,
+    "mean_stitch_precision_ratio_delta": 0.00113885,
+    "mean_coverage_ratio_delta": 0.00063973,
+    "mean_off_mask_stitch_length_mm_delta": -0.01501515,
+    "mean_visible_connector_count_delta": 0.0,
+    "mean_unified_loss_delta": 0.00066927,
+    "mean_jump_count_delta": 0.12121212,
+    "mean_trim_count_delta": 0.0
+  },
+  "interpretation": "M2.86 expands M2.85 from the M2.82 candidate table to all existing ext33 generator roots that have command and coverage rows. It selects 7 preview-positive candidates while keeping hard_fail and visible connectors at zero. The main gain is in DST-derived preview and texture proxy metrics, with a small accepted increase in jump count and unified loss."
+}
