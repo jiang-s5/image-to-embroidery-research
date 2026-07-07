@@ -1,0 +1,105 @@
+{
+  "model_id": "m2_83_dst_preview_texture_audit",
+  "profiles": {
+    "m2_81": "results\\public_benchmark_v1_ext33_m2_81_family_policy_texture_profile",
+    "m2_82": "results\\public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy"
+  },
+  "rows": 66,
+  "delta_rows": 33,
+  "profile_summary": [
+    {
+      "profile": "m2_81",
+      "samples": 33,
+      "mean_professional_preview_score": 0.73007454,
+      "mean_generator_texture_score": 0.20860606,
+      "mean_angle_entropy": 0.49069049,
+      "mean_dominant_angle_mass": 0.61630507,
+      "mean_stitch_density_per_100mm2": 17.25413234,
+      "mean_rhythm_score": 0.60764702,
+      "mean_coverage_ratio": 0.98103933,
+      "mean_stitch_precision_ratio": 0.83779552,
+      "mean_visible_connector_count": 0.0
+    },
+    {
+      "profile": "m2_82",
+      "samples": 33,
+      "mean_professional_preview_score": 0.72976094,
+      "mean_generator_texture_score": 0.19769697,
+      "mean_angle_entropy": 0.49145153,
+      "mean_dominant_angle_mass": 0.61826383,
+      "mean_stitch_density_per_100mm2": 17.35027878,
+      "mean_rhythm_score": 0.60626542,
+      "mean_coverage_ratio": 0.98105379,
+      "mean_stitch_precision_ratio": 0.83837373,
+      "mean_visible_connector_count": 0.0
+    }
+  ],
+  "source_summary": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 20,
+      "mean_professional_preview_score": 0.79456313,
+      "mean_generator_texture_score": 0.375,
+      "mean_angle_entropy": 0.42303462,
+      "mean_dominant_angle_mass": 0.72200984,
+      "mean_stitch_density_per_100mm2": 14.27963587,
+      "mean_rhythm_score": 0.64000851,
+      "mean_coverage_ratio": 0.99804925,
+      "mean_stitch_precision_ratio": 0.89265,
+      "mean_visible_connector_count": 0.0
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 20,
+      "mean_professional_preview_score": 0.75643354,
+      "mean_generator_texture_score": 0.1636,
+      "mean_angle_entropy": 0.39661395,
+      "mean_dominant_angle_mass": 0.72444475,
+      "mean_stitch_density_per_100mm2": 17.85366496,
+      "mean_rhythm_score": 0.62977193,
+      "mean_coverage_ratio": 0.9629139,
+      "mean_stitch_precision_ratio": 0.89019275,
+      "mean_visible_connector_count": 0.0
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 16,
+      "mean_professional_preview_score": 0.60014823,
+      "mean_generator_texture_score": 0.092,
+      "mean_angle_entropy": 0.71030561,
+      "mean_dominant_angle_mass": 0.33292484,
+      "mean_stitch_density_per_100mm2": 18.36480041,
+      "mean_rhythm_score": 0.49737575,
+      "mean_coverage_ratio": 0.97825438,
+      "mean_stitch_precision_ratio": 0.71747012,
+      "mean_visible_connector_count": 0.0
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 10,
+      "mean_professional_preview_score": 0.75522658,
+      "mean_generator_texture_score": 0.1164,
+      "mean_angle_entropy": 0.46528257,
+      "mean_dominant_angle_mass": 0.64848843,
+      "mean_stitch_density_per_100mm2": 20.54427439,
+      "mean_rhythm_score": 0.67054896,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.8177208,
+      "mean_visible_connector_count": 0.0
+    }
+  ],
+  "delta_summary": {
+    "base_profile": "m2_81",
+    "compare_profile": "m2_82",
+    "samples": 33,
+    "mean_delta_professional_preview_score": -0.0003136,
+    "mean_delta_generator_texture_score": -0.01090909,
+    "mean_delta_coverage_ratio": 1.445e-05,
+    "mean_delta_stitch_precision_ratio": 0.00057821,
+    "mean_delta_visible_connector_count": 0.0,
+    "mean_delta_off_mask_stitch_length_mm": 0.0,
+    "improved_preview_samples": 0,
+    "worse_preview_samples": 2
+  },
+  "interpretation": "This audit reads DST stitches directly and adds a preview-texture proxy score. It is a diagnostic evaluator, not a replacement for human stitch-preview review or professional digitizer ground truth."
+}

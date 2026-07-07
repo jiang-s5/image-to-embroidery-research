@@ -1,0 +1,42 @@
+{
+  "model_id": "m2_83_dst_preview_texture_audit",
+  "date": "2026-07-07",
+  "status": "diagnostic_dst_preview_texture_evaluator",
+  "base_profiles": {
+    "m2_81": "results/public_benchmark_v1_ext33_m2_81_family_policy_texture_profile",
+    "m2_82": "results/public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy"
+  },
+  "new_tools": [
+    "tools/audit_dst_preview_texture.py"
+  ],
+  "output_dir": "results/public_benchmark_v1_ext33_m2_83_dst_preview_texture_audit",
+  "outputs": [
+    "dst_preview_texture_rows.csv",
+    "dst_preview_texture_delta_rows.csv",
+    "dst_preview_texture_summary.json"
+  ],
+  "preview_outputs": {
+    "local_only": true,
+    "path": "results/public_benchmark_v1_ext33_m2_83_dst_preview_texture_audit/previews",
+    "reason": "Generated PNG previews are useful for local review but are not required for the reproducible numeric audit."
+  },
+  "metrics": {
+    "professional_preview_score": "Weighted proxy from coverage/precision, stitch density, stitch-length rhythm, directional structure, generator texture family score, and command safety.",
+    "angle_entropy": "Normalized entropy of stitch orientations modulo 180 degrees.",
+    "dominant_angle_mass": "Share of stitches in the dominant orientation bin.",
+    "stitch_density_per_100mm2": "DST stitch segment density normalized by pattern bounding-box area.",
+    "rhythm_score": "Penalty-based score for irregular stitch length distribution.",
+    "generator_texture_score": "Existing texture-family proxy from fill rows, outline points, satin columns, satin rail, DT satin, and style running points."
+  },
+  "result": {
+    "m2_81_mean_professional_preview_score": 0.73007454,
+    "m2_82_mean_professional_preview_score": 0.72976094,
+    "mean_delta_professional_preview_score": -0.0003136,
+    "mean_delta_generator_texture_score": -0.01090909,
+    "mean_delta_coverage_ratio": 0.00001445,
+    "mean_delta_stitch_precision_ratio": 0.00057821,
+    "improved_preview_samples": 0,
+    "worse_preview_samples": 2
+  },
+  "interpretation": "M2.83 shows that M2.82's command-safe multi-family substitutions do not improve the DST-derived preview texture proxy. This supports adding preview-texture gating before promoting future multi-family outputs."
+}
