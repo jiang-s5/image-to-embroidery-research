@@ -1,0 +1,188 @@
+{
+  "model_id": "m2_85_preview_aware_candidate_reranker",
+  "baseline_rows": "results\\public_benchmark_v1_ext33_m2_81_family_policy_texture_profile\\family_policy_selected_rows.csv",
+  "decision_rows": "results\\public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy\\multifamily_decision_rows.csv",
+  "policy": {
+    "min_preview_gain": 0.001,
+    "min_texture_gain": -0.05,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0,
+    "max_loss_increase": 0.01,
+    "max_jump_increase": 2.0,
+    "max_trim_increase": 2.0,
+    "max_coverage_drop": 0.015,
+    "max_precision_drop": 0.03
+  },
+  "candidate_audit": {
+    "audited_nonbaseline_rows": 627,
+    "gate_pass_rows": 1,
+    "positive_preview_rows": 219,
+    "gate_reasons": {
+      "m2_82_policy_failed": 606,
+      "preview_aware_candidate_pass": 1,
+      "preview_gain_too_small": 20
+    },
+    "gate_pass_by_family": {
+      "satin_like": 1
+    }
+  },
+  "selected_summary": {
+    "samples": 33,
+    "preview_aware_switches": 1,
+    "hard_fail": 0,
+    "selected_candidate_counts": {
+      "m2_81_current_profile": 32,
+      "satinrail_safeadt_light": 1
+    },
+    "selected_family_counts": {
+      "base_keep": 32,
+      "satin_like": 1
+    },
+    "mean_unified_loss": 0.05639949,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98103933,
+    "mean_stitch_precision_ratio": 0.83804397,
+    "mean_professional_preview_score": 0.73047417,
+    "mean_generator_texture_score": 0.20769697,
+    "mean_angle_entropy": 0.49281109,
+    "mean_dominant_angle_mass": 0.61737011,
+    "mean_stitch_density_per_100mm2": 17.30964717,
+    "mean_rhythm_score": 0.60713455,
+    "mean_coverage_score": 0.91942587,
+    "mean_density_score": 0.94710502,
+    "mean_directional_score": 0.65669177,
+    "mean_family_texture_score_norm": 0.22739394,
+    "mean_safety_score": 0.96727285
+  },
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 10,
+      "preview_aware_switches": 0,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 10
+      },
+      "selected_family_counts": {
+        "base_keep": 10
+      },
+      "mean_unified_loss": 0.06086459,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 0.7,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9980254,
+      "mean_stitch_precision_ratio": 0.8925656,
+      "mean_professional_preview_score": 0.79495717,
+      "mean_generator_texture_score": 0.377,
+      "mean_angle_entropy": 0.42222687,
+      "mean_dominant_angle_mass": 0.72278068,
+      "mean_stitch_density_per_100mm2": 14.21839683,
+      "mean_rhythm_score": 0.64098871,
+      "mean_coverage_score": 0.9580933,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.75361859,
+      "mean_family_texture_score_norm": 0.3728,
+      "mean_safety_score": 0.996859
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 10,
+      "preview_aware_switches": 1,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 9,
+        "satinrail_safeadt_light": 1
+      },
+      "selected_family_counts": {
+        "base_keep": 9,
+        "satin_like": 1
+      },
+      "mean_unified_loss": 0.04059693,
+      "mean_jump_count": 4.1,
+      "mean_trim_count": 0.2,
+      "mean_off_mask_stitch_length_mm": 0.24293,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9629139,
+      "mean_stitch_precision_ratio": 0.890143,
+      "mean_professional_preview_score": 0.75787571,
+      "mean_generator_texture_score": 0.1766,
+      "mean_angle_entropy": 0.40316395,
+      "mean_dominant_angle_mass": 0.72395662,
+      "mean_stitch_density_per_100mm2": 17.93946132,
+      "mean_rhythm_score": 0.62938023,
+      "mean_coverage_score": 0.93166585,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.77528327,
+      "mean_family_texture_score_norm": 0.20186667,
+      "mean_safety_score": 0.8951414
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 8,
+      "preview_aware_switches": 0,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 8
+      },
+      "selected_family_counts": {
+        "base_keep": 8
+      },
+      "mean_unified_loss": 0.06893349,
+      "mean_jump_count": 7.75,
+      "mean_trim_count": 0.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97825438,
+      "mean_stitch_precision_ratio": 0.71747012,
+      "mean_professional_preview_score": 0.60014823,
+      "mean_generator_texture_score": 0.092,
+      "mean_angle_entropy": 0.71030561,
+      "mean_dominant_angle_mass": 0.33292484,
+      "mean_stitch_density_per_100mm2": 18.36480041,
+      "mean_rhythm_score": 0.49737575,
+      "mean_coverage_score": 0.86090146,
+      "mean_density_score": 0.78180819,
+      "mean_directional_score": 0.33821425,
+      "mean_family_texture_score_norm": 0.12266667,
+      "mean_safety_score": 1.0
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 5,
+      "preview_aware_switches": 0,
+      "hard_fail": 0,
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 5
+      },
+      "selected_family_counts": {
+        "base_keep": 5
+      },
+      "mean_unified_loss": 0.05901998,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.8177208,
+      "mean_professional_preview_score": 0.75522658,
+      "mean_generator_texture_score": 0.1164,
+      "mean_angle_entropy": 0.46528257,
+      "mean_dominant_angle_mass": 0.64848843,
+      "mean_stitch_density_per_100mm2": 20.54427439,
+      "mean_rhythm_score": 0.67054896,
+      "mean_coverage_score": 0.91125006,
+      "mean_density_score": 1.0,
+      "mean_directional_score": 0.73521916,
+      "mean_family_texture_score_norm": 0.1552,
+      "mean_safety_score": 1.0
+    }
+  ],
+  "switch_sample_ids": [
+    "ocp_005"
+  ],
+  "interpretation": "M2.85 audits the broader M2.82 candidate pool with M2.83's DST-derived preview texture score and selects only candidates with positive preview gains plus command-safety gates."
+}

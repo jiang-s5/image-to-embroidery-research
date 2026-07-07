@@ -1,0 +1,71 @@
+{
+  "model_id": "m2_85_preview_aware_candidate_reranker",
+  "date": "2026-07-07",
+  "status": "preview_positive_candidate_reranker",
+  "base_profile": "m2_81_family_policy_texture_profile",
+  "candidate_pool": "m2_82_multifamily_candidate_policy",
+  "preview_metric": "m2_83_dst_preview_texture_audit",
+  "guardrail": "m2_84_preview_gated_multifamily_policy",
+  "new_tools": [
+    "tools/apply_preview_aware_candidate_reranker.py"
+  ],
+  "inputs": {
+    "baseline_rows": "results/public_benchmark_v1_ext33_m2_81_family_policy_texture_profile/family_policy_selected_rows.csv",
+    "decision_rows": "results/public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy/multifamily_decision_rows.csv"
+  },
+  "output_dir": "results/public_benchmark_v1_ext33_m2_85_preview_aware_candidate_reranker",
+  "policy": {
+    "min_preview_gain": 0.001,
+    "min_texture_gain": -0.05,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0,
+    "max_loss_increase": 0.01,
+    "max_jump_increase": 2.0,
+    "max_trim_increase": 2.0,
+    "max_coverage_drop": 0.015,
+    "max_precision_drop": 0.03
+  },
+  "candidate_audit": {
+    "audited_nonbaseline_rows": 627,
+    "positive_preview_rows": 219,
+    "gate_pass_rows": 1,
+    "gate_pass_by_family": {
+      "satin_like": 1
+    },
+    "gate_reasons": {
+      "m2_82_policy_failed": 606,
+      "preview_gain_too_small": 20,
+      "preview_aware_candidate_pass": 1
+    }
+  },
+  "selected_result": {
+    "samples": 33,
+    "preview_aware_switches": 1,
+    "switch_sample_ids": [
+      "ocp_005"
+    ],
+    "selected_candidate": "satinrail_safeadt_light",
+    "selected_family": "satin_like",
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05639949,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98103933,
+    "mean_stitch_precision_ratio": 0.83804397,
+    "mean_professional_preview_score": 0.73047417,
+    "mean_generator_texture_score": 0.20769697
+  },
+  "comparison_to_m2_84": {
+    "mean_professional_preview_score_delta": 0.00039963,
+    "mean_stitch_precision_ratio_delta": 0.00024845,
+    "mean_generator_texture_score_delta": -0.00090909,
+    "mean_unified_loss_delta": 0.0,
+    "mean_jump_count_delta": 0.0,
+    "mean_trim_count_delta": 0.0,
+    "mean_off_mask_stitch_length_mm_delta": 0.0,
+    "mean_visible_connector_count_delta": 0.0
+  },
+  "interpretation": "M2.85 is the first preview-positive reranker in this line. It searches the broader M2.82 candidate pool using the M2.83 DST-derived preview score and finds one command-safe candidate with a positive preview gain. The gain is small but real, and it does not increase command-level risk."
+}
