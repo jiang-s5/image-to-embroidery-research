@@ -1,0 +1,167 @@
+{
+  "model_id": "m2_82_multifamily_candidate_policy",
+  "seed_rows": "results\\public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed\\stitch_type_teacher_seed_rows.csv",
+  "baseline_rows": "results\\public_benchmark_v1_ext33_m2_81_family_policy_texture_profile\\family_policy_selected_rows.csv",
+  "selector_model": "results\\public_benchmark_v1_ext33_m2_81_professional_gate_selector\\stitch_family_selector_model.json",
+  "candidate_pool_config": "configs\\best_current_model_m2_12_maskfill_selector.json",
+  "policy": {
+    "min_risky_margin": 0.2,
+    "min_policy_score": 0.05,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0,
+    "max_loss_increase": 0.01,
+    "max_jump_increase": 2.0,
+    "max_trim_increase": 2.0,
+    "max_coverage_drop": 0.015,
+    "max_precision_drop": 0.03
+  },
+  "candidate_audit": {
+    "decision_rows": 660,
+    "executable_candidate_rows": 660,
+    "policy_pass_rows": 52,
+    "promotable_nonbaseline_rows": 19,
+    "executable_by_family": {
+      "auto_fill": 95,
+      "running_line": 198,
+      "fill_tatami_like": 66,
+      "outline_border": 33,
+      "style_aware_mixed": 33,
+      "base_keep": 33,
+      "satin_like": 132,
+      "auto_running": 70
+    },
+    "policy_pass_by_family": {
+      "base_keep": 31,
+      "satin_like": 14,
+      "auto_fill": 5,
+      "running_line": 2
+    },
+    "rejection_reasons": {
+      "family_rejected": 267,
+      "loss_increase": 234,
+      "safe_multifamily_candidate": 52,
+      "coverage_drop": 71,
+      "precision_drop": 10,
+      "off_mask_increase": 17,
+      "trim_increase": 7,
+      "jump_increase": 2
+    }
+  },
+  "selected_summary": {
+    "samples": 33,
+    "policy_switches": 5,
+    "hard_fail": 0,
+    "selected_family_counts": {
+      "base_keep": 28,
+      "satin_like": 4,
+      "auto_fill": 1
+    },
+    "selected_candidate_counts": {
+      "m2_81_current_profile": 28,
+      "satinrail_w5_s16_i5_cap45": 1,
+      "auto_evalrepair_r10_c20": 1,
+      "dtsatin_safeadt_light": 2,
+      "satinrail_safeadt_light": 1
+    },
+    "mean_unified_loss": 0.05640053,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98105379,
+    "mean_stitch_precision_ratio": 0.83837373
+  },
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 10,
+      "policy_switches": 3,
+      "hard_fail": 0,
+      "selected_family_counts": {
+        "satin_like": 3,
+        "base_keep": 7
+      },
+      "selected_candidate_counts": {
+        "dtsatin_safeadt_light": 2,
+        "m2_81_current_profile": 7,
+        "satinrail_safeadt_light": 1
+      },
+      "mean_unified_loss": 0.06086804,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 0.7,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9980731,
+      "mean_stitch_precision_ratio": 0.8927344
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 10,
+      "policy_switches": 2,
+      "hard_fail": 0,
+      "selected_family_counts": {
+        "base_keep": 8,
+        "satin_like": 1,
+        "auto_fill": 1
+      },
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 8,
+        "satinrail_w5_s16_i5_cap45": 1,
+        "auto_evalrepair_r10_c20": 1
+      },
+      "mean_unified_loss": 0.04059693,
+      "mean_jump_count": 4.1,
+      "mean_trim_count": 0.2,
+      "mean_off_mask_stitch_length_mm": 0.24293,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9629139,
+      "mean_stitch_precision_ratio": 0.8910624
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 8,
+      "policy_switches": 0,
+      "hard_fail": 0,
+      "selected_family_counts": {
+        "base_keep": 8
+      },
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 8
+      },
+      "mean_unified_loss": 0.06893349,
+      "mean_jump_count": 7.75,
+      "mean_trim_count": 0.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97825438,
+      "mean_stitch_precision_ratio": 0.71747012
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 5,
+      "policy_switches": 0,
+      "hard_fail": 0,
+      "selected_family_counts": {
+        "base_keep": 5
+      },
+      "selected_candidate_counts": {
+        "m2_81_current_profile": 5
+      },
+      "mean_unified_loss": 0.05901998,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.8177208
+    }
+  ],
+  "switched_sample_ids": [
+    "ocp_005",
+    "ocp_010",
+    "omj_001",
+    "omj_003",
+    "omj_005"
+  ],
+  "interpretation": "M2.82 audits a broader executable multi-family candidate pool and only promotes candidates that pass learned family deployment plus conservative command-level gates."
+}

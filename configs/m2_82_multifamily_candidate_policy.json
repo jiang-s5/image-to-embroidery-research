@@ -1,0 +1,83 @@
+{
+  "model_id": "m2_82_multifamily_candidate_policy",
+  "date": "2026-07-07",
+  "status": "experimental_multifamily_executable_candidate_policy",
+  "base_profile": "m2_81_family_policy_texture_profile",
+  "base_learned_control_layer": "m2_81_professional_gate_selector",
+  "new_tools": [
+    "tools/apply_multifamily_executable_candidate_policy.py"
+  ],
+  "inputs": {
+    "teacher_seed_rows": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_teacher_seed_rows.csv",
+    "baseline_rows": "results/public_benchmark_v1_ext33_m2_81_family_policy_texture_profile/family_policy_selected_rows.csv",
+    "selector_model": "results/public_benchmark_v1_ext33_m2_81_professional_gate_selector/stitch_family_selector_model.json",
+    "candidate_pool_config": "configs/best_current_model_m2_12_maskfill_selector.json",
+    "texture_candidate_rows": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_candidate_rows.csv"
+  },
+  "output_dir": "results/public_benchmark_v1_ext33_m2_82_multifamily_candidate_policy",
+  "policy": {
+    "min_risky_margin": 0.2,
+    "min_policy_score": 0.05,
+    "max_visible_increase": 0.0,
+    "max_off_mask_increase": 0.0,
+    "max_loss_increase": 0.01,
+    "max_jump_increase": 2.0,
+    "max_trim_increase": 2.0,
+    "max_coverage_drop": 0.015,
+    "max_precision_drop": 0.03,
+    "note": "Only non-base candidates are allowed to replace the M2.81 baseline. base_keep is retained as fallback and is not counted as a policy switch."
+  },
+  "candidate_audit": {
+    "decision_rows": 660,
+    "executable_candidate_rows": 660,
+    "policy_pass_rows": 52,
+    "promotable_nonbaseline_rows": 19,
+    "policy_pass_by_family": {
+      "base_keep": 31,
+      "satin_like": 14,
+      "auto_fill": 5,
+      "running_line": 2
+    }
+  },
+  "selected_profile_metrics": {
+    "samples": 33,
+    "policy_switches": 5,
+    "hard_fail": 0,
+    "selected_family_counts": {
+      "base_keep": 28,
+      "satin_like": 4,
+      "auto_fill": 1
+    },
+    "selected_candidate_counts": {
+      "m2_81_current_profile": 28,
+      "satinrail_w5_s16_i5_cap45": 1,
+      "auto_evalrepair_r10_c20": 1,
+      "dtsatin_safeadt_light": 2,
+      "satinrail_safeadt_light": 1
+    },
+    "switched_sample_ids": [
+      "ocp_005",
+      "ocp_010",
+      "omj_001",
+      "omj_003",
+      "omj_005"
+    ],
+    "mean_unified_loss": 0.05640053,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98105379,
+    "mean_stitch_precision_ratio": 0.83837373
+  },
+  "comparison_to_m2_81": {
+    "mean_unified_loss_delta": 0.00000104,
+    "mean_jump_count_delta": 0.0,
+    "mean_trim_count_delta": 0.0,
+    "mean_off_mask_stitch_length_mm_delta": 0.0,
+    "mean_visible_connector_count_delta": 0.0,
+    "mean_coverage_ratio_delta": 0.00001446,
+    "mean_stitch_precision_ratio_delta": 0.00057821
+  },
+  "interpretation": "M2.82 safely expands M2.81 from a texture-only learned-control layer into a broader executable multi-family candidate audit. It produces five non-base switches without increasing hard failures, jumps, trims, visible connectors, or off-mask length, but the aggregate improvement is still very small. Treat it as the latest experimental candidate rather than a final professional digitizer."
+}
