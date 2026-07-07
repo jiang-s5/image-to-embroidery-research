@@ -1,0 +1,13 @@
+﻿min_risky_margin,risk_families,accuracy,positive_accuracy,nonbase_positive_accuracy,reject_recall,false_texture_promotions,accuracy_delta_vs_raw,reject_recall_delta_vs_raw,false_texture_delta_vs_raw
+0.0,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.75595238,0.83333333,0.7027027,0.73703704,4,0.0,0.0,0
+0.02,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.77678571,0.83333333,0.7027027,0.76296296,3,0.02083333,0.02592592,-1
+0.05,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.80059524,0.81818182,0.67567568,0.7962963,1,0.04464286,0.05925926,-3
+0.08,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.80059524,0.81818182,0.67567568,0.7962963,1,0.04464286,0.05925926,-3
+0.1,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.80654762,0.81818182,0.67567568,0.8037037,0,0.05059524,0.06666666,-4
+0.12,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.82142857,0.81818182,0.67567568,0.82222222,0,0.06547619,0.08518518,-4
+0.15,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.82142857,0.81818182,0.67567568,0.82222222,0,0.06547619,0.08518518,-4
+0.2,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.8422619,0.81818182,0.67567568,0.84814815,0,0.08630952,0.11111111,-4
+0.25,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.86011905,0.8030303,0.64864865,0.87407407,0,0.10416667,0.13703703,-4
+0.3,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.86011905,0.78787879,0.62162162,0.87777778,0,0.10416667,0.14074074,-4
+0.4,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.87202381,0.77272727,0.59459459,0.8962963,0,0.11607143,0.15925926,-4
+0.5,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.86011905,0.71212121,0.48648649,0.8962963,0,0.10416667,0.15925926,-4

@@ -94,10 +94,15 @@ def feature_schema(
     include_source_name: bool,
     include_candidate_name: bool,
     include_gate_features: bool,
+    include_professional_gate_feature: bool,
 ) -> tuple[list[str], dict[str, list[str]], list[str]]:
     numeric = list(NUMERIC_FEATURES)
+    if include_professional_gate_feature and "allowed_by_professional_gate" not in numeric:
+        numeric.append("allowed_by_professional_gate")
     if include_gate_features:
-        numeric.extend(["allowed_by_professional_gate", "teacher_is_texture_switch"])
+        for key in ("allowed_by_professional_gate", "teacher_is_texture_switch"):
+            if key not in numeric:
+                numeric.append(key)
 
     categorical_keys = list(CATEGORICAL_FEATURES)
     if include_source_name:
@@ -342,6 +347,7 @@ def main() -> int:
     parser.add_argument("--reject-margin", type=float, default=0.0)
     parser.add_argument("--include-source-name", action="store_true")
     parser.add_argument("--include-candidate-name", action="store_true")
+    parser.add_argument("--include-professional-gate-feature", action="store_true")
     parser.add_argument("--include-gate-features", action="store_true")
     args = parser.parse_args()
 
@@ -351,6 +357,7 @@ def main() -> int:
         rows,
         include_source_name=args.include_source_name,
         include_candidate_name=args.include_candidate_name,
+        include_professional_gate_feature=args.include_professional_gate_feature,
         include_gate_features=args.include_gate_features,
     )
     predictions, fold_rows = source_held_out_predictions(
@@ -379,6 +386,7 @@ def main() -> int:
         "reject_margin": args.reject_margin,
         "include_source_name": args.include_source_name,
         "include_candidate_name": args.include_candidate_name,
+        "include_professional_gate_feature": args.include_professional_gate_feature,
         "include_gate_features": args.include_gate_features,
         "holdout_column": args.holdout_column,
         "source_held_out": summarize_predictions(predictions),
@@ -397,6 +405,7 @@ def main() -> int:
     model["holdout_column"] = args.holdout_column
     model["include_source_name"] = args.include_source_name
     model["include_candidate_name"] = args.include_candidate_name
+    model["include_professional_gate_feature"] = args.include_professional_gate_feature
     model["include_gate_features"] = args.include_gate_features
     model["reject_margin"] = args.reject_margin
     write_json(model, output_dir / "stitch_family_selector_model.json")

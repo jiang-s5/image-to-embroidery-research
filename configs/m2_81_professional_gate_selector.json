@@ -1,0 +1,70 @@
+{
+  "model_id": "m2_81_professional_gate_selector",
+  "date": "2026-07-07",
+  "status": "professional_gate_aware_family_selector_and_texture_profile_application",
+  "base_selector": "m2_79_stitch_family_selector_rejectw4",
+  "base_deployment_policy": "m2_80_stitch_family_deployment_policy",
+  "promoted_output_profile": "m2_74_professional_texture_profile",
+  "new_tools": [
+    "tools/train_stitch_family_selector.py",
+    "tools/apply_stitch_family_policy_texture_profile.py"
+  ],
+  "selector_training": {
+    "seed_rows": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_teacher_seed_rows.csv",
+    "output_dir": "results/public_benchmark_v1_ext33_m2_81_professional_gate_selector",
+    "alpha": 1.0,
+    "reject_weight": 4.0,
+    "holdout_column": "source_name",
+    "include_professional_gate_feature": true,
+    "include_gate_features": false,
+    "note": "Uses allowed_by_professional_gate only. It does not use teacher_is_texture_switch, avoiding label leakage."
+  },
+  "deployment_policy": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_81_professional_gate_deployment_policy",
+    "min_risky_margin": 0.2,
+    "risk_families": [
+      "running_line",
+      "auto_running",
+      "auto_fill",
+      "fill_tatami_like",
+      "satin_like",
+      "outline_border"
+    ]
+  },
+  "actual_texture_profile_application": {
+    "candidate_rows": "results/public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset/stitch_type_candidate_rows.csv",
+    "output_dir": "results/public_benchmark_v1_ext33_m2_81_family_policy_texture_profile",
+    "copied_dst_outputs_match_m2_74": true,
+    "sha256_dst_diffs_vs_m2_74": 0
+  },
+  "source_heldout_result": {
+    "m2_80_deployment_policy": {
+      "accuracy": 0.8422619,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.86296296,
+      "false_texture_promotions": 0
+    },
+    "m2_81_professional_gate_deployment_policy": {
+      "accuracy": 0.8422619,
+      "positive_accuracy": 0.81818182,
+      "nonbase_positive_accuracy": 0.67567568,
+      "reject_recall": 0.84814815,
+      "false_texture_promotions": 0
+    }
+  },
+  "actual_profile_metrics": {
+    "samples": 33,
+    "texture_switches": 4,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05639949,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98103933,
+    "mean_stitch_precision_ratio": 0.83779552,
+    "mean_texture_score": 0.20860606
+  },
+  "interpretation": "M2.81 keeps M2.80's zero false-texture deployment behavior while recovering much more non-base positive recall. It also preserves the actual M2.74 professional DST outputs, proving that the learned gate can support the current promoted texture profile without destabilizing it."
+}

@@ -1,0 +1,114 @@
+{
+  "model_id": "m2_81_family_policy_texture_profile",
+  "candidate_rows": "results\\public_benchmark_v1_ext33_m2_75_stitch_type_teacher_dataset\\stitch_type_candidate_rows.csv",
+  "selector_model": "results\\public_benchmark_v1_ext33_m2_81_professional_gate_selector\\stitch_family_selector_model.json",
+  "min_risky_margin": 0.2,
+  "summary": {
+    "samples": 33,
+    "texture_switches": 4,
+    "hard_fail": 0,
+    "mean_unified_loss": 0.05639949,
+    "mean_jump_count": 6.03030303,
+    "mean_trim_count": 0.60606061,
+    "mean_off_mask_stitch_length_mm": 0.12120606,
+    "mean_visible_connector_count": 0.0,
+    "mean_coverage_ratio": 0.98103933,
+    "mean_stitch_precision_ratio": 0.83779552,
+    "mean_texture_score": 0.20860606
+  },
+  "by_source": [
+    {
+      "source_name": "OpenMoji",
+      "samples": 10,
+      "texture_switches": 3,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.06086459,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 0.7,
+      "mean_off_mask_stitch_length_mm": 0.15705,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9980254,
+      "mean_stitch_precision_ratio": 0.8925656,
+      "mean_texture_score": 0.377
+    },
+    {
+      "source_name": "Openclipart",
+      "samples": 10,
+      "texture_switches": 1,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.04059693,
+      "mean_jump_count": 4.1,
+      "mean_trim_count": 0.2,
+      "mean_off_mask_stitch_length_mm": 0.24293,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.9629139,
+      "mean_stitch_precision_ratio": 0.8893231,
+      "mean_texture_score": 0.1796
+    },
+    {
+      "source_name": "QuickDraw",
+      "samples": 8,
+      "texture_switches": 0,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.06893349,
+      "mean_jump_count": 7.75,
+      "mean_trim_count": 0.75,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97825438,
+      "mean_stitch_precision_ratio": 0.71747012,
+      "mean_texture_score": 0.092
+    },
+    {
+      "source_name": "Rendered text",
+      "samples": 5,
+      "texture_switches": 0,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.05901998,
+      "mean_jump_count": 6.4,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.987774,
+      "mean_stitch_precision_ratio": 0.8177208,
+      "mean_texture_score": 0.1164
+    }
+  ],
+  "by_candidate_kind": [
+    {
+      "candidate_kind": "base_keep",
+      "samples": 29,
+      "texture_switches": 0,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.05389028,
+      "mean_jump_count": 5.72413793,
+      "mean_trim_count": 0.55172414,
+      "mean_off_mask_stitch_length_mm": 0.13792414,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.97848728,
+      "mean_stitch_precision_ratio": 0.82500676,
+      "mean_texture_score": 0.09062069
+    },
+    {
+      "candidate_kind": "dt_satin",
+      "samples": 4,
+      "texture_switches": 4,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.07459124,
+      "mean_jump_count": 8.25,
+      "mean_trim_count": 1.0,
+      "mean_off_mask_stitch_length_mm": 0.0,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.99954175,
+      "mean_stitch_precision_ratio": 0.930514,
+      "mean_texture_score": 1.064
+    }
+  ],
+  "texture_switch_sample_ids": [
+    "ocp_005",
+    "omj_001",
+    "omj_003",
+    "omj_005"
+  ],
+  "interpretation": "This is the first actual texture-profile application of the learned stitch-family selector plus deployment gate."
+}
