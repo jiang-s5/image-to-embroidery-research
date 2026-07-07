@@ -54,6 +54,8 @@ M2.75 adds the first stitch-type teacher dataset for the next learned planner. I
 
 M2.76 adds the first learned stitch-type selector prototype on top of M2.75. The gate-assisted leave-one-out selector reproduces M2.74 choices exactly on 33 public benchmark images, but metric-only variants recover only one of four texture promotions. This means M2.76 is a useful learned-selector bridge and diagnostic result, while M2.74 remains the promoted DST output profile. See [docs/m2_76_learned_stitch_type_selector.md](docs/m2_76_learned_stitch_type_selector.md).
 
+M2.77 adds source-held-out validation for the stitch-type selector. It holds out whole source families instead of individual samples. The gate-assisted selector still reproduces M2.74 exactly, but metric-only source-held-out variants recover `0/4` texture promotions and the no-gate variant over-promotes texture on unsafe sources. This confirms that current professional stitch-type selection still depends on gate-derived supervision and needs more real DST/PES stitch-type teacher data before it should replace M2.74. See [docs/m2_77_source_heldout_stitch_type_selector.md](docs/m2_77_source_heldout_stitch_type_selector.md).
+
 See [MODEL_CARD.md](MODEL_CARD.md) for metrics and checkpoint notes.
 
 ## Research Contributions

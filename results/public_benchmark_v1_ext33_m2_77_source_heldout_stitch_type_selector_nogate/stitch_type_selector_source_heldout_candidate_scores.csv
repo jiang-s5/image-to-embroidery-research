@@ -1,0 +1,166 @@
+﻿validation_mode,heldout_group,heldout_sample_id,sample_id,candidate,candidate_kind,is_teacher_choice,selector_score,blocked_by_professional_gate,allowed_by_professional_gate
+source_held_out,OpenMoji,omj_001,omj_001,base_keep,base_keep,0,2.50002452,0,1
+source_held_out,OpenMoji,omj_001,omj_001,satinrail_safeadt_light,satin_rail,0,-1.60304924,0,1
+source_held_out,OpenMoji,omj_001,omj_001,dtsatin_safeadt_light,dt_satin,1,-0.80832097,0,1
+source_held_out,OpenMoji,omj_001,omj_001,satinrail_w4_s18_i4_cap40,satin_rail,0,-1.63864743,0,0
+source_held_out,OpenMoji,omj_001,omj_001,satinrail_w5_s16_i5_cap45,satin_rail,0,-1.62978295,0,1
+source_held_out,OpenMoji,omj_002,omj_002,base_keep,base_keep,1,0.74786495,0,1
+source_held_out,OpenMoji,omj_002,omj_002,satinrail_safeadt_light,satin_rail,0,-0.47446955,0,0
+source_held_out,OpenMoji,omj_002,omj_002,dtsatin_safeadt_light,dt_satin,0,0.20082718,0,0
+source_held_out,OpenMoji,omj_002,omj_002,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.50795057,0,0
+source_held_out,OpenMoji,omj_002,omj_002,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.49792988,0,0
+source_held_out,OpenMoji,omj_003,omj_003,base_keep,base_keep,0,0.89867212,0,1
+source_held_out,OpenMoji,omj_003,omj_003,satinrail_safeadt_light,satin_rail,0,-0.13818145,0,1
+source_held_out,OpenMoji,omj_003,omj_003,dtsatin_safeadt_light,dt_satin,1,0.41705952,0,1
+source_held_out,OpenMoji,omj_003,omj_003,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.29973962,0,0
+source_held_out,OpenMoji,omj_003,omj_003,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.16921209,0,1
+source_held_out,OpenMoji,omj_004,omj_004,base_keep,base_keep,1,0.70071848,0,1
+source_held_out,OpenMoji,omj_004,omj_004,satinrail_safeadt_light,satin_rail,0,0.10271151,0,0
+source_held_out,OpenMoji,omj_004,omj_004,dtsatin_safeadt_light,dt_satin,0,0.8005925,0,0
+source_held_out,OpenMoji,omj_004,omj_004,satinrail_w4_s18_i4_cap40,satin_rail,0,0.06345424,0,0
+source_held_out,OpenMoji,omj_004,omj_004,satinrail_w5_s16_i5_cap45,satin_rail,0,0.07642647,0,0
+source_held_out,OpenMoji,omj_005,omj_005,base_keep,base_keep,0,0.72212279,0,1
+source_held_out,OpenMoji,omj_005,omj_005,satinrail_safeadt_light,satin_rail,0,-0.10291374,0,1
+source_held_out,OpenMoji,omj_005,omj_005,dtsatin_safeadt_light,dt_satin,1,0.38626929,0,1
+source_held_out,OpenMoji,omj_005,omj_005,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.14068634,0,1
+source_held_out,OpenMoji,omj_005,omj_005,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.12701523,0,1
+source_held_out,OpenMoji,omj_006,omj_006,base_keep,base_keep,1,0.75392265,0,1
+source_held_out,OpenMoji,omj_006,omj_006,satinrail_safeadt_light,satin_rail,0,-0.20964041,0,0
+source_held_out,OpenMoji,omj_006,omj_006,dtsatin_safeadt_light,dt_satin,0,0.47903727,0,0
+source_held_out,OpenMoji,omj_006,omj_006,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.32507842,0,0
+source_held_out,OpenMoji,omj_006,omj_006,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.24672747,0,0
+source_held_out,OpenMoji,omj_007,omj_007,base_keep,base_keep,1,0.71785055,0,1
+source_held_out,OpenMoji,omj_007,omj_007,satinrail_safeadt_light,satin_rail,0,0.02280649,0,0
+source_held_out,OpenMoji,omj_007,omj_007,dtsatin_safeadt_light,dt_satin,0,0.49679709,0,0
+source_held_out,OpenMoji,omj_007,omj_007,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.01977281,0,0
+source_held_out,OpenMoji,omj_007,omj_007,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.00673458,0,0
+source_held_out,OpenMoji,omj_008,omj_008,base_keep,base_keep,1,0.60183429,0,1
+source_held_out,OpenMoji,omj_008,omj_008,satinrail_safeadt_light,satin_rail,0,-0.22751221,0,0
+source_held_out,OpenMoji,omj_008,omj_008,dtsatin_safeadt_light,dt_satin,0,-0.09867915,0,0
+source_held_out,OpenMoji,omj_008,omj_008,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.36673011,0,0
+source_held_out,OpenMoji,omj_008,omj_008,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.35462847,0,0
+source_held_out,OpenMoji,omj_009,omj_009,base_keep,base_keep,1,0.82780054,0,1
+source_held_out,OpenMoji,omj_009,omj_009,satinrail_safeadt_light,satin_rail,0,-0.24203188,0,0
+source_held_out,OpenMoji,omj_009,omj_009,dtsatin_safeadt_light,dt_satin,0,0.571433,0,0
+source_held_out,OpenMoji,omj_009,omj_009,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.21539525,0,0
+source_held_out,OpenMoji,omj_009,omj_009,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.21477102,0,0
+source_held_out,OpenMoji,omj_010,omj_010,base_keep,base_keep,1,0.83985123,0,1
+source_held_out,OpenMoji,omj_010,omj_010,satinrail_safeadt_light,satin_rail,0,-0.17379639,0,0
+source_held_out,OpenMoji,omj_010,omj_010,dtsatin_safeadt_light,dt_satin,0,1.1517828,0,0
+source_held_out,OpenMoji,omj_010,omj_010,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.20684273,0,0
+source_held_out,OpenMoji,omj_010,omj_010,satinrail_w5_s16_i5_cap45,satin_rail,0,0.10475806,0,0
+source_held_out,Openclipart,ocp_001,ocp_001,base_keep,base_keep,1,0.82617733,0,1
+source_held_out,Openclipart,ocp_001,ocp_001,satinrail_safeadt_light,satin_rail,0,-0.01935593,0,0
+source_held_out,Openclipart,ocp_001,ocp_001,dtsatin_safeadt_light,dt_satin,0,0.71122704,0,0
+source_held_out,Openclipart,ocp_001,ocp_001,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.11153971,0,0
+source_held_out,Openclipart,ocp_001,ocp_001,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.08553276,0,0
+source_held_out,Openclipart,ocp_002,ocp_002,base_keep,base_keep,1,0.80143107,0,1
+source_held_out,Openclipart,ocp_002,ocp_002,satinrail_safeadt_light,satin_rail,0,-0.04240746,0,0
+source_held_out,Openclipart,ocp_002,ocp_002,dtsatin_safeadt_light,dt_satin,0,0.69070514,0,0
+source_held_out,Openclipart,ocp_002,ocp_002,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.12677418,0,0
+source_held_out,Openclipart,ocp_002,ocp_002,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.10363314,0,0
+source_held_out,Openclipart,ocp_003,ocp_003,base_keep,base_keep,1,0.79757275,0,1
+source_held_out,Openclipart,ocp_003,ocp_003,satinrail_safeadt_light,satin_rail,0,-0.14208279,0,0
+source_held_out,Openclipart,ocp_003,ocp_003,dtsatin_safeadt_light,dt_satin,0,0.59623517,0,0
+source_held_out,Openclipart,ocp_003,ocp_003,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.20696905,0,0
+source_held_out,Openclipart,ocp_003,ocp_003,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.18146221,0,0
+source_held_out,Openclipart,ocp_004,ocp_004,base_keep,base_keep,1,0.67132869,0,1
+source_held_out,Openclipart,ocp_004,ocp_004,satinrail_safeadt_light,satin_rail,0,-0.1245069,0,0
+source_held_out,Openclipart,ocp_004,ocp_004,dtsatin_safeadt_light,dt_satin,0,0.62950518,0,0
+source_held_out,Openclipart,ocp_004,ocp_004,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.18653592,0,0
+source_held_out,Openclipart,ocp_004,ocp_004,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.15905426,0,0
+source_held_out,Openclipart,ocp_005,ocp_005,base_keep,base_keep,0,0.73632685,0,1
+source_held_out,Openclipart,ocp_005,ocp_005,satinrail_safeadt_light,satin_rail,0,-0.10482655,0,1
+source_held_out,Openclipart,ocp_005,ocp_005,dtsatin_safeadt_light,dt_satin,1,0.6356975,0,1
+source_held_out,Openclipart,ocp_005,ocp_005,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.17299153,0,1
+source_held_out,Openclipart,ocp_005,ocp_005,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.14341124,0,1
+source_held_out,Openclipart,ocp_006,ocp_006,base_keep,base_keep,1,0.63325902,0,1
+source_held_out,Openclipart,ocp_006,ocp_006,satinrail_safeadt_light,satin_rail,0,-0.09366303,0,0
+source_held_out,Openclipart,ocp_006,ocp_006,dtsatin_safeadt_light,dt_satin,0,0.63711776,0,0
+source_held_out,Openclipart,ocp_006,ocp_006,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.17344355,0,0
+source_held_out,Openclipart,ocp_006,ocp_006,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.15466026,0,0
+source_held_out,Openclipart,ocp_007,ocp_007,base_keep,base_keep,1,0.63712795,0,1
+source_held_out,Openclipart,ocp_007,ocp_007,satinrail_safeadt_light,satin_rail,0,-0.03748395,0,0
+source_held_out,Openclipart,ocp_007,ocp_007,dtsatin_safeadt_light,dt_satin,0,0.69859068,0,0
+source_held_out,Openclipart,ocp_007,ocp_007,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.04169636,0,0
+source_held_out,Openclipart,ocp_007,ocp_007,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.08992257,0,0
+source_held_out,Openclipart,ocp_008,ocp_008,base_keep,base_keep,1,0.61210864,0,1
+source_held_out,Openclipart,ocp_008,ocp_008,satinrail_safeadt_light,satin_rail,0,0.08877156,0,0
+source_held_out,Openclipart,ocp_008,ocp_008,dtsatin_safeadt_light,dt_satin,0,0.76111283,0,0
+source_held_out,Openclipart,ocp_008,ocp_008,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.17746443,0,0
+source_held_out,Openclipart,ocp_008,ocp_008,satinrail_w5_s16_i5_cap45,satin_rail,0,0.0294636,0,0
+source_held_out,Openclipart,ocp_009,ocp_009,base_keep,base_keep,1,0.84461073,0,1
+source_held_out,Openclipart,ocp_009,ocp_009,satinrail_safeadt_light,satin_rail,0,-0.05733936,0,0
+source_held_out,Openclipart,ocp_009,ocp_009,dtsatin_safeadt_light,dt_satin,0,0.7202823,0,0
+source_held_out,Openclipart,ocp_009,ocp_009,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.10523702,0,0
+source_held_out,Openclipart,ocp_009,ocp_009,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.01428986,0,0
+source_held_out,Openclipart,ocp_010,ocp_010,base_keep,base_keep,1,1.11475953,0,1
+source_held_out,Openclipart,ocp_010,ocp_010,satinrail_safeadt_light,satin_rail,0,-0.28787835,0,0
+source_held_out,Openclipart,ocp_010,ocp_010,dtsatin_safeadt_light,dt_satin,0,0.4661112,0,0
+source_held_out,Openclipart,ocp_010,ocp_010,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.36147185,0,0
+source_held_out,Openclipart,ocp_010,ocp_010,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.34660294,0,0
+source_held_out,QuickDraw,qd_001,qd_001,base_keep,base_keep,1,0.41158585,0,1
+source_held_out,QuickDraw,qd_001,qd_001,satinrail_safeadt_light,satin_rail,0,-2.56661969,0,0
+source_held_out,QuickDraw,qd_001,qd_001,dtsatin_safeadt_light,dt_satin,0,-1.67718648,0,0
+source_held_out,QuickDraw,qd_001,qd_001,satinrail_w4_s18_i4_cap40,satin_rail,0,-2.47023654,0,0
+source_held_out,QuickDraw,qd_001,qd_001,satinrail_w5_s16_i5_cap45,satin_rail,0,-2.48707413,0,0
+source_held_out,QuickDraw,qd_002,qd_002,base_keep,base_keep,1,0.5447539,0,1
+source_held_out,QuickDraw,qd_002,qd_002,satinrail_safeadt_light,satin_rail,0,-1.91184404,0,0
+source_held_out,QuickDraw,qd_002,qd_002,dtsatin_safeadt_light,dt_satin,0,-1.02815688,0,0
+source_held_out,QuickDraw,qd_002,qd_002,satinrail_w4_s18_i4_cap40,satin_rail,0,-1.79958557,0,0
+source_held_out,QuickDraw,qd_002,qd_002,satinrail_w5_s16_i5_cap45,satin_rail,0,-1.81523939,0,0
+source_held_out,QuickDraw,qd_003,qd_003,base_keep,base_keep,1,0.31055646,0,1
+source_held_out,QuickDraw,qd_003,qd_003,satinrail_safeadt_light,satin_rail,0,-1.56761173,0,0
+source_held_out,QuickDraw,qd_003,qd_003,dtsatin_safeadt_light,dt_satin,0,-0.68452875,0,0
+source_held_out,QuickDraw,qd_003,qd_003,satinrail_w4_s18_i4_cap40,satin_rail,0,-1.58937365,0,0
+source_held_out,QuickDraw,qd_003,qd_003,satinrail_w5_s16_i5_cap45,satin_rail,0,-1.52818579,0,0
+source_held_out,QuickDraw,qd_004,qd_004,base_keep,base_keep,1,0.35799139,0,1
+source_held_out,QuickDraw,qd_004,qd_004,satinrail_safeadt_light,satin_rail,0,-1.87276996,0,0
+source_held_out,QuickDraw,qd_004,qd_004,dtsatin_safeadt_light,dt_satin,0,-0.98827499,0,0
+source_held_out,QuickDraw,qd_004,qd_004,satinrail_w4_s18_i4_cap40,satin_rail,0,-1.81617776,0,0
+source_held_out,QuickDraw,qd_004,qd_004,satinrail_w5_s16_i5_cap45,satin_rail,0,-1.82860094,0,0
+source_held_out,QuickDraw,qd_005,qd_005,base_keep,base_keep,1,0.48225672,0,1
+source_held_out,QuickDraw,qd_005,qd_005,satinrail_safeadt_light,satin_rail,0,-2.06148142,0,0
+source_held_out,QuickDraw,qd_005,qd_005,dtsatin_safeadt_light,dt_satin,0,-1.0142377,0,0
+source_held_out,QuickDraw,qd_005,qd_005,satinrail_w4_s18_i4_cap40,satin_rail,0,-1.85846501,0,0
+source_held_out,QuickDraw,qd_005,qd_005,satinrail_w5_s16_i5_cap45,satin_rail,0,-1.86773315,0,0
+source_held_out,QuickDraw,qd_006,qd_006,base_keep,base_keep,1,0.31164202,0,1
+source_held_out,QuickDraw,qd_006,qd_006,satinrail_safeadt_light,satin_rail,0,-1.38591041,0,0
+source_held_out,QuickDraw,qd_006,qd_006,dtsatin_safeadt_light,dt_satin,0,-0.49990839,0,0
+source_held_out,QuickDraw,qd_006,qd_006,satinrail_w4_s18_i4_cap40,satin_rail,0,-1.38203122,0,0
+source_held_out,QuickDraw,qd_006,qd_006,satinrail_w5_s16_i5_cap45,satin_rail,0,-1.39207773,0,0
+source_held_out,QuickDraw,qd_007,qd_007,base_keep,base_keep,1,0.19645225,0,1
+source_held_out,QuickDraw,qd_007,qd_007,satinrail_safeadt_light,satin_rail,0,-2.39785469,0,0
+source_held_out,QuickDraw,qd_007,qd_007,dtsatin_safeadt_light,dt_satin,0,-1.49941732,0,0
+source_held_out,QuickDraw,qd_007,qd_007,satinrail_w4_s18_i4_cap40,satin_rail,0,-2.28408862,0,0
+source_held_out,QuickDraw,qd_007,qd_007,satinrail_w5_s16_i5_cap45,satin_rail,0,-2.32015479,0,0
+source_held_out,QuickDraw,qd_008,qd_008,base_keep,base_keep,1,0.69450491,0,1
+source_held_out,QuickDraw,qd_008,qd_008,satinrail_safeadt_light,satin_rail,0,-2.6057035,0,0
+source_held_out,QuickDraw,qd_008,qd_008,dtsatin_safeadt_light,dt_satin,0,-1.72882643,0,0
+source_held_out,QuickDraw,qd_008,qd_008,satinrail_w4_s18_i4_cap40,satin_rail,0,-2.54809591,0,0
+source_held_out,QuickDraw,qd_008,qd_008,satinrail_w5_s16_i5_cap45,satin_rail,0,-2.55523695,0,0
+source_held_out,Rendered text,txt_001,txt_001,base_keep,base_keep,1,0.73586706,0,1
+source_held_out,Rendered text,txt_001,txt_001,satinrail_safeadt_light,satin_rail,0,-0.19467855,0,0
+source_held_out,Rendered text,txt_001,txt_001,dtsatin_safeadt_light,dt_satin,0,0.7777225,0,0
+source_held_out,Rendered text,txt_001,txt_001,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.23497048,0,0
+source_held_out,Rendered text,txt_001,txt_001,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.22137773,0,0
+source_held_out,Rendered text,txt_002,txt_002,base_keep,base_keep,1,0.65498461,0,1
+source_held_out,Rendered text,txt_002,txt_002,satinrail_safeadt_light,satin_rail,0,-0.074534,0,0
+source_held_out,Rendered text,txt_002,txt_002,dtsatin_safeadt_light,dt_satin,0,0.76329082,0,0
+source_held_out,Rendered text,txt_002,txt_002,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.13696713,0,0
+source_held_out,Rendered text,txt_002,txt_002,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.11211447,0,0
+source_held_out,Rendered text,txt_003,txt_003,base_keep,base_keep,1,0.73708241,0,1
+source_held_out,Rendered text,txt_003,txt_003,satinrail_safeadt_light,satin_rail,0,-0.20770879,0,0
+source_held_out,Rendered text,txt_003,txt_003,dtsatin_safeadt_light,dt_satin,0,0.57680559,0,0
+source_held_out,Rendered text,txt_003,txt_003,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.25319018,0,0
+source_held_out,Rendered text,txt_003,txt_003,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.22846639,0,0
+source_held_out,Rendered text,txt_004,txt_004,base_keep,base_keep,1,0.63836625,0,1
+source_held_out,Rendered text,txt_004,txt_004,satinrail_safeadt_light,satin_rail,0,-0.08075014,0,0
+source_held_out,Rendered text,txt_004,txt_004,dtsatin_safeadt_light,dt_satin,0,0.73488151,0,0
+source_held_out,Rendered text,txt_004,txt_004,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.1276534,0,0
+source_held_out,Rendered text,txt_004,txt_004,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.11387059,0,0
+source_held_out,Rendered text,txt_005,txt_005,base_keep,base_keep,1,0.41376286,0,1
+source_held_out,Rendered text,txt_005,txt_005,satinrail_safeadt_light,satin_rail,0,-0.10588376,0,0
+source_held_out,Rendered text,txt_005,txt_005,dtsatin_safeadt_light,dt_satin,0,0.66381347,0,0
+source_held_out,Rendered text,txt_005,txt_005,satinrail_w4_s18_i4_cap40,satin_rail,0,-0.16887637,0,0
+source_held_out,Rendered text,txt_005,txt_005,satinrail_w5_s16_i5_cap45,satin_rail,0,-0.14398239,0,0

@@ -1,0 +1,177 @@
+{
+  "model_id": "m2_77_source_heldout_stitch_type_selector_nogate",
+  "candidate_rows": 165,
+  "samples": 33,
+  "feature_count": 43,
+  "include_gate_features": false,
+  "use_professional_gate_at_inference": false,
+  "validation_mode": "source-held-out",
+  "holdout_column": "source_name",
+  "alpha": 1.0,
+  "texture_choice_weight": 4.0,
+  "source_held_out": {
+    "samples": 33,
+    "exact_teacher_match": 20,
+    "exact_teacher_match_rate": 0.60606061,
+    "teacher_texture_switches": 4,
+    "predicted_texture_switches": 9,
+    "texture_switch_recall": 0.0,
+    "texture_switch_precision": 0.0,
+    "predicted_kinds": {
+      "base_keep": 24,
+      "dt_satin": 9
+    },
+    "teacher_kinds": {
+      "dt_satin": 4,
+      "base_keep": 29
+    },
+    "predicted_mean_unified_loss": 0.06184062,
+    "predicted_mean_jump_count": 6.45454545,
+    "predicted_mean_trim_count": 0.96969697,
+    "predicted_mean_off_mask_stitch_length_mm": 0.10898182,
+    "predicted_mean_visible_connector_count": 0.0,
+    "predicted_mean_coverage_ratio": 0.98137594,
+    "predicted_mean_stitch_precision_ratio": 0.80614048,
+    "predicted_mean_texture_score": 0.338,
+    "teacher_mean_unified_loss": 0.05639949,
+    "teacher_mean_jump_count": 6.03030303,
+    "teacher_mean_trim_count": 0.60606061,
+    "teacher_mean_off_mask_stitch_length_mm": 0.12120606,
+    "teacher_mean_visible_connector_count": 0.0,
+    "teacher_mean_coverage_ratio": 0.98103933,
+    "teacher_mean_stitch_precision_ratio": 0.83779552,
+    "teacher_mean_texture_score": 0.20860606
+  },
+  "by_source": {
+    "OpenMoji": {
+      "samples": 10,
+      "exact_teacher_match": 5,
+      "exact_teacher_match_rate": 0.5,
+      "teacher_texture_switches": 3,
+      "predicted_texture_switches": 2,
+      "texture_switch_recall": 0.0,
+      "texture_switch_precision": 0.0,
+      "predicted_kinds": {
+        "base_keep": 8,
+        "dt_satin": 2
+      },
+      "teacher_kinds": {
+        "dt_satin": 3,
+        "base_keep": 7
+      },
+      "predicted_mean_unified_loss": 0.06337116,
+      "predicted_mean_jump_count": 6.2,
+      "predicted_mean_trim_count": 1.8,
+      "predicted_mean_off_mask_stitch_length_mm": 0.04955,
+      "predicted_mean_visible_connector_count": 0.0,
+      "predicted_mean_coverage_ratio": 0.9939632,
+      "predicted_mean_stitch_precision_ratio": 0.8796619,
+      "predicted_mean_texture_score": 0.1908,
+      "teacher_mean_unified_loss": 0.06086459,
+      "teacher_mean_jump_count": 6.4,
+      "teacher_mean_trim_count": 0.7,
+      "teacher_mean_off_mask_stitch_length_mm": 0.15705,
+      "teacher_mean_visible_connector_count": 0.0,
+      "teacher_mean_coverage_ratio": 0.9980254,
+      "teacher_mean_stitch_precision_ratio": 0.8925656,
+      "teacher_mean_texture_score": 0.377
+    },
+    "Openclipart": {
+      "samples": 10,
+      "exact_teacher_match": 6,
+      "exact_teacher_match_rate": 0.6,
+      "teacher_texture_switches": 1,
+      "predicted_texture_switches": 3,
+      "texture_switch_recall": 0.0,
+      "texture_switch_precision": 0.0,
+      "predicted_kinds": {
+        "base_keep": 7,
+        "dt_satin": 3
+      },
+      "teacher_kinds": {
+        "base_keep": 9,
+        "dt_satin": 1
+      },
+      "predicted_mean_unified_loss": 0.06790949,
+      "predicted_mean_jump_count": 7.0,
+      "predicted_mean_trim_count": 0.7,
+      "predicted_mean_off_mask_stitch_length_mm": 0.24754,
+      "predicted_mean_visible_connector_count": 0.0,
+      "predicted_mean_coverage_ratio": 0.9627112,
+      "predicted_mean_stitch_precision_ratio": 0.8984069,
+      "predicted_mean_texture_score": 0.4516,
+      "teacher_mean_unified_loss": 0.04059693,
+      "teacher_mean_jump_count": 4.1,
+      "teacher_mean_trim_count": 0.2,
+      "teacher_mean_off_mask_stitch_length_mm": 0.24293,
+      "teacher_mean_visible_connector_count": 0.0,
+      "teacher_mean_coverage_ratio": 0.9629139,
+      "teacher_mean_stitch_precision_ratio": 0.8893231,
+      "teacher_mean_texture_score": 0.1796
+    },
+    "QuickDraw": {
+      "samples": 8,
+      "exact_teacher_match": 8,
+      "exact_teacher_match_rate": 1.0,
+      "teacher_texture_switches": 0,
+      "predicted_texture_switches": 0,
+      "texture_switch_recall": 0.0,
+      "texture_switch_precision": 0.0,
+      "predicted_kinds": {
+        "base_keep": 8
+      },
+      "teacher_kinds": {
+        "base_keep": 8
+      },
+      "predicted_mean_unified_loss": 0.06893349,
+      "predicted_mean_jump_count": 7.75,
+      "predicted_mean_trim_count": 0.75,
+      "predicted_mean_off_mask_stitch_length_mm": 0.0,
+      "predicted_mean_visible_connector_count": 0.0,
+      "predicted_mean_coverage_ratio": 0.97825438,
+      "predicted_mean_stitch_precision_ratio": 0.71747012,
+      "predicted_mean_texture_score": 0.092,
+      "teacher_mean_unified_loss": 0.06893349,
+      "teacher_mean_jump_count": 7.75,
+      "teacher_mean_trim_count": 0.75,
+      "teacher_mean_off_mask_stitch_length_mm": 0.0,
+      "teacher_mean_visible_connector_count": 0.0,
+      "teacher_mean_coverage_ratio": 0.97825438,
+      "teacher_mean_stitch_precision_ratio": 0.71747012,
+      "teacher_mean_texture_score": 0.092
+    },
+    "Rendered text": {
+      "samples": 5,
+      "exact_teacher_match": 1,
+      "exact_teacher_match_rate": 0.2,
+      "teacher_texture_switches": 0,
+      "predicted_texture_switches": 4,
+      "texture_switch_recall": 0.0,
+      "texture_switch_precision": 0.0,
+      "predicted_kinds": {
+        "dt_satin": 4,
+        "base_keep": 1
+      },
+      "teacher_kinds": {
+        "base_keep": 5
+      },
+      "predicted_mean_unified_loss": 0.03529321,
+      "predicted_mean_jump_count": 3.8,
+      "predicted_mean_trim_count": 0.2,
+      "predicted_mean_off_mask_stitch_length_mm": 0.1251,
+      "predicted_mean_visible_connector_count": 0.0,
+      "predicted_mean_coverage_ratio": 0.9985254,
+      "predicted_mean_stitch_precision_ratio": 0.6164374,
+      "predicted_mean_texture_score": 0.7988,
+      "teacher_mean_unified_loss": 0.05901998,
+      "teacher_mean_jump_count": 6.4,
+      "teacher_mean_trim_count": 1.0,
+      "teacher_mean_off_mask_stitch_length_mm": 0.0,
+      "teacher_mean_visible_connector_count": 0.0,
+      "teacher_mean_coverage_ratio": 0.987774,
+      "teacher_mean_stitch_precision_ratio": 0.8177208,
+      "teacher_mean_texture_score": 0.1164
+    }
+  },
+  "interpretation": "This is a constrained learned selector prototype. It should not replace M2.74 unless leave-one-out texture recall and exact-match quality are strong enough."
+}

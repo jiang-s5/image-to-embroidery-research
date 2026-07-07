@@ -311,6 +311,83 @@ def leave_one_out(
     return choice_rows, candidate_score_rows
 
 
+def source_held_out(
+    groups: dict[str, list[dict[str, Any]]],
+    names: list[str],
+    categorical: dict[str, list[str]],
+    include_gate_features: bool,
+    alpha: float,
+    texture_choice_weight: float,
+    use_professional_gate: bool,
+    holdout_column: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    source_groups: dict[str, list[str]] = defaultdict(list)
+    for sample_id, sample_rows in groups.items():
+        source = str(sample_rows[0].get(holdout_column, ""))
+        source_groups[source].append(sample_id)
+
+    choice_rows: list[dict[str, Any]] = []
+    candidate_score_rows: list[dict[str, Any]] = []
+    for heldout_value, sample_ids in sorted(source_groups.items()):
+        heldout_set = set(sample_ids)
+        train_groups = {key: value for key, value in groups.items() if key not in heldout_set}
+        if not train_groups:
+            continue
+        model = fit_pairwise_ranker(train_groups, names, categorical, include_gate_features, alpha, texture_choice_weight)
+        for heldout_id in sample_ids:
+            heldout_rows = groups[heldout_id]
+            predicted, scored = predict_choice(heldout_rows, model, use_professional_gate)
+            teacher = next(row for row in heldout_rows if safe_float(row.get("is_teacher_choice")) > 0.5)
+            choice = {
+                "validation_mode": "source_held_out",
+                "heldout_group": heldout_value,
+                "holdout_column": holdout_column,
+                "train_samples": len(train_groups),
+                "heldout_samples_in_group": len(sample_ids),
+                "sample_id": heldout_id,
+                "source_name": teacher.get("source_name", ""),
+                "category": teacher.get("category", ""),
+                "teacher_candidate": teacher.get("candidate", ""),
+                "teacher_kind": teacher.get("candidate_kind", ""),
+                "teacher_is_texture_switch": teacher.get("teacher_is_texture_switch", ""),
+                "predicted_candidate": predicted.get("candidate", ""),
+                "predicted_kind": predicted.get("candidate_kind", ""),
+                "predicted_matches_teacher": 1 if predicted.get("candidate") == teacher.get("candidate") else 0,
+                "predicted_blocked_by_gate": predicted.get("blocked_by_professional_gate", ""),
+                "predicted_selector_score": predicted.get("selector_score", ""),
+            }
+            for key in METRIC_KEYS:
+                choice[f"teacher_{key}"] = teacher.get(key, "")
+                choice[f"predicted_{key}"] = predicted.get(key, "")
+                choice[f"delta_predicted_vs_teacher_{key}"] = round(
+                    safe_float(predicted.get(key)) - safe_float(teacher.get(key)), 8
+                )
+            choice_rows.append(choice)
+            for row in scored:
+                candidate_score_rows.append(
+                    {
+                        "validation_mode": "source_held_out",
+                        "heldout_group": heldout_value,
+                        "heldout_sample_id": heldout_id,
+                        "sample_id": row.get("sample_id", ""),
+                        "candidate": row.get("candidate", ""),
+                        "candidate_kind": row.get("candidate_kind", ""),
+                        "is_teacher_choice": row.get("is_teacher_choice", ""),
+                        "selector_score": row.get("selector_score", ""),
+                        "blocked_by_professional_gate": row.get("blocked_by_professional_gate", ""),
+                        "allowed_by_professional_gate": row.get("allowed_by_professional_gate", ""),
+                    }
+                )
+    return choice_rows, candidate_score_rows
+
+
+def summarize_by(rows: list[dict[str, Any]], key: str) -> dict[str, Any]:
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        grouped[str(row.get(key, ""))].append(row)
+    return {name: summarize_choices(items) for name, items in sorted(grouped.items())}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Train/evaluate a constrained learned stitch-type selector.")
     parser.add_argument("--candidate-rows", required=True)
@@ -320,21 +397,42 @@ def main() -> int:
     parser.add_argument("--texture-choice-weight", type=float, default=4.0)
     parser.add_argument("--include-gate-features", action="store_true")
     parser.add_argument("--use-professional-gate-at-inference", action="store_true")
+    parser.add_argument("--validation-mode", choices=("loo", "source-held-out"), default="loo")
+    parser.add_argument("--holdout-column", default="source_name")
     args = parser.parse_args()
 
     rows = read_csv(Path(args.candidate_rows))
     groups = grouped_by_sample(rows)
     names, categorical = feature_schema(rows, args.include_gate_features)
 
-    loo_choices, loo_scores = leave_one_out(
-        groups,
-        names,
-        categorical,
-        args.include_gate_features,
-        args.alpha,
-        args.texture_choice_weight,
-        args.use_professional_gate_at_inference,
-    )
+    if args.validation_mode == "loo":
+        selected_choices, selected_scores = leave_one_out(
+            groups,
+            names,
+            categorical,
+            args.include_gate_features,
+            args.alpha,
+            args.texture_choice_weight,
+            args.use_professional_gate_at_inference,
+        )
+        choice_filename = "stitch_type_selector_loo_choices.csv"
+        score_filename = "stitch_type_selector_loo_candidate_scores.csv"
+        summary_key = "loo"
+    else:
+        selected_choices, selected_scores = source_held_out(
+            groups,
+            names,
+            categorical,
+            args.include_gate_features,
+            args.alpha,
+            args.texture_choice_weight,
+            args.use_professional_gate_at_inference,
+            args.holdout_column,
+        )
+        choice_filename = "stitch_type_selector_source_heldout_choices.csv"
+        score_filename = "stitch_type_selector_source_heldout_candidate_scores.csv"
+        summary_key = "source_held_out"
+
     full_model = fit_pairwise_ranker(groups, names, categorical, args.include_gate_features, args.alpha, args.texture_choice_weight)
 
     output_dir = Path(args.output_dir)
@@ -346,9 +444,12 @@ def main() -> int:
         "feature_count": len(names),
         "include_gate_features": args.include_gate_features,
         "use_professional_gate_at_inference": args.use_professional_gate_at_inference,
+        "validation_mode": args.validation_mode,
+        "holdout_column": args.holdout_column,
         "alpha": args.alpha,
         "texture_choice_weight": args.texture_choice_weight,
-        "loo": summarize_choices(loo_choices),
+        summary_key: summarize_choices(selected_choices),
+        "by_source": summarize_by(selected_choices, "source_name"),
         "interpretation": "This is a constrained learned selector prototype. It should not replace M2.74 unless leave-one-out texture recall and exact-match quality are strong enough.",
     }
     model = dict(full_model)
@@ -356,9 +457,11 @@ def main() -> int:
     model["candidate_rows"] = args.candidate_rows
     model["training_samples"] = len(groups)
     model["use_professional_gate_at_inference"] = args.use_professional_gate_at_inference
+    model["validation_mode"] = args.validation_mode
+    model["holdout_column"] = args.holdout_column
 
-    write_csv(loo_choices, output_dir / "stitch_type_selector_loo_choices.csv")
-    write_csv(loo_scores, output_dir / "stitch_type_selector_loo_candidate_scores.csv")
+    write_csv(selected_choices, output_dir / choice_filename)
+    write_csv(selected_scores, output_dir / score_filename)
     write_json(summary, output_dir / "stitch_type_selector_summary.json")
     write_json(model, output_dir / "stitch_type_selector_model.json")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
