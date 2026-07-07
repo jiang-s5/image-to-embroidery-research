@@ -1,0 +1,5 @@
+﻿seed_source,rows,positive_rows,hard_negative_rows,mean_teacher_weight,mean_execution_penalty_score
+candidate_selector,495,33,154,0.45353535,0.0
+m2_86_preview_sweep,1584,7,875,0.57357445,0.0
+m2_88_no_gate_hard_negative,6,0,6,12.2198957,28.55182602
+stitch_type_teacher,165,33,120,0.76363636,0.0

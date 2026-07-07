@@ -1,0 +1,58 @@
+{
+  "model_id": "m2_89_hard_failure_teacher_refresh",
+  "base_seed_rows": "results\\public_benchmark_v1_ext33_m2_87_preview_teacher_refresh\\preview_teacher_seed_rows.csv",
+  "no_gate_decision_rows": "results\\public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy_relaxed_nogate\\preview_learned_decision_rows.csv",
+  "no_gate_selected_rows": "results\\public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy_relaxed_nogate\\preview_learned_selected_rows.csv",
+  "summary": {
+    "rows": 2250,
+    "added_hard_negative_rows": 6,
+    "positive_teacher_rows": 73,
+    "hard_negative_rows": 1155,
+    "teacher_family_counts": {
+      "reject": 1151,
+      "running_line": 11,
+      "candidate_non_teacher": 1026,
+      "auto_fill": 10,
+      "fill_tatami_like": 12,
+      "outline_border": 1,
+      "auto_running": 5,
+      "base_keep": 29,
+      "satin_like": 5
+    },
+    "seed_source_counts": {
+      "candidate_selector": 495,
+      "stitch_type_teacher": 165,
+      "m2_86_preview_sweep": 1584,
+      "m2_88_no_gate_hard_negative": 6
+    },
+    "added_sample_ids": [
+      "ocp_001",
+      "ocp_009",
+      "omj_010",
+      "qd_007"
+    ],
+    "added_candidate_counts": {
+      "mask_fill_serpentine": 6
+    },
+    "mean_added_teacher_weight": 12.2198957,
+    "mean_added_execution_penalty_score": 28.55182602,
+    "mean_added_jump_explosion_ratio": 56.33666667,
+    "mean_added_trim_explosion_ratio": 28.40555556,
+    "mean_added_offmask_explosion_mm": 30.11671667,
+    "mean_added_visible_explosion_count": 9.66666667
+  },
+  "labeling_policy": {
+    "source": "M2.88 no-gate rows where M2.87 deployed a non-reject family even though the M2.86 preview gate failed.",
+    "teacher_family": "reject",
+    "teacher_weight": "teacher_weight_scale + execution_penalty_score / 3, capped by the script",
+    "risk_features": [
+      "execution_penalty_score",
+      "hard_fail_probe_selected",
+      "jump_explosion_ratio",
+      "trim_explosion_ratio",
+      "offmask_explosion_mm",
+      "visible_explosion_count"
+    ]
+  },
+  "interpretation": "M2.89 does not promote a new output profile by itself. It strengthens the learned selector against candidates that look preview-positive but explode in command-level execution metrics when the deterministic safety gate is removed."
+}

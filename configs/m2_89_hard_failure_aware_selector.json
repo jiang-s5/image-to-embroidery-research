@@ -1,0 +1,89 @@
+{
+  "model_id": "m2_89_hard_failure_aware_selector",
+  "date": "2026-07-07",
+  "status": "hard_failure_aware_refresh_confirmed",
+  "purpose": "Use M2.88 no-gate false positives as high-weight hard negatives so the learned selector rejects preview-positive but command-unsafe candidates.",
+  "tools": {
+    "teacher_refresh": "tools/build_hard_failure_aware_teacher_refresh.py",
+    "selector_training": "tools/train_stitch_family_selector.py",
+    "deployment": "tools/apply_preview_learned_deployment_policy.py"
+  },
+  "inputs": {
+    "base_teacher_rows": "results/public_benchmark_v1_ext33_m2_87_preview_teacher_refresh/preview_teacher_seed_rows.csv",
+    "m2_88_no_gate_decision_rows": "results/public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy_relaxed_nogate/preview_learned_decision_rows.csv",
+    "m2_88_no_gate_selected_rows": "results/public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy_relaxed_nogate/preview_learned_selected_rows.csv",
+    "m2_86_candidate_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_candidate_rows.csv",
+    "m2_86_selected_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_selected_rows.csv"
+  },
+  "teacher_refresh": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_89_hard_failure_teacher_refresh",
+    "added_hard_negative_rows": 6,
+    "added_sample_ids": [
+      "ocp_001",
+      "ocp_009",
+      "omj_010",
+      "qd_007"
+    ],
+    "added_candidate_counts": {
+      "mask_fill_serpentine": 6
+    },
+    "risk_features": [
+      "execution_penalty_score",
+      "hard_fail_probe_selected",
+      "jump_explosion_ratio",
+      "trim_explosion_ratio",
+      "offmask_explosion_mm",
+      "visible_explosion_count"
+    ]
+  },
+  "selector_training": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_89_hard_failure_selector_rejectw16_margin010",
+    "command": "python tools/train_stitch_family_selector.py --seed-rows results/public_benchmark_v1_ext33_m2_89_hard_failure_teacher_refresh/hard_failure_teacher_seed_rows.csv --output-dir results/public_benchmark_v1_ext33_m2_89_hard_failure_selector_rejectw16_margin010 --model-id m2_89_hard_failure_selector_rejectw16_margin010 --alpha 1.0 --holdout-column source_name --reject-weight 16.0 --reject-margin 0.10 --include-professional-gate-feature",
+    "source_held_out": {
+      "rows": 1224,
+      "accuracy": 0.9501634,
+      "positive_accuracy": 0.80821918,
+      "nonbase_positive_accuracy": 0.68181818,
+      "reject_recall": 0.95916594,
+      "false_texture_promotions": 0,
+      "feature_count": 43
+    }
+  },
+  "strict_deployment": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_89_hard_failure_deployment_strict",
+    "require_preview_gate": true,
+    "result": {
+      "samples": 33,
+      "learned_policy_switches": 7,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.05706876,
+      "mean_jump_count": 6.15151515,
+      "mean_trim_count": 0.60606061,
+      "mean_off_mask_stitch_length_mm": 0.10619091,
+      "mean_visible_connector_count": 0.0,
+      "mean_coverage_ratio": 0.98167906,
+      "mean_stitch_precision_ratio": 0.83918282,
+      "mean_professional_preview_score": 0.73544111,
+      "mean_generator_texture_score": 0.22612121,
+      "differs_from_m2_86_sample_ids": []
+    }
+  },
+  "relaxed_no_gate_replay": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_89_hard_failure_deployment_relaxed_nogate",
+    "require_preview_gate": false,
+    "result": {
+      "samples": 33,
+      "learned_policy_switches": 7,
+      "hard_fail": 0,
+      "mean_unified_loss": 0.05706876,
+      "mean_jump_count": 6.15151515,
+      "mean_trim_count": 0.60606061,
+      "mean_off_mask_stitch_length_mm": 0.10619091,
+      "mean_visible_connector_count": 0.0,
+      "mean_professional_preview_score": 0.73544111,
+      "mean_generator_texture_score": 0.22612121,
+      "differs_from_m2_86_sample_ids": []
+    }
+  },
+  "interpretation": "M2.89 strengthens hard-failure awareness. It preserves the promoted M2.86/M2.88 final output metrics while removing the M2.88 no-gate hard-failure replay. It is a robustness gain, not a new professional-preview quality gain."
+}

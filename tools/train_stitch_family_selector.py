@@ -28,6 +28,12 @@ NUMERIC_FEATURES = (
     "delta_generator_texture_score",
     "preview_sweep_score",
     "preview_sweep_gate_pass",
+    "execution_penalty_score",
+    "hard_fail_probe_selected",
+    "jump_explosion_ratio",
+    "trim_explosion_ratio",
+    "offmask_explosion_mm",
+    "visible_explosion_count",
 )
 
 CATEGORICAL_FEATURES = (

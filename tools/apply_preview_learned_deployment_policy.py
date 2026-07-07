@@ -108,6 +108,7 @@ def map_candidate_family(row: dict[str, Any]) -> str:
 def selector_input_row(row: dict[str, Any]) -> dict[str, Any]:
     out = dict(row)
     gate_pass = int(safe_float(row.get("preview_sweep_gate_pass")))
+    risk = execution_risk_features(row)
     out["raw_candidate_family"] = row.get("candidate_family", "")
     out["candidate_family"] = map_candidate_family(row)
     out["seed_source"] = "m2_86_preview_sweep"
@@ -116,7 +117,42 @@ def selector_input_row(row: dict[str, Any]) -> dict[str, Any]:
     out["delta_texture_score"] = row.get("delta_generator_texture_score", row.get("delta_texture_score", 0.0))
     out["allowed_by_professional_gate"] = gate_pass
     out["preview_sweep_gate_pass"] = gate_pass
+    out.update(risk)
     return out
+
+
+def execution_risk_features(row: dict[str, Any]) -> dict[str, float]:
+    jump = safe_float(row.get("jump_count"))
+    trim = safe_float(row.get("trim_count"))
+    offmask = safe_float(row.get("off_mask_stitch_length_mm"))
+    visible = safe_float(row.get("visible_connector_count"))
+    delta_loss = max(0.0, safe_float(row.get("delta_unified_loss")))
+    delta_jump = max(0.0, safe_float(row.get("delta_jump_count")))
+    delta_trim = max(0.0, safe_float(row.get("delta_trim_count")))
+    delta_offmask = max(0.0, safe_float(row.get("delta_off_mask_stitch_length_mm")))
+    delta_visible = max(0.0, safe_float(row.get("delta_visible_connector_count")))
+    jump_explosion = max(jump / 50.0, delta_jump / 10.0)
+    trim_explosion = max(trim / 10.0, delta_trim / 3.0)
+    offmask_explosion = max(offmask, delta_offmask)
+    visible_explosion = max(visible, delta_visible)
+    score = (
+        1.0 * min(8.0, jump_explosion)
+        + 0.9 * min(8.0, trim_explosion)
+        + 1.5 * min(8.0, offmask_explosion / 10.0)
+        + 2.0 * min(8.0, visible_explosion)
+        + 8.0 * delta_loss
+    )
+    quality = str(row.get("oracle_quality_level", row.get("quality_level", ""))).lower()
+    if quality == "hard_fail":
+        score += 4.0
+    return {
+        "execution_penalty_score": round(score, 8),
+        "hard_fail_probe_selected": 0.0,
+        "jump_explosion_ratio": round(jump_explosion, 8),
+        "trim_explosion_ratio": round(trim_explosion, 8),
+        "offmask_explosion_mm": round(offmask_explosion, 8),
+        "visible_explosion_count": round(visible_explosion, 8),
+    }
 
 
 def prediction_margin(score_map: dict[str, float], predicted: str) -> float:
@@ -161,6 +197,15 @@ def enrich_candidate(
     out["selector_deployment_reason"] = reason
     out["selector_nonreject"] = int(deployed != "reject")
     out["learned_preview_policy_score"] = score_candidate(out, selector_margin_weight)
+    for key in (
+        "execution_penalty_score",
+        "hard_fail_probe_selected",
+        "jump_explosion_ratio",
+        "trim_explosion_ratio",
+        "offmask_explosion_mm",
+        "visible_explosion_count",
+    ):
+        out[key] = model_row.get(key, 0.0)
     for label in LABELS:
         out[f"selector_score_{label}"] = score_map.get(label, 0.0)
     return out
@@ -254,10 +299,10 @@ def build_policy(args: argparse.Namespace) -> tuple[list[dict[str, Any]], list[d
     baseline_rows = {row["sample_id"]: row for row in read_csv(args.baseline_rows) if row.get("sample_id")}
     m2_86_selected = {row["sample_id"]: row for row in read_csv(args.m2_86_selected_rows) if row.get("sample_id")}
     policy_rule = (
-        "Require the strict M2.86 preview sweep gate, then use M2.87 as a learned non-reject veto and light reranker. "
+        "Require the strict M2.86 preview sweep gate, then use the supplied learned selector as a non-reject veto and light reranker. "
         "The default fallback rows are M2.86 selected rows so preview metrics stay on the same audited scale."
         if args.require_preview_gate
-        else "Exploratory no-gate mode: use M2.87 as a learned non-reject selector without the M2.86 preview sweep gate. "
+        else "Exploratory no-gate mode: use the supplied learned selector without the M2.86 preview sweep gate. "
         "This is intentionally audited against M2.86 before any promotion."
     )
 
@@ -340,7 +385,7 @@ def build_policy(args: argparse.Namespace) -> tuple[list[dict[str, Any]], list[d
         "differs_from_m2_86_sample_ids": [
             row["sample_id"] for row in selected_rows if int(row.get("differs_from_m2_86", 0)) == 1
         ],
-        "interpretation": "M2.88 is the first deployment-stage use of the M2.87 learned preview selector. The default strict policy treats the learned model as a safety/texture accept signal after the deterministic M2.86 command and preview gate.",
+        "interpretation": "This run applies the supplied learned selector as a deployment-stage safety/texture accept signal over the M2.86 candidate pool. The strict policy keeps the deterministic M2.86 command and preview gate; no-gate mode is exploratory and must be audited before promotion.",
     }
     m2_86_summary = read_json(args.m2_86_summary).get("selected_summary", {})
     if m2_86_summary:
@@ -350,7 +395,7 @@ def build_policy(args: argparse.Namespace) -> tuple[list[dict[str, Any]], list[d
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the M2.87 learned preview-aware selector as a deployment-stage policy over M2.86 candidates."
+        description="Apply a learned preview-aware selector as a deployment-stage policy over M2.86 candidates."
     )
     parser.add_argument(
         "--candidate-rows",

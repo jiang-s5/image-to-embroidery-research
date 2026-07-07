@@ -1,0 +1,150 @@
+{
+  "model_id": "m2_89_hard_failure_selector_rejectw16_margin010",
+  "seed_rows": "results\\public_benchmark_v1_ext33_m2_89_hard_failure_teacher_refresh\\hard_failure_teacher_seed_rows.csv",
+  "rows": 2250,
+  "labeled_rows": 1224,
+  "labels": [
+    "base_keep",
+    "running_line",
+    "auto_running",
+    "auto_fill",
+    "fill_tatami_like",
+    "satin_like",
+    "outline_border",
+    "reject"
+  ],
+  "feature_count": 43,
+  "alpha": 1.0,
+  "balance_classes": false,
+  "reject_weight": 16.0,
+  "reject_margin": 0.1,
+  "include_source_name": false,
+  "include_candidate_name": false,
+  "include_professional_gate_feature": true,
+  "include_gate_features": false,
+  "holdout_column": "source_name",
+  "source_held_out": {
+    "rows": 1224,
+    "accuracy": 0.9501634,
+    "positive_accuracy": 0.80821918,
+    "nonbase_positive_accuracy": 0.68181818,
+    "reject_recall": 0.95916594,
+    "false_texture_promotions": 0,
+    "teacher_family_counts": {
+      "reject": 1151,
+      "fill_tatami_like": 12,
+      "auto_fill": 10,
+      "outline_border": 1,
+      "auto_running": 5,
+      "satin_like": 5,
+      "base_keep": 29,
+      "running_line": 11
+    },
+    "predicted_family_counts": {
+      "reject": 1112,
+      "auto_fill": 27,
+      "running_line": 15,
+      "satin_like": 4,
+      "base_keep": 29,
+      "fill_tatami_like": 7,
+      "auto_running": 30
+    }
+  },
+  "by_source": {
+    "OpenMoji": {
+      "rows": 225,
+      "accuracy": 0.92,
+      "positive_accuracy": 0.72727273,
+      "nonbase_positive_accuracy": 0.6,
+      "reject_recall": 0.9408867,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 203,
+        "fill_tatami_like": 6,
+        "auto_fill": 4,
+        "outline_border": 1,
+        "auto_running": 1,
+        "satin_like": 3,
+        "base_keep": 7
+      },
+      "predicted_family_counts": {
+        "reject": 197,
+        "auto_fill": 14,
+        "running_line": 2,
+        "satin_like": 3,
+        "base_keep": 7,
+        "fill_tatami_like": 2
+      }
+    },
+    "Openclipart": {
+      "rows": 394,
+      "accuracy": 0.93908629,
+      "positive_accuracy": 0.75,
+      "nonbase_positive_accuracy": 0.6,
+      "reject_recall": 0.95135135,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 370,
+        "running_line": 3,
+        "auto_fill": 6,
+        "fill_tatami_like": 4,
+        "base_keep": 9,
+        "satin_like": 2
+      },
+      "predicted_family_counts": {
+        "auto_fill": 10,
+        "running_line": 1,
+        "auto_running": 16,
+        "reject": 353,
+        "base_keep": 9,
+        "satin_like": 1,
+        "fill_tatami_like": 4
+      }
+    },
+    "QuickDraw": {
+      "rows": 450,
+      "accuracy": 0.96666667,
+      "positive_accuracy": 0.94117647,
+      "nonbase_positive_accuracy": 0.88888889,
+      "reject_recall": 0.96766744,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 433,
+        "running_line": 6,
+        "auto_running": 2,
+        "base_keep": 8,
+        "fill_tatami_like": 1
+      },
+      "predicted_family_counts": {
+        "auto_running": 12,
+        "reject": 420,
+        "running_line": 6,
+        "auto_fill": 3,
+        "base_keep": 8,
+        "fill_tatami_like": 1
+      }
+    },
+    "Rendered text": {
+      "rows": 155,
+      "accuracy": 0.97419355,
+      "positive_accuracy": 0.9,
+      "nonbase_positive_accuracy": 0.8,
+      "reject_recall": 0.97931034,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 145,
+        "fill_tatami_like": 1,
+        "auto_running": 2,
+        "running_line": 2,
+        "base_keep": 5
+      },
+      "predicted_family_counts": {
+        "reject": 142,
+        "running_line": 6,
+        "auto_running": 2,
+        "base_keep": 5
+      }
+    }
+  },
+  "interpretation": "This evaluates whether the broader M2.78 teacher seed supports multi-family stitch-type learning under source-held-out validation."
+}

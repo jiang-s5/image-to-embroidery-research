@@ -1,0 +1,10 @@
+﻿teacher_family,rows,positive_rows,hard_negative_rows,mean_teacher_weight,mean_execution_penalty_score
+auto_fill,10,10,0,1.0,0.0
+auto_running,5,5,0,1.0,0.0
+base_keep,29,29,2,1.0,0.0
+candidate_non_teacher,1026,0,0,0.21842105,0.0
+fill_tatami_like,12,12,2,1.64818177,0.0
+outline_border,1,1,0,1.0,0.0
+reject,1151,0,1151,0.89093777,0.14883663
+running_line,11,11,0,1.0,0.0
+satin_like,5,5,0,1.40275104,0.0
