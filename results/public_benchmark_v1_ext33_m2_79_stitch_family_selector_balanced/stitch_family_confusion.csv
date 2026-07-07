@@ -1,0 +1,15 @@
+﻿teacher_family,predicted_family,count
+auto_fill,auto_fill,10
+auto_running,auto_running,5
+base_keep,base_keep,29
+fill_tatami_like,fill_tatami_like,6
+outline_border,fill_tatami_like,1
+reject,auto_fill,21
+reject,auto_running,10
+reject,fill_tatami_like,62
+reject,outline_border,26
+reject,reject,48
+reject,running_line,18
+reject,satin_like,85
+running_line,running_line,11
+satin_like,satin_like,4

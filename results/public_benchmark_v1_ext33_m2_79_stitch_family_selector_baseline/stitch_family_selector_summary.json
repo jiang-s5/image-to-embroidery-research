@@ -1,0 +1,152 @@
+{
+  "model_id": "m2_79_stitch_family_selector_baseline",
+  "seed_rows": "results\\public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed\\stitch_type_teacher_seed_rows.csv",
+  "rows": 660,
+  "labeled_rows": 336,
+  "labels": [
+    "base_keep",
+    "running_line",
+    "auto_running",
+    "auto_fill",
+    "fill_tatami_like",
+    "satin_like",
+    "outline_border",
+    "reject"
+  ],
+  "feature_count": 21,
+  "alpha": 1.0,
+  "balance_classes": false,
+  "reject_weight": 1.0,
+  "reject_margin": 0.0,
+  "include_source_name": false,
+  "include_candidate_name": false,
+  "include_gate_features": false,
+  "holdout_column": "source_name",
+  "source_held_out": {
+    "rows": 336,
+    "accuracy": 0.64583333,
+    "positive_accuracy": 0.93939394,
+    "nonbase_positive_accuracy": 0.89189189,
+    "reject_recall": 0.57407407,
+    "false_texture_promotions": 51,
+    "teacher_family_counts": {
+      "reject": 270,
+      "fill_tatami_like": 6,
+      "auto_fill": 10,
+      "outline_border": 1,
+      "auto_running": 5,
+      "satin_like": 4,
+      "base_keep": 29,
+      "running_line": 11
+    },
+    "predicted_family_counts": {
+      "fill_tatami_like": 39,
+      "auto_fill": 40,
+      "reject": 157,
+      "running_line": 30,
+      "auto_running": 20,
+      "base_keep": 29,
+      "satin_like": 20,
+      "outline_border": 1
+    }
+  },
+  "by_source": {
+    "OpenMoji": {
+      "rows": 84,
+      "accuracy": 0.64285714,
+      "positive_accuracy": 0.85,
+      "nonbase_positive_accuracy": 0.76923077,
+      "reject_recall": 0.578125,
+      "false_texture_promotions": 8,
+      "teacher_family_counts": {
+        "reject": 64,
+        "fill_tatami_like": 4,
+        "auto_fill": 4,
+        "outline_border": 1,
+        "auto_running": 1,
+        "satin_like": 3,
+        "base_keep": 7
+      },
+      "predicted_family_counts": {
+        "fill_tatami_like": 13,
+        "auto_fill": 21,
+        "reject": 39,
+        "running_line": 2,
+        "auto_running": 1,
+        "base_keep": 7,
+        "satin_like": 1
+      }
+    },
+    "Openclipart": {
+      "rows": 111,
+      "accuracy": 0.62162162,
+      "positive_accuracy": 1.0,
+      "nonbase_positive_accuracy": 1.0,
+      "reject_recall": 0.53846154,
+      "false_texture_promotions": 21,
+      "teacher_family_counts": {
+        "reject": 91,
+        "running_line": 3,
+        "auto_fill": 6,
+        "fill_tatami_like": 1,
+        "base_keep": 9,
+        "satin_like": 1
+      },
+      "predicted_family_counts": {
+        "auto_fill": 16,
+        "running_line": 9,
+        "fill_tatami_like": 8,
+        "reject": 49,
+        "auto_running": 5,
+        "base_keep": 9,
+        "satin_like": 15
+      }
+    },
+    "QuickDraw": {
+      "rows": 97,
+      "accuracy": 0.79381443,
+      "positive_accuracy": 0.9375,
+      "nonbase_positive_accuracy": 0.875,
+      "reject_recall": 0.7654321,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 81,
+        "running_line": 6,
+        "auto_running": 2,
+        "base_keep": 8
+      },
+      "predicted_family_counts": {
+        "auto_running": 12,
+        "running_line": 12,
+        "reject": 62,
+        "auto_fill": 3,
+        "base_keep": 8
+      }
+    },
+    "Rendered text": {
+      "rows": 44,
+      "accuracy": 0.38636364,
+      "positive_accuracy": 1.0,
+      "nonbase_positive_accuracy": 1.0,
+      "reject_recall": 0.20588235,
+      "false_texture_promotions": 22,
+      "teacher_family_counts": {
+        "reject": 34,
+        "fill_tatami_like": 1,
+        "auto_running": 2,
+        "running_line": 2,
+        "base_keep": 5
+      },
+      "predicted_family_counts": {
+        "fill_tatami_like": 18,
+        "auto_running": 2,
+        "running_line": 7,
+        "reject": 7,
+        "outline_border": 1,
+        "base_keep": 5,
+        "satin_like": 4
+      }
+    }
+  },
+  "interpretation": "This evaluates whether the broader M2.78 teacher seed supports multi-family stitch-type learning under source-held-out validation."
+}

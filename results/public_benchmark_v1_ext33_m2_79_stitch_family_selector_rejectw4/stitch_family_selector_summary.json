@@ -1,0 +1,147 @@
+{
+  "model_id": "m2_79_stitch_family_selector_rejectw4",
+  "seed_rows": "results\\public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed\\stitch_type_teacher_seed_rows.csv",
+  "rows": 660,
+  "labeled_rows": 336,
+  "labels": [
+    "base_keep",
+    "running_line",
+    "auto_running",
+    "auto_fill",
+    "fill_tatami_like",
+    "satin_like",
+    "outline_border",
+    "reject"
+  ],
+  "feature_count": 21,
+  "alpha": 1.0,
+  "balance_classes": false,
+  "reject_weight": 4.0,
+  "reject_margin": 0.0,
+  "include_source_name": false,
+  "include_candidate_name": false,
+  "include_gate_features": false,
+  "holdout_column": "source_name",
+  "source_held_out": {
+    "rows": 336,
+    "accuracy": 0.74107143,
+    "positive_accuracy": 0.77272727,
+    "nonbase_positive_accuracy": 0.59459459,
+    "reject_recall": 0.73333333,
+    "false_texture_promotions": 6,
+    "teacher_family_counts": {
+      "reject": 270,
+      "fill_tatami_like": 6,
+      "auto_fill": 10,
+      "outline_border": 1,
+      "auto_running": 5,
+      "satin_like": 4,
+      "base_keep": 29,
+      "running_line": 11
+    },
+    "predicted_family_counts": {
+      "reject": 202,
+      "auto_fill": 50,
+      "fill_tatami_like": 6,
+      "auto_running": 28,
+      "base_keep": 29,
+      "satin_like": 2,
+      "running_line": 19
+    }
+  },
+  "by_source": {
+    "OpenMoji": {
+      "rows": 84,
+      "accuracy": 0.64285714,
+      "positive_accuracy": 0.6,
+      "nonbase_positive_accuracy": 0.38461538,
+      "reject_recall": 0.65625,
+      "false_texture_promotions": 1,
+      "teacher_family_counts": {
+        "reject": 64,
+        "fill_tatami_like": 4,
+        "auto_fill": 4,
+        "outline_border": 1,
+        "auto_running": 1,
+        "satin_like": 3,
+        "base_keep": 7
+      },
+      "predicted_family_counts": {
+        "reject": 45,
+        "auto_fill": 30,
+        "fill_tatami_like": 1,
+        "auto_running": 1,
+        "base_keep": 7
+      }
+    },
+    "Openclipart": {
+      "rows": 111,
+      "accuracy": 0.8018018,
+      "positive_accuracy": 0.8,
+      "nonbase_positive_accuracy": 0.63636364,
+      "reject_recall": 0.8021978,
+      "false_texture_promotions": 3,
+      "teacher_family_counts": {
+        "reject": 91,
+        "running_line": 3,
+        "auto_fill": 6,
+        "fill_tatami_like": 1,
+        "base_keep": 9,
+        "satin_like": 1
+      },
+      "predicted_family_counts": {
+        "auto_fill": 11,
+        "reject": 74,
+        "auto_running": 13,
+        "fill_tatami_like": 2,
+        "base_keep": 9,
+        "satin_like": 2
+      }
+    },
+    "QuickDraw": {
+      "rows": 97,
+      "accuracy": 0.82474227,
+      "positive_accuracy": 0.8125,
+      "nonbase_positive_accuracy": 0.625,
+      "reject_recall": 0.82716049,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 81,
+        "running_line": 6,
+        "auto_running": 2,
+        "base_keep": 8
+      },
+      "predicted_family_counts": {
+        "auto_running": 12,
+        "reject": 67,
+        "running_line": 5,
+        "auto_fill": 5,
+        "base_keep": 8
+      }
+    },
+    "Rendered text": {
+      "rows": 44,
+      "accuracy": 0.59090909,
+      "positive_accuracy": 1.0,
+      "nonbase_positive_accuracy": 1.0,
+      "reject_recall": 0.47058824,
+      "false_texture_promotions": 2,
+      "teacher_family_counts": {
+        "reject": 34,
+        "fill_tatami_like": 1,
+        "auto_running": 2,
+        "running_line": 2,
+        "base_keep": 5
+      },
+      "predicted_family_counts": {
+        "fill_tatami_like": 3,
+        "auto_running": 2,
+        "reject": 16,
+        "running_line": 14,
+        "base_keep": 5,
+        "auto_fill": 4
+      }
+    }
+  },
+  "interpretation": "This evaluates whether the broader M2.78 teacher seed supports multi-family stitch-type learning under source-held-out validation."
+}

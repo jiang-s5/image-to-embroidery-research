@@ -1,0 +1,81 @@
+{
+  "model_id": "m2_79_stitch_family_selector",
+  "date": "2026-07-07",
+  "status": "source_heldout_multi_family_stitch_type_selector_prototype",
+  "promoted_output_profile": "m2_74_professional_texture_profile",
+  "teacher_seed": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_teacher_seed_rows.csv",
+  "tool": "tools/train_stitch_family_selector.py",
+  "purpose": "Train and source-held-out evaluate a multi-family stitch-type selector over running, fill/tatami-like, satin-like, base, outline, and reject labels.",
+  "labels": [
+    "base_keep",
+    "running_line",
+    "auto_running",
+    "auto_fill",
+    "fill_tatami_like",
+    "satin_like",
+    "outline_border",
+    "reject"
+  ],
+  "shared_setup": {
+    "rows": 660,
+    "labeled_rows": 336,
+    "feature_count": 21,
+    "holdout_column": "source_name",
+    "include_source_name": false,
+    "include_candidate_name": false,
+    "include_gate_features": false
+  },
+  "variants": {
+    "baseline": {
+      "output_dir": "results/public_benchmark_v1_ext33_m2_79_stitch_family_selector_baseline",
+      "alpha": 1.0,
+      "balance_classes": false,
+      "reject_weight": 1.0,
+      "reject_margin": 0.0,
+      "accuracy": 0.64583333,
+      "positive_accuracy": 0.93939394,
+      "nonbase_positive_accuracy": 0.89189189,
+      "reject_recall": 0.57407407,
+      "false_texture_promotions": 51
+    },
+    "class_balanced_negative_control": {
+      "output_dir": "results/public_benchmark_v1_ext33_m2_79_stitch_family_selector_balanced",
+      "alpha": 1.0,
+      "balance_classes": true,
+      "reject_weight": 1.0,
+      "reject_margin": 0.0,
+      "accuracy": 0.33630952,
+      "positive_accuracy": 0.98484848,
+      "nonbase_positive_accuracy": 0.97297297,
+      "reject_recall": 0.17777778,
+      "false_texture_promotions": 173
+    },
+    "risk_guarded_rejectw3_margin002": {
+      "output_dir": "results/public_benchmark_v1_ext33_m2_79_stitch_family_selector_rejectw3_margin002",
+      "alpha": 1.0,
+      "balance_classes": false,
+      "reject_weight": 3.0,
+      "reject_margin": 0.02,
+      "accuracy": 0.73214286,
+      "positive_accuracy": 0.78787879,
+      "nonbase_positive_accuracy": 0.62162162,
+      "reject_recall": 0.71851852,
+      "false_texture_promotions": 10
+    },
+    "risk_guarded_rejectw4": {
+      "output_dir": "results/public_benchmark_v1_ext33_m2_79_stitch_family_selector_rejectw4",
+      "alpha": 1.0,
+      "balance_classes": false,
+      "reject_weight": 4.0,
+      "reject_margin": 0.0,
+      "accuracy": 0.74107143,
+      "positive_accuracy": 0.77272727,
+      "nonbase_positive_accuracy": 0.59459459,
+      "reject_recall": 0.73333333,
+      "false_texture_promotions": 6
+    }
+  },
+  "interpretation": "M2.79 confirms that M2.78's broader seed table supports multi-family stitch-type learning, but professional-safe deployment requires reject-risk weighting. The safest evaluated variant is rejectw4: it improves overall source-held-out accuracy and reduces false texture promotions from 51 to 6, at the cost of lower non-base positive recall.",
+  "promotion_decision": "M2.79 is not promoted as a DST output profile. It is a learned stitch-family selector prototype and risk-control audit. M2.74 remains the promoted DST generation profile.",
+  "next_step": "Increase true DST/PES-derived family labels and add a cost-sensitive loss that separately optimizes positive stitch-family recall and unsafe texture rejection."
+}
