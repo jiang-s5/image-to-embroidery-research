@@ -1,0 +1,56 @@
+{
+  "model_id": "m2_88_preview_learned_deployment_policy",
+  "date": "2026-07-07",
+  "status": "strict_learned_deployment_confirmed_no_gate_rejected",
+  "purpose": "Apply the M2.87 preview-aware learned selector to the M2.86 executable candidate pool and verify whether it can replace or safely confirm the deterministic preview sweep.",
+  "tool": "tools/apply_preview_learned_deployment_policy.py",
+  "inputs": {
+    "candidate_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_candidate_rows.csv",
+    "fallback_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_selected_rows.csv",
+    "m2_86_selected_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_selected_rows.csv",
+    "selector_model": "results/public_benchmark_v1_ext33_m2_87_preview_selector_rejectw16_margin010/stitch_family_selector_model.json"
+  },
+  "strict_policy": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy",
+    "command": "python tools/apply_preview_learned_deployment_policy.py --copy-outputs",
+    "require_preview_gate": true,
+    "reject_margin": 0.1,
+    "min_risky_margin": 0.0,
+    "selector_margin_weight": 0.001,
+    "decision": "promoted_as_learned_control_layer",
+    "result": {
+      "samples": 33,
+      "learned_policy_switches": 7,
+      "hard_fail": 0,
+      "visible_connector_count": 0.0,
+      "mean_unified_loss": 0.05706876,
+      "mean_jump_count": 6.15151515,
+      "mean_trim_count": 0.60606061,
+      "mean_off_mask_stitch_length_mm": 0.10619091,
+      "mean_coverage_ratio": 0.98167906,
+      "mean_stitch_precision_ratio": 0.83918282,
+      "mean_professional_preview_score": 0.73544111,
+      "mean_generator_texture_score": 0.22612121,
+      "differs_from_m2_86_sample_ids": []
+    }
+  },
+  "relaxed_no_gate_probe": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy_relaxed_nogate",
+    "command": "python tools/apply_preview_learned_deployment_policy.py --no-require-preview-gate --output-dir results/public_benchmark_v1_ext33_m2_88_preview_learned_deployment_policy_relaxed_nogate",
+    "require_preview_gate": false,
+    "decision": "not_promoted",
+    "result": {
+      "samples": 33,
+      "learned_policy_switches": 10,
+      "hard_fail": 3,
+      "mean_unified_loss": 0.09428522,
+      "mean_jump_count": 59.42424242,
+      "mean_trim_count": 8.66666667,
+      "mean_off_mask_stitch_length_mm": 4.58460303,
+      "mean_visible_connector_count": 1.39393939,
+      "mean_professional_preview_score": 0.74095152,
+      "mean_generator_texture_score": 0.24442424
+    }
+  },
+  "interpretation": "M2.88 confirms that the M2.87 selector can be safely wired into deployment only as a strict learned confirmation layer after the M2.86 command/preview gate. Removing the hard gate gives small preview/texture gains but creates hard failures and excessive jumps, so the no-gate learned selector is rejected."
+}
