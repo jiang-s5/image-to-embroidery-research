@@ -1,0 +1,12 @@
+variant,reject_weight,reject_margin,accuracy,positive_accuracy,nonbase_positive_accuracy,reject_recall,false_texture_promotions,selection_note
+m2_81_professional_gate,4.0,0.0,0.84226190,0.81818182,0.67567568,0.84814815,0,previous zero-false-promotion learned baseline
+m2_87_preview_selector_rejectw2,2.0,0.0,0.70361248,0.93150685,0.88636364,0.68908297,166,too aggressive and unsafe
+m2_87_preview_selector_rejectw4,4.0,0.0,0.77914614,0.91780822,0.86363636,0.77030568,95,still unsafe
+m2_87_preview_selector_rejectw2_margin005,2.0,0.05,0.78407225,0.93150685,0.88636364,0.77467249,125,still unsafe
+m2_87_preview_selector_rejectw4_margin005,4.0,0.05,0.84646962,0.91780822,0.86363636,0.84192140,62,improves accuracy but unsafe
+m2_87_preview_selector_rejectw8,8.0,0.0,0.87848933,0.91780822,0.86363636,0.87598253,31,better but unsafe
+m2_87_preview_selector_rejectw8_margin005,8.0,0.05,0.91543514,0.91780822,0.86363636,0.91528384,14,good recall but still unsafe
+m2_87_preview_selector_rejectw8_margin010,8.0,0.10,0.93103448,0.90410959,0.84090909,0.93275109,6,strong exploratory variant but not zero-false
+m2_87_preview_selector_rejectw16_margin010,16.0,0.10,0.95073892,0.80821918,0.68181818,0.95982533,0,selected: zero false promotions with best safe nonbase recall
+m2_87_preview_selector_rejectw16_margin015,16.0,0.15,0.94991790,0.76712329,0.61363636,0.96157205,0,safer but loses more nonbase recall
+m2_87_preview_selector_rejectw24_margin015,24.0,0.15,0.95320197,0.65753425,0.43181818,0.97205240,0,too conservative

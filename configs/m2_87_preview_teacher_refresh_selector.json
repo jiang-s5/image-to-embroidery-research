@@ -1,0 +1,52 @@
+{
+  "model_id": "m2_87_preview_teacher_refresh_selector",
+  "date": "2026-07-07",
+  "status": "preview_aware_teacher_refresh_and_learned_selector_audit",
+  "base_seed": "m2_78_stitch_type_teacher_seed",
+  "preview_source": "m2_86_preview_candidate_sweep_selector",
+  "new_tools": [
+    "tools/build_preview_aware_teacher_refresh.py",
+    "tools/train_stitch_family_selector.py"
+  ],
+  "teacher_refresh": {
+    "output_dir": "results/public_benchmark_v1_ext33_m2_87_preview_teacher_refresh",
+    "base_seed_rows": "results/public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed/stitch_type_teacher_seed_rows.csv",
+    "preview_candidate_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_candidate_rows.csv",
+    "preview_selected_rows": "results/public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector/preview_sweep_selected_rows.csv",
+    "candidate_rows": 2244,
+    "added_preview_rows": 1584,
+    "positive_teacher_rows": 73,
+    "added_positive_teacher_rows": 7,
+    "hard_negative_rows": 1149,
+    "mean_added_positive_preview_score": 0.77505593,
+    "mean_added_positive_preview_delta": 0.02529955,
+    "mean_added_positive_texture_delta": 0.08257143
+  },
+  "selector_training": {
+    "selected_variant": "m2_87_preview_selector_rejectw16_margin010",
+    "output_dir": "results/public_benchmark_v1_ext33_m2_87_preview_selector_rejectw16_margin010",
+    "seed_rows": "results/public_benchmark_v1_ext33_m2_87_preview_teacher_refresh/preview_teacher_seed_rows.csv",
+    "alpha": 1.0,
+    "reject_weight": 16.0,
+    "reject_margin": 0.1,
+    "holdout_column": "source_name",
+    "include_professional_gate_feature": true,
+    "feature_count": 36
+  },
+  "source_heldout_result": {
+    "rows": 1218,
+    "accuracy": 0.95073892,
+    "positive_accuracy": 0.80821918,
+    "nonbase_positive_accuracy": 0.68181818,
+    "reject_recall": 0.95982533,
+    "false_texture_promotions": 0
+  },
+  "comparison_to_m2_81_professional_gate": {
+    "accuracy_delta": 0.10847702,
+    "positive_accuracy_delta": -0.00996264,
+    "nonbase_positive_accuracy_delta": 0.0061425,
+    "reject_recall_delta": 0.11167718,
+    "false_texture_promotions_delta": 0
+  },
+  "interpretation": "M2.87 turns M2.86 preview-positive and preview-rejected candidates into explicit teacher rows. The selected rejectw16_margin010 selector improves source-held-out accuracy and reject recall over M2.81 while keeping false texture promotions at zero and slightly improving non-base positive accuracy. It is a learned-control improvement, not yet a promoted DST output profile."
+}

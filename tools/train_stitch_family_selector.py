@@ -22,6 +22,12 @@ NUMERIC_FEATURES = (
     "stitch_precision_ratio",
     "texture_score",
     "delta_texture_score",
+    "professional_preview_score",
+    "delta_professional_preview_score",
+    "generator_texture_score",
+    "delta_generator_texture_score",
+    "preview_sweep_score",
+    "preview_sweep_gate_pass",
 )
 
 CATEGORICAL_FEATURES = (

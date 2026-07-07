@@ -1,0 +1,63 @@
+{
+  "model_id": "m2_87_preview_teacher_refresh",
+  "base_seed_rows": "results\\public_benchmark_v1_ext33_m2_78_stitch_type_teacher_seed\\stitch_type_teacher_seed_rows.csv",
+  "preview_candidate_rows": "results\\public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector\\preview_sweep_candidate_rows.csv",
+  "preview_selected_rows": "results\\public_benchmark_v1_ext33_m2_86_preview_candidate_sweep_selector\\preview_sweep_selected_rows.csv",
+  "summary": {
+    "candidate_rows": 2244,
+    "added_preview_rows": 1584,
+    "samples": 33,
+    "positive_teacher_rows": 73,
+    "added_positive_teacher_rows": 7,
+    "hard_negative_rows": 1149,
+    "teacher_family_counts": {
+      "reject": 1145,
+      "running_line": 11,
+      "candidate_non_teacher": 1026,
+      "auto_fill": 10,
+      "fill_tatami_like": 12,
+      "outline_border": 1,
+      "auto_running": 5,
+      "base_keep": 29,
+      "satin_like": 5
+    },
+    "positive_teacher_family_counts": {
+      "running_line": 11,
+      "auto_fill": 10,
+      "fill_tatami_like": 12,
+      "outline_border": 1,
+      "auto_running": 5,
+      "base_keep": 29,
+      "satin_like": 5
+    },
+    "positive_seed_source_counts": {
+      "candidate_selector": 33,
+      "stitch_type_teacher": 33,
+      "m2_86_preview_sweep": 7
+    },
+    "m2_86_gate_reason_counts": {
+      "loss_increase": 456,
+      "off_mask_increase": 309,
+      "preview_gain_too_small": 675,
+      "preview_sweep_candidate_pass": 34,
+      "texture_regression_too_large": 1,
+      "visible_connector_increase": 27,
+      "precision_drop": 82
+    },
+    "mean_positive_unified_loss": 0.07761467,
+    "mean_positive_jump_count": 7.63013699,
+    "mean_positive_trim_count": 1.93150685,
+    "mean_positive_coverage_ratio": 0.92977963,
+    "mean_positive_stitch_precision_ratio": 0.84022323,
+    "mean_added_positive_preview_score": 0.77505593,
+    "mean_added_positive_preview_delta": 0.02529955,
+    "mean_added_positive_texture_delta": 0.08257143
+  },
+  "labeling_policy": {
+    "selected_m2_86_switch": "positive teacher with family mapped to trainable stitch family",
+    "preview_gate_pass_but_not_selected": "neutral candidate_non_teacher",
+    "visible/off_mask/precision/loss/texture_regression": "reject with reason-specific weights",
+    "preview_gain_too_small": "neutral candidate_non_teacher"
+  },
+  "interpretation": "M2.87 adds DST-preview-aware supervision to the M2.78 seed. It does not promote a new output profile by itself; it prepares a learned selector to prefer candidates that improve preview texture while learning explicit reject signals from unsafe or regressing candidates."
+}
