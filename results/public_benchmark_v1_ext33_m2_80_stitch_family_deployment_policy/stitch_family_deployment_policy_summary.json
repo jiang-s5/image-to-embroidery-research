@@ -1,0 +1,307 @@
+{
+  "model_id": "m2_80_stitch_family_deployment_policy",
+  "input_predictions": "results\\public_benchmark_v1_ext33_m2_79_stitch_family_selector_rejectw4\\stitch_family_source_heldout_predictions.csv",
+  "policy": {
+    "min_risky_margin": 0.2,
+    "risk_families": [
+      "auto_fill",
+      "auto_running",
+      "fill_tatami_like",
+      "outline_border",
+      "running_line",
+      "satin_like"
+    ],
+    "rule": "If the selector predicts a risky stitch family but its score margin over reject is below the threshold, deploy reject instead."
+  },
+  "raw_selector_summary": {
+    "rows": 336,
+    "accuracy": 0.74107143,
+    "positive_accuracy": 0.77272727,
+    "nonbase_positive_accuracy": 0.59459459,
+    "reject_recall": 0.73333333,
+    "false_texture_promotions": 6,
+    "teacher_family_counts": {
+      "reject": 270,
+      "fill_tatami_like": 6,
+      "auto_fill": 10,
+      "outline_border": 1,
+      "auto_running": 5,
+      "satin_like": 4,
+      "base_keep": 29,
+      "running_line": 11
+    },
+    "deployed_family_counts": {
+      "reject": 202,
+      "auto_fill": 50,
+      "fill_tatami_like": 6,
+      "auto_running": 28,
+      "base_keep": 29,
+      "satin_like": 2,
+      "running_line": 19
+    }
+  },
+  "deployed_policy_summary": {
+    "rows": 336,
+    "accuracy": 0.8422619,
+    "positive_accuracy": 0.75757576,
+    "nonbase_positive_accuracy": 0.56756757,
+    "reject_recall": 0.86296296,
+    "false_texture_promotions": 0,
+    "teacher_family_counts": {
+      "reject": 270,
+      "fill_tatami_like": 6,
+      "auto_fill": 10,
+      "outline_border": 1,
+      "auto_running": 5,
+      "satin_like": 4,
+      "base_keep": 29,
+      "running_line": 11
+    },
+    "deployed_family_counts": {
+      "reject": 238,
+      "auto_fill": 32,
+      "auto_running": 28,
+      "base_keep": 29,
+      "fill_tatami_like": 2,
+      "running_line": 7
+    }
+  },
+  "by_source": {
+    "OpenMoji": {
+      "rows": 84,
+      "accuracy": 0.75,
+      "positive_accuracy": 0.6,
+      "nonbase_positive_accuracy": 0.38461538,
+      "reject_recall": 0.796875,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 64,
+        "fill_tatami_like": 4,
+        "auto_fill": 4,
+        "outline_border": 1,
+        "auto_running": 1,
+        "satin_like": 3,
+        "base_keep": 7
+      },
+      "deployed_family_counts": {
+        "reject": 54,
+        "auto_fill": 22,
+        "auto_running": 1,
+        "base_keep": 7
+      }
+    },
+    "Openclipart": {
+      "rows": 111,
+      "accuracy": 0.87387387,
+      "positive_accuracy": 0.8,
+      "nonbase_positive_accuracy": 0.63636364,
+      "reject_recall": 0.89010989,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 91,
+        "running_line": 3,
+        "auto_fill": 6,
+        "fill_tatami_like": 1,
+        "base_keep": 9,
+        "satin_like": 1
+      },
+      "deployed_family_counts": {
+        "reject": 82,
+        "auto_running": 13,
+        "auto_fill": 6,
+        "fill_tatami_like": 1,
+        "base_keep": 9
+      }
+    },
+    "QuickDraw": {
+      "rows": 97,
+      "accuracy": 0.84536082,
+      "positive_accuracy": 0.75,
+      "nonbase_positive_accuracy": 0.5,
+      "reject_recall": 0.86419753,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 81,
+        "running_line": 6,
+        "auto_running": 2,
+        "base_keep": 8
+      },
+      "deployed_family_counts": {
+        "auto_running": 12,
+        "reject": 71,
+        "running_line": 2,
+        "auto_fill": 4,
+        "base_keep": 8
+      }
+    },
+    "Rendered text": {
+      "rows": 44,
+      "accuracy": 0.93181818,
+      "positive_accuracy": 1.0,
+      "nonbase_positive_accuracy": 1.0,
+      "reject_recall": 0.91176471,
+      "false_texture_promotions": 0,
+      "teacher_family_counts": {
+        "reject": 34,
+        "fill_tatami_like": 1,
+        "auto_running": 2,
+        "running_line": 2,
+        "base_keep": 5
+      },
+      "deployed_family_counts": {
+        "reject": 31,
+        "fill_tatami_like": 1,
+        "auto_running": 2,
+        "running_line": 5,
+        "base_keep": 5
+      }
+    }
+  },
+  "sweep": [
+    {
+      "min_risky_margin": 0.0,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.74107143,
+      "positive_accuracy": 0.77272727,
+      "nonbase_positive_accuracy": 0.59459459,
+      "reject_recall": 0.73333333,
+      "false_texture_promotions": 6,
+      "accuracy_delta_vs_raw": 0.0,
+      "reject_recall_delta_vs_raw": 0.0,
+      "false_texture_delta_vs_raw": 0
+    },
+    {
+      "min_risky_margin": 0.02,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.75892857,
+      "positive_accuracy": 0.77272727,
+      "nonbase_positive_accuracy": 0.59459459,
+      "reject_recall": 0.75555556,
+      "false_texture_promotions": 3,
+      "accuracy_delta_vs_raw": 0.01785714,
+      "reject_recall_delta_vs_raw": 0.02222223,
+      "false_texture_delta_vs_raw": -3
+    },
+    {
+      "min_risky_margin": 0.05,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.78571429,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.79259259,
+      "false_texture_promotions": 1,
+      "accuracy_delta_vs_raw": 0.04464286,
+      "reject_recall_delta_vs_raw": 0.05925926,
+      "false_texture_delta_vs_raw": -5
+    },
+    {
+      "min_risky_margin": 0.08,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.80059524,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.81111111,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.05952381,
+      "reject_recall_delta_vs_raw": 0.07777778,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.1,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.80654762,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.81851852,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.06547619,
+      "reject_recall_delta_vs_raw": 0.08518519,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.12,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.81547619,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.82962963,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.07440476,
+      "reject_recall_delta_vs_raw": 0.0962963,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.15,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.82142857,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.83703704,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.08035714,
+      "reject_recall_delta_vs_raw": 0.10370371,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.2,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.8422619,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.86296296,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.10119047,
+      "reject_recall_delta_vs_raw": 0.12962963,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.25,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.86011905,
+      "positive_accuracy": 0.74242424,
+      "nonbase_positive_accuracy": 0.54054054,
+      "reject_recall": 0.88888889,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.11904762,
+      "reject_recall_delta_vs_raw": 0.15555556,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.3,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.86011905,
+      "positive_accuracy": 0.72727273,
+      "nonbase_positive_accuracy": 0.51351351,
+      "reject_recall": 0.89259259,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.11904762,
+      "reject_recall_delta_vs_raw": 0.15925926,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.4,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.86011905,
+      "positive_accuracy": 0.71212121,
+      "nonbase_positive_accuracy": 0.48648649,
+      "reject_recall": 0.8962963,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.11904762,
+      "reject_recall_delta_vs_raw": 0.16296297,
+      "false_texture_delta_vs_raw": -6
+    },
+    {
+      "min_risky_margin": 0.5,
+      "risk_families": "auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like",
+      "accuracy": 0.84821429,
+      "positive_accuracy": 0.65151515,
+      "nonbase_positive_accuracy": 0.37837838,
+      "reject_recall": 0.8962963,
+      "false_texture_promotions": 0,
+      "accuracy_delta_vs_raw": 0.10714286,
+      "reject_recall_delta_vs_raw": 0.16296297,
+      "false_texture_delta_vs_raw": -6
+    }
+  ],
+  "interpretation": "M2.80 adds a conservative deployment gate after M2.79 so complex stitch-family promotions require a stronger margin over reject."
+}

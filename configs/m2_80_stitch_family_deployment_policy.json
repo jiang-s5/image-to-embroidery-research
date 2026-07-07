@@ -1,0 +1,40 @@
+{
+  "model_id": "m2_80_stitch_family_deployment_policy",
+  "date": "2026-07-07",
+  "status": "post_selector_deployment_policy",
+  "base_selector": "m2_79_stitch_family_selector_rejectw4",
+  "promoted_output_profile": "m2_74_professional_texture_profile",
+  "input_predictions": "results/public_benchmark_v1_ext33_m2_79_stitch_family_selector_rejectw4/stitch_family_source_heldout_predictions.csv",
+  "output_dir": "results/public_benchmark_v1_ext33_m2_80_stitch_family_deployment_policy",
+  "purpose": "Add a conservative deployment gate after the M2.79 multi-family stitch selector so risky stitch-family promotions require a stronger score margin over reject.",
+  "tool": "tools/calibrate_stitch_family_deployment_policy.py",
+  "selected_policy": {
+    "min_risky_margin": 0.2,
+    "risk_families": [
+      "running_line",
+      "auto_running",
+      "auto_fill",
+      "fill_tatami_like",
+      "satin_like",
+      "outline_border"
+    ],
+    "rule": "If the selector predicts a risky stitch family but its score margin over reject is below 0.20, deploy reject instead."
+  },
+  "source_heldout_result": {
+    "raw_m2_79_rejectw4": {
+      "accuracy": 0.74107143,
+      "positive_accuracy": 0.77272727,
+      "nonbase_positive_accuracy": 0.59459459,
+      "reject_recall": 0.73333333,
+      "false_texture_promotions": 6
+    },
+    "m2_80_deployment_policy": {
+      "accuracy": 0.8422619,
+      "positive_accuracy": 0.75757576,
+      "nonbase_positive_accuracy": 0.56756757,
+      "reject_recall": 0.86296296,
+      "false_texture_promotions": 0
+    }
+  },
+  "interpretation": "M2.80 is a conservative professional safety layer. It removes all held-out false texture promotions and improves reject recall, while sacrificing a small amount of non-base positive recall. It is not yet a new DST output profile; it is the deployment gate to use before allowing M2.79-style family predictions to control actual DST generation."
+}

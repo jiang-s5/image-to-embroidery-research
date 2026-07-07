@@ -1,0 +1,13 @@
+﻿min_risky_margin,risk_families,accuracy,positive_accuracy,nonbase_positive_accuracy,reject_recall,false_texture_promotions,accuracy_delta_vs_raw,reject_recall_delta_vs_raw,false_texture_delta_vs_raw
+0.0,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.74107143,0.77272727,0.59459459,0.73333333,6,0.0,0.0,0
+0.02,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.75892857,0.77272727,0.59459459,0.75555556,3,0.01785714,0.02222223,-3
+0.05,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.78571429,0.75757576,0.56756757,0.79259259,1,0.04464286,0.05925926,-5
+0.08,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.80059524,0.75757576,0.56756757,0.81111111,0,0.05952381,0.07777778,-6
+0.1,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.80654762,0.75757576,0.56756757,0.81851852,0,0.06547619,0.08518519,-6
+0.12,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.81547619,0.75757576,0.56756757,0.82962963,0,0.07440476,0.0962963,-6
+0.15,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.82142857,0.75757576,0.56756757,0.83703704,0,0.08035714,0.10370371,-6
+0.2,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.8422619,0.75757576,0.56756757,0.86296296,0,0.10119047,0.12962963,-6
+0.25,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.86011905,0.74242424,0.54054054,0.88888889,0,0.11904762,0.15555556,-6
+0.3,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.86011905,0.72727273,0.51351351,0.89259259,0,0.11904762,0.15925926,-6
+0.4,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.86011905,0.71212121,0.48648649,0.8962963,0,0.11904762,0.16296297,-6
+0.5,auto_fill|auto_running|fill_tatami_like|outline_border|running_line|satin_like,0.84821429,0.65151515,0.37837838,0.8962963,0,0.10714286,0.16296297,-6
