@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "Please cite this project and obtain permission before publishing results derived from it."
+title: "Image-to-Embroidery Stitch Planning with Geometry and Continuity-Aware Graph Planning"
+type: software
+authors:
+  - name: "LLYszs070206"
+    affiliation: "GitHub and Hugging Face release account"
+date-released: 2026-07-30
+version: "public-v1.0"
+repository-code: "https://github.com/jiang-s5/image-to-embroidery-research"
+url: "https://huggingface.co/LLYszs070206/image-to-embroidery-private"
+license: "LicenseRef-Research-Only-Non-Commercial"
+keywords:
+  - embroidery
+  - DST
+  - PES
+  - computer vision
+  - graph planning
+  - path continuity

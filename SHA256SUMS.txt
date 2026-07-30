@@ -1,0 +1,10 @@
+# SHA-256 manifest for the public-v1.0 Hugging Face release package.
+# The listed model/checkpoint paths are hosted at:
+# https://huggingface.co/LLYszs070206/image-to-embroidery-private
+# They are not stored in ordinary Git history in this source repository.
+B35D7C77E58B617183D5E5C584C568CAA5B17D708A5C4156190812F58B6F7B2F  model.safetensors
+BB58B5DDE7C8A3DC0FDF0A19E2D82D54615229365E80FE70AF3F97A1B7EEBC1A  checkpoints/model14B_gentle_continue_geometry_final.pt
+D85D70A70625CB261B3B42B21719E331B2B4D1A60A5541816527AAF3EA59E6DF  checkpoints/best_model13_multiformat_all_vector_continuity.pt
+86F56084EC88B4B999258BB5C6D0EE30C71C84F89850164C6EF04C06688F1E96  checkpoints/m2_edge_policy_m2_1_globalrepair20.json
+AB32923228D04F958D7CA98E152E14B87EEA29E541A5AEA28E3A6E5A5448AC12  runtime/planner/graph_tsp.py
+DD5583119DB1218C6368247A9CB1DC40CFA93980AF722DF92D51D2153A45337C  run_image_to_dst.py

@@ -18,6 +18,27 @@ input image / DST-rendered preview
   -> DST/PES export and render-back evaluation
 ```
 
+## Release and Use Restrictions
+
+This repository is public for transparency and reproducibility. It is **not an
+OSI-approved open-source release** and is not granted commercial or unrestricted
+redistribution rights. Code, model weights, planner policies, and original
+runtime artifacts released by the project are governed by
+[MODEL_LICENSE.md](MODEL_LICENSE.md).
+
+The corresponding latest model package is available on Hugging Face as a gated
+research-only release:
+[image-to-embroidery-private](https://huggingface.co/LLYszs070206/image-to-embroidery-private).
+The login-protected demo is available at
+[image-to-embroidery-dst-generator](https://huggingface.co/spaces/LLYszs070206/image-to-embroidery-dst-generator).
+
+Before using this repository, read [AUTHOR_DECLARATION.md](AUTHOR_DECLARATION.md)
+and [CITATION.cff](CITATION.cff). The release artifact hashes are recorded in
+[SHA256SUMS.txt](SHA256SUMS.txt); the model/checkpoint paths in that file refer
+to the Hugging Face release package, not to files that are stored in ordinary
+Git history. Third-party datasets, images, embroidery files, and libraries keep
+their original licenses.
+
 ## Current Direction
 
 The latest stable research direction is a geometry-to-planner model with vector-continuity supervision:
